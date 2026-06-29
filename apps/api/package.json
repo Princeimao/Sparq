@@ -1,0 +1,42 @@
+{
+  "name": "@sparq/api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "lint": "echo 'No lint step'",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sparq/database": "*",
+    "express": "^5.1.0",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0",
+    "cookie-parser": "^1.4.7",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "zod": "^3.25.30",
+    "axios": "^1.9.0",
+    "node-cron": "^3.0.3",
+    "stripe": "^18.1.0",
+    "google-auth-library": "^9.15.1",
+    "dotenv": "^16.5.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/cors": "^2.8.18",
+    "@types/morgan": "^1.9.9",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.15.21",
+    "@types/node-cron": "^3.0.11",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.4",
+    "typescript": "5.9.2"
+  }
+}

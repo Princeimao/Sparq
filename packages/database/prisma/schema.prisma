@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum IntegrationType {
+  WHATSAPP
+  PAYMENT
+  STORE
+  CUSTOM_API
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  COMPLETED
+  CANCELLED
+}
+
+enum ConversationStep {
+  INITIAL
+  WAITING_CONFIRMATION
+  WAITING_ADDRESS
+  WAITING_PAYMENT
+  COMPLETED
+  CANCELLED
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+// ─── Core Auth & Org ─────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  googleId  String?  @unique
+
+  memberships Membership[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  memberships  Membership[]
+  integrations Integration[]
+  campaigns    Campaign[]
+  customers    Customer[]
+  orders       Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations")
+}
+
+model Membership {
+  id String @id @default(cuid())
+
+  userId         String
+  organizationId String
+
+  role Role @default(MEMBER)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@index([userId])
+  @@map("memberships")
+}
+
+model Integration {
+  id String @id @default(cuid())
+
+  organizationId String
+  type           IntegrationType
+
+  name     String
+  isActive Boolean @default(true)
+
+  credentials Json?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([organizationId, type])
+  @@map("integrations")
+}
+
+model Campaign {
+  id String @id @default(cuid())
+
+  organizationId String
+
+  name             String
+  productName      String?
+  reorderAfterDays Int
+  messageTemplate  String?
+  isActive         Boolean @default(true)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders       Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("campaigns")
+}
+
+model Customer {
+  id String @id @default(cuid())
+
+  organizationId String
+
+  phone      String
+  name       String?
+  externalId String?
+  address    String?
+  optedIn    Boolean @default(true)
+
+  organization  Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders        Order[]
+  conversations ConversationState[]
+  messages      Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, phone])
+  @@index([organizationId])
+  @@map("customers")
+}
+
+model Order {
+  id String @id @default(cuid())
+
+  organizationId String
+  customerId     String
+  campaignId     String?
+
+  productName   String
+  amount        Float?
+  currency      String?          @default("INR")
+  status        OrderStatus      @default(PENDING)
+  purchaseDate  DateTime         @default(now())
+  paymentId     String?          // External payment ID (Stripe/Razorpay)
+  paymentLink   String?
+
+  organization  Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer      Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  campaign      Campaign?        @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  conversation  ConversationState?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([status])
+  @@map("orders")
+}
+
+model ConversationState {
+  id String @id @default(cuid())
+
+  customerId String
+  orderId    String? @unique
+
+  step          ConversationStep @default(INITIAL)
+  contextData   Json?            // Extra context (product info, address confirmation, etc.)
+  lastMessageAt DateTime         @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  order    Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([step])
+  @@map("conversation_states")
+}
+
+// ─── Message Log ─────────────────────────────────────────────────────────────
+
+model Message {
+  id String @id @default(cuid())
+
+  customerId String
+
+  waMessageId String?          @unique // WhatsApp message ID
+  direction   MessageDirection
+  body        String?
+  templateName String?
+  status      MessageStatus    @default(SENT)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([waMessageId])
+  @@map("messages")
+}

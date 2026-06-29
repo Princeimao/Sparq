@@ -1,0 +1,289 @@
+import { Router } from "express";
+import { OAuth2Client } from "google-auth-library";
+import jwt, { type SignOptions } from "jsonwebtoken";
+import { env } from "../../config/env";
+import { prisma } from "../../config/prisma";
+import { authenticate, AuthPayload } from "../../middleware/auth";
+
+const router = Router();
+
+const googleClient = new OAuth2Client(
+  env.GOOGLE_CLIENT_ID,
+  env.GOOGLE_CLIENT_SECRET,
+  env.GOOGLE_REDIRECT_URI
+);
+
+router.get("/google", (_req, res) => {
+  const url = googleClient.generateAuthUrl({
+    access_type: "offline",
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile",
+    ],
+  });
+  res.redirect(url);
+});
+
+router.get("/google/callback", async (req, res, next) => {
+  try {
+    const code = req.query.code as string;
+    if (!code) {
+      res.status(400).json({ error: "Authorization code is required" });
+      return;
+    }
+
+    const { tokens } = await googleClient.getToken(code);
+    googleClient.setCredentials(tokens);
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: tokens.id_token!,
+      audience: env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      res.status(400).json({ error: "Failed to get user info from Google" });
+      return;
+    }
+
+    const user = await prisma.user.upsert({
+      where: { email: payload.email },
+      update: {
+        name: payload.name,
+        avatarUrl: payload.picture,
+        googleId: payload.sub,
+      },
+      create: {
+        email: payload.email,
+        name: payload.name,
+        avatarUrl: payload.picture,
+        googleId: payload.sub,
+      },
+    });
+
+    const accessToken = generateAccessToken(user.id, user.email);
+    const refreshToken = generateRefreshToken(user.id, user.email);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.redirect(
+      `${env.FRONTEND_URL}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/google/token", async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      res.status(400).json({ error: "idToken is required" });
+      return;
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      res.status(400).json({ error: "Invalid Google token" });
+      return;
+    }
+
+    const user = await prisma.user.upsert({
+      where: { email: payload.email },
+      update: {
+        name: payload.name,
+        avatarUrl: payload.picture,
+        googleId: payload.sub,
+      },
+      create: {
+        email: payload.email,
+        name: payload.name,
+        avatarUrl: payload.picture,
+        googleId: payload.sub,
+      },
+    });
+
+    const accessToken = generateAccessToken(user.id, user.email);
+    const refreshToken = generateRefreshToken(user.id, user.email);
+
+    res.json({
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatarUrl
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/refresh", async (req, res, next) => {
+  try {
+    const token = req.body.refreshToken || req.cookies?.refresh_token;
+    if (!token) {
+      res.status(401).json({ error: "Refresh token is required" });
+      return;
+    }
+
+    const payload = jwt.verify(token, env.JWT_REFRESH_SECRET) as AuthPayload;
+
+    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+    if (!user) {
+      res.status(401).json({ error: "User not found" });
+      return;
+    }
+
+    const accessToken = generateAccessToken(user.id, user.email);
+    const refreshToken = generateRefreshToken(user.id, user.email);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken, refreshToken });
+  } catch {
+    res.status(401).json({ error: "Invalid refresh token" });
+  }
+});
+
+router.get("/me", authenticate, async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        createdAt: true,
+        memberships: {
+          include: {
+            organization: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/logout", (_req, res) => {
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+  res.json({ message: "Logged out" });
+});
+
+// Test route
+router.get("/test", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ error: "Email and name are required" });
+      return;
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const accessToken = generateAccessToken(user.id, user.email);
+    const refreshToken = generateRefreshToken(user.id, user.email);
+
+    res.cookie("access_token", accessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.json({ accessToken, refreshToken });
+  } catch (error) {
+    next(error);
+  }
+});
+
+function generateAccessToken(userId: string, email: string): string {
+  return jwt.sign({
+    userId,
+    email
+  },
+    env.JWT_ACCESS_SECRET, {
+      expiresIn: env.JWT_ACCESS_EXPIRES_IN as string,
+    } as SignOptions);
+}
+
+function generateRefreshToken(userId: string, email: string): string {
+  return jwt.sign({
+    userId,
+    email
+  },
+    env.JWT_REFRESH_SECRET, {
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN as string,
+    } as SignOptions);
+}
+
+
+export default router;
+
+
