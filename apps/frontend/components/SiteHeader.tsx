@@ -8,8 +8,11 @@ import {
 } from "@/components/ui/input-group";
 import NotificationDropdown from "./NotificationDropdown";
 import UserDropdown from "./UserDropdown";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/lib/store";
 
 export function SiteHeader() {
+  const user = useSelector((state: RootState) => state.auth.user);
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-2">
@@ -38,10 +41,10 @@ export function SiteHeader() {
             <div className="rounded-full">
               <Avatar className="size-8 cursor-pointer">
                 <AvatarImage
-                  src="https://images.shadcnspace.com/assets/profiles/user-11.jpg"
-                  alt="David McMichael"
+                  src={user?.avatarUrl || "/avatar.png"}
+                  alt={user?.name || ""}
                 />
-                <AvatarFallback>DM</AvatarFallback>
+                <AvatarFallback>{user?.name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
               </Avatar>
             </div>
           }

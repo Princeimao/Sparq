@@ -1,3 +1,5 @@
+"use client";
+
 import { MoreHorizontal, Settings2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
@@ -19,20 +21,18 @@ export function IntegrationCard({
 }: IntegrationCardProps) {
   return (
     <Card>
-      <CardContent className="p-5 flex flex-col justify-between">
-        {/* <div className="flex justify-between items-start">
+      <CardContent className="flex flex-col justify-between">
+        <div className="flex justify-between items-start">
           <div className="h-14 w-14 rounded-xl bg-zinc-500/10 flex items-center justify-center">
             <Image
-              src={`../public/${icon}`}
+              src={`${icon}`}
               alt={name}
               width={34}
               height={34}
               className="rounded-lg"
             />
           </div>
-        </div> */}
-
-        <img src={icon} alt="" />
+        </div>
 
         {/* Content */}
         <div>
@@ -57,7 +57,7 @@ export function IntegrationCard({
 
           <button
             onClick={onManage}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc/10 cursor-pointer bg-zinc-600/20 hover:bg-zinc-500/10 text-sm"
           >
             <Settings2 size={15} />
             Manage

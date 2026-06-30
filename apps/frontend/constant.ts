@@ -21,6 +21,7 @@ import {
     Home,
     Calendar,
 } from "lucide-react";
+import { useWhatsAppConnect } from "./hooks/integration";
 
 export const navigationData: NavigationSection[] = [
     {
@@ -235,37 +236,38 @@ export const navData: NavItem[] = [
 export const integrations = [
     {
         name: "WhatsApp",
-        description: "Send messages and automate conversations",
-        icon: "/whatsapp.png",
+        description: "Send messages and automate work",
+        icon: "/whatsap.png",
+        onClick: useWhatsAppConnect,
     },
 
     {
         name: "Stripe",
         description: "Accept payments and manage billing",
-        icon: "stripe.png",
+        icon: "/stripe.png",
     },
 
     {
         name: "Razorpay",
         description: "Payment gateway integration",
-        icon: "razorpay.png",
+        icon: "/razorpay.png",
     },
 
     {
         name: "Google Calendar",
         description: "Sync events and availability",
-        icon: "calendar.png",
+        icon: "/calendar.png",
     },
 
     {
         name: "Cal.com",
         description: "Calendar booking synchronization",
-        icon: "cal.png",
+        icon: "/cal.png",
     },
 
     {
         name: "WooCommerce",
         description: "Sync products and orders",
-        icon: "woocommerce.png",
+        icon: "/woo.jpg",
     },
 ];
