@@ -17,7 +17,7 @@ function AuthCallbackHandler() {
 
     if (accessToken && refreshToken) {
       dispatch(setTokens({ accessToken, refreshToken }));
-      
+
       // Fetch user profile and organization memberships
       dispatch(fetchCurrentUser())
         .unwrap()
@@ -39,10 +39,10 @@ function AuthCallbackHandler() {
   }, [router, searchParams, dispatch]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#ffffff] text-black">
       <div className="flex flex-col items-center gap-4">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-        <p className="text-zinc-400">Authenticating...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-black" />
+        <p className="text-black">Authenticating...</p>
       </div>
     </div>
   );

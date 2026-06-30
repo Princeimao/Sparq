@@ -4,6 +4,9 @@ import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { authenticate, AuthPayload } from "../../middleware/auth";
+import { exchangeToken, getGoogleAuthUrl, getUserInfo } from "../../lib/auth";
+
+const codeVerifierStore = new Map<string, string>();
 
 const router = Router();
 
@@ -14,49 +17,45 @@ const googleClient = new OAuth2Client(
 );
 
 router.get("/google", (_req, res) => {
-  const url = googleClient.generateAuthUrl({
-    access_type: "offline",
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/userinfo.profile",
-    ],
-  });
+  const { url, codeVerifier, state } = getGoogleAuthUrl();
+  codeVerifierStore.set(state, codeVerifier);
   res.redirect(url);
 });
 
 router.get("/google/callback", async (req, res, next) => {
   try {
-    const code = req.query.code as string;
+    const { code, state } = req.query as { code: string, state: string };
     if (!code) {
       res.status(400).json({ error: "Authorization code is required" });
       return;
     }
 
-    const { tokens } = await googleClient.getToken(code);
-    googleClient.setCredentials(tokens);
-
-    const ticket = await googleClient.verifyIdToken({
-      idToken: tokens.id_token!,
-      audience: env.GOOGLE_CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      res.status(400).json({ error: "Failed to get user info from Google" });
+    if (!state) {
+      res.status(400).json({ error: "State is required" });
       return;
     }
+
+    const codeVerifier = codeVerifierStore.get(state);
+    if (!codeVerifier) {
+      res.status(400).json({ error: "Code verifier not found for state" });
+      return;
+    }
+    codeVerifierStore.delete(state);
+
+    const idToken = await exchangeToken(code, codeVerifier);
+    const payload = getUserInfo(idToken);
 
     const user = await prisma.user.upsert({
       where: { email: payload.email },
       update: {
         name: payload.name,
-        avatarUrl: payload.picture,
+        avatarUrl: payload.picture.toString(),
         googleId: payload.sub,
       },
       create: {
         email: payload.email,
         name: payload.name,
-        avatarUrl: payload.picture,
+        avatarUrl: payload.picture.toString(),
         googleId: payload.sub,
       },
     });
