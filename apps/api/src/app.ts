@@ -19,6 +19,10 @@ import orderRoutes from "./modules/order/order.routes";
 import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
 import paymentRoutes from "./modules/payment/payment.routes";
 import conversationRoutes from "./modules/conversation/conversation.routes";
+import dashboardRoutes from "./modules/dashboard/dashboard.routes";
+import productRoutes from "./modules/product/product.routes";
+import appointmentRoutes from "./modules/appointment/appointment.routes";
+import workflowRoutes from "./modules/workflow/workflow.routes";
 
 
 const app = express();
@@ -52,6 +56,10 @@ app.use("/api/organizations", campaignRoutes);
 app.use("/api/organizations", customerRoutes);
 app.use("/api/organizations", orderRoutes);
 app.use("/api/organizations", conversationRoutes);
+app.use("/api/organizations", dashboardRoutes);
+app.use("/api/organizations", productRoutes);
+app.use("/api/organizations", appointmentRoutes);
+app.use("/api/organizations", workflowRoutes);
 
 // Payment 
 app.use("/api/payments", paymentRoutes);

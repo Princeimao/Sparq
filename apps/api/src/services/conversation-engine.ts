@@ -1,4 +1,4 @@
-import { prisma } from "@sparq/database";
+import { prisma } from "../config/prisma";
 import { decryptJson } from "../lib/encryption";
 import { createWhatsAppService, WhatsAppService } from "./whatsapp.service";
 import { createPaymentLink } from "./payment.service";

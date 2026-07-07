@@ -75,6 +75,9 @@ model Organization {
   campaigns    Campaign[]
   customers    Customer[]
   orders       Order[]
+  products     Product[]
+  appointments Appointment[]
+  workflows    Workflow[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -238,4 +241,65 @@ model Message {
   @@index([customerId])
   @@index([waMessageId])
   @@map("messages")
+}
+
+// ─── Product ─────────────────────────────────────────────────────────────────
+
+model Product {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  price          Float
+  image          String?
+  stock          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("products")
+}
+
+// ─── Appointment ──────────────────────────────────────────────────────────────
+
+model Appointment {
+  id             String   @id @default(cuid())
+  organizationId String
+  title          String
+  description    String?
+  startTime      DateTime
+  endTime        DateTime
+  customerName   String?
+  customerEmail  String?
+  customerPhone  String?
+  status         String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("appointments")
+}
+
+// ─── Workflow ────────────────────────────────────────────────────────────────
+
+model Workflow {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  triggerType    String   // e.g., "WHATSAPP_MESSAGE", "PRODUCT_PURCHASE", "APPOINTMENT_BOOKING"
+  steps          Json     // Array of steps [{ type: "send_message", template: "...", delay: 0 }, ...]
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("workflows")
 }

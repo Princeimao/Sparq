@@ -1,13 +1,22 @@
 "use client";
 
+import { api } from "@/lib/api";
+
 export function useWhatsAppConnect() {
     return () => {
         window.FB.login(
-            (response: any) => {
+            async (response: any) => {
                 console.log("login", response);
 
                 if (response.authResponse?.code) {
-                    console.log("Code:", response.authResponse.code);
+                    const code = response.authResponse.code;
+                    try {
+                        const res = await api.post("/whatsapp/exchange", { code });
+
+                        console.log("Backend response:", res.data);
+                    } catch (err) {
+                        console.error("Backend error:", err);
+                    }
                 }
             },
             {

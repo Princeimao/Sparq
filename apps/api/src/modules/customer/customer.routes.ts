@@ -162,6 +162,15 @@ router.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const customerId = req.params.customerId as string;
+      const existing = await prisma.customer.findFirst({
+        where: { id: customerId, organizationId: req.organizationId },
+      });
+
+      if (!existing) {
+        res.status(404).json({ error: "Customer not found" });
+        return;
+      }
+
       const customer = await prisma.customer.update({
         where: { id: customerId },
         data: req.body,
@@ -181,6 +190,15 @@ router.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const customerId = req.params.customerId as string;
+      const existing = await prisma.customer.findFirst({
+        where: { id: customerId, organizationId: req.organizationId },
+      });
+
+      if (!existing) {
+        res.status(404).json({ error: "Customer not found" });
+        return;
+      }
+
       await prisma.customer.delete({ where: { id: customerId } });
       res.json({ message: "Customer deleted" });
     } catch (error) {

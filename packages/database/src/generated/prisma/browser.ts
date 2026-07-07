@@ -62,3 +62,18 @@ export type ConversationState = Prisma.ConversationStateModel
  * 
  */
 export type Message = Prisma.MessageModel
+/**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel
+/**
+ * Model Appointment
+ * 
+ */
+export type Appointment = Prisma.AppointmentModel
+/**
+ * Model Workflow
+ * 
+ */
+export type Workflow = Prisma.WorkflowModel

@@ -31,6 +31,18 @@ router.post(
   validateBody(createOrderSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const customer = await prisma.customer.findFirst({
+        where: {
+          id: req.body.customerId,
+          organizationId: req.organizationId,
+        },
+      });
+
+      if (!customer) {
+        res.status(404).json({ error: "Customer not found" });
+        return;
+      }
+
       const order = await prisma.order.create({
         data: {
           organizationId: req.organizationId!,
@@ -129,6 +141,18 @@ router.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const orderId = req.params.orderId as string;
+      const existing = await prisma.order.findFirst({
+        where: {
+          id: orderId,
+          organizationId: req.organizationId,
+        },
+      });
+
+      if (!existing) {
+        res.status(404).json({ error: "Order not found" });
+        return;
+      }
+
       const order = await prisma.order.update({
         where: { id: orderId },
         data: req.body,

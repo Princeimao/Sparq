@@ -57,9 +57,9 @@ export default function DashboardLayout({
     <TooltipProvider>
       <AppSidebar orgId={orgId as string}>
         <div className="p-4 w-full h-full">
-          <h1 className="text-2xl font-semibold mb-2 pl-1">
+          {/* <h1 className="text-2xl font-semibold mb-2 pl-1">
             {path.split("")[0].toUpperCase() + path.split("").slice(1).join("")}
-          </h1>
+          </h1> */}
           <FacebookSDK />
           {children}
         </div>

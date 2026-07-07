@@ -2,13 +2,10 @@ import { Router, Request, Response, NextFunction } from "express";
 import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { processMessage } from "../../services/conversation-engine";
+import axios from "axios";
 
 const router = Router();
 
-/**
- * WhatsApp Webhook Verification (GET)
- * Meta sends a GET request to verify the webhook URL during setup.
- */
 router.get("/webhook", (req: Request, res: Response) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
@@ -23,12 +20,7 @@ router.get("/webhook", (req: Request, res: Response) => {
   }
 });
 
-/**
- * WhatsApp Webhook Handler (POST)
- * Receives incoming messages, button clicks, and status updates.
- */
 router.post("/webhook", async (req: Request, res: Response, _next: NextFunction) => {
-  // Always respond 200 immediately (Meta expects fast response)
   res.sendStatus(200);
 
   try {
@@ -68,9 +60,28 @@ router.post("/webhook", async (req: Request, res: Response, _next: NextFunction)
   }
 });
 
-/**
- * Handle an incoming WhatsApp message.
- */
+router.post("/exchange", async (req: Request, res: Response) => {
+  const code = req.body.code;
+
+  if (!code) {
+    return res.status(400).json({ error: "No code provided" });
+  }
+
+  const resToken = await axios.get("https://graph.facebook.com/v23.0/oauth/access_token", {
+    params: {
+      client_id: process.env.FB_APP_ID,
+      client_secret: process.env.FB_APP_SECRET,
+      redirect_uri: process.env.FB_REDIRECT_URI,
+      code: code,
+    }
+  })
+
+  const accessToken = resToken.data.access_token;
+
+  console.log("Exchanging code for token:", accessToken);
+  res.status(200).json({ token: accessToken });
+})
+
 async function handleIncomingMessage(
   message: Record<string, unknown>,
   metadata: Record<string, unknown>,
@@ -134,9 +145,6 @@ async function handleIncomingMessage(
   }
 }
 
-/**
- * Handle message status updates (sent, delivered, read, failed).
- */
 async function handleStatusUpdates(
   statuses: Array<Record<string, unknown>>
 ): Promise<void> {
@@ -166,3 +174,4 @@ async function handleStatusUpdates(
 }
 
 export default router;
+
