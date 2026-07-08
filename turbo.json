@@ -5,30 +5,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "dist/**"],
-      "env": [
-        "DATABASE_URL",
-
-        "GOOGLE_CLIENT_ID",
-        "GOOGLE_CLIENT_SECRET",
-        "GOOGLE_REDIRECT_URI",
-
-        "JWT_ACCESS_SECRET",
-        "JWT_REFRESH_SECRET",
-        "JWT_ACCESS_EXPIRES_IN",
-        "JWT_REFRESH_EXPIRES_IN",
-
-        "ENCRYPTION_KEY",
-
-        "WHATSAPP_VERIFY_TOKEN",
-        "WHATSAPP_PHONE_NUMBER_ID",
-        "WHATSAPP_ACCESS_TOKEN",
-
-        "STRIPE_SECRET_KEY",
-        "STRIPE_WEBHOOK_SECRET",
-
-        "FRONTEND_URL"
-      ]
+      "outputs": [".next/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]

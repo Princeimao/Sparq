@@ -24,7 +24,6 @@ import productRoutes from "./modules/product/product.routes";
 import appointmentRoutes from "./modules/appointment/appointment.routes";
 import workflowRoutes from "./modules/workflow/workflow.routes";
 
-
 const app = express();
 
 app.use(helmet());
