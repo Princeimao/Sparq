@@ -1,8 +1,9 @@
 "use client";
 
 import { MoreHorizontal, Settings2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import { Switch } from "./ui/switch";
 
 type IntegrationCardProps = {
   name: string;
@@ -35,22 +36,20 @@ export function IntegrationCard({
         </div>
 
         {/* Content */}
-        <div>
-          <h3 className="text-white font-medium text-lg">{name}</h3>
-
+        <div className="mt-4">
+          <CardTitle className="text-sm">{name}</CardTitle>
           <p className="text-sm text-muted-foreground mt-1">{description}</p>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-white/10 pt-4">
           <div className="flex items-center gap-2">
-            <span
-              className={`h-2 w-2 rounded-full ${
-                connected ? "bg-green-400" : "bg-gray-500"
-              }`}
+            <Switch
+              checked={connected}
+              onCheckedChange={() => onManage && onManage()}
             />
 
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {connected ? "Connected" : "Not connected"}
             </span>
           </div>
@@ -60,7 +59,7 @@ export function IntegrationCard({
             className="flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc/10 cursor-pointer bg-zinc-600/20 hover:bg-zinc-500/10 text-sm"
           >
             <Settings2 size={15} />
-            Manage
+            Connect
           </button>
         </div>
       </CardContent>

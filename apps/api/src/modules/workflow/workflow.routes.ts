@@ -155,6 +155,32 @@ router.get(
   }
 );
 
+// ─── GET /api/organizations/:orgId/workflows/:workflowId ───────────────────
+router.get(
+  "/:orgId/workflows/:workflowId",
+  authenticate,
+  requireOrg,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const orgId = req.organizationId as string;
+      const workflowId = req.params.workflowId as string;
+
+      const workflow = await prisma.workflow.findFirst({
+        where: { id: workflowId, organizationId: orgId },
+      });
+
+      if (!workflow) {
+        res.status(404).json({ error: "Workflow not found" });
+        return;
+      }
+
+      res.json({ workflow });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // ─── POST /api/organizations/:orgId/workflows ────────────────────────────────
 router.post(
   "/:orgId/workflows",

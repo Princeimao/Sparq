@@ -1,326 +1,249 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import { Plus, RefreshCw, Save, Trash2, Workflow as WorkflowIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Badge } from "@/components/ui/badge";
+import toast from "react-hot-toast";
+import {
+  Plus,
+  Workflow,
+  MoreVertical,
+  Trash2,
+  Loader2,
+  Zap,
+  MessageSquare,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CreateWorkflowDrawer } from "@/components/workflow/CreateWorkflowDrawer";
 
-type WorkflowStep = {
-  id: string;
-  type: string;
-  label: string;
-  config: {
-    message?: string;
-    durationMinutes?: number;
-    timeoutMinutes?: number;
-  };
-};
-
-type Workflow = {
+interface WorkflowItem {
   id: string;
   name: string;
-  description: string | null;
+  description?: string;
   triggerType: string;
-  steps: WorkflowStep[];
+  steps: any[];
   isActive: boolean;
+  createdAt: string;
   updatedAt: string;
-};
-
-const stepTypes = [
-  "send_message",
-  "wait_reply",
-  "request_address",
-  "generate_payment_link",
-  "offer_slots",
-  "create_appointment",
-  "delay",
-  "condition",
-];
-
-const emptyWorkflow = {
-  name: "",
-  description: "",
-  triggerType: "WHATSAPP_MESSAGE",
-  isActive: true,
-};
-
-const starterStep = (): WorkflowStep => ({
-  id: crypto.randomUUID(),
-  type: "send_message",
-  label: "Send message",
-  config: { message: "" },
-});
+}
 
 export default function WorkflowsPage() {
-  const { orgId } = useParams<{ orgId: string }>();
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const [form, setForm] = useState(emptyWorkflow);
-  const [steps, setSteps] = useState<WorkflowStep[]>([starterStep()]);
+  const { orgId } = useParams();
+  const router = useRouter();
+  const [workflows, setWorkflows] = useState<WorkflowItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const activeCount = useMemo(() => workflows.filter((workflow) => workflow.isActive).length, [workflows]);
-
-  const loadWorkflows = async () => {
-    setLoading(true);
-    const response = await api.get(`/organizations/${orgId}/workflows`);
-    setWorkflows(response.data.workflows);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadWorkflows().catch(() => setLoading(false));
+  const fetchWorkflows = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/organizations/${orgId}/workflows`);
+      setWorkflows(res.data.workflows);
+    } catch {
+      toast.error("Failed to load workflows");
+    } finally {
+      setLoading(false);
+    }
   }, [orgId]);
 
-  const createWorkflow = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSaving(true);
+  useEffect(() => {
+    fetchWorkflows();
+  }, [fetchWorkflows]);
+
+  const handleToggleActive = async (workflow: WorkflowItem) => {
     try {
-      await api.post(`/organizations/${orgId}/workflows`, {
-        ...form,
-        description: form.description || undefined,
-        steps: steps.map((step, index) => ({
-          ...step,
-          id: `step_${index + 1}`,
-          label: step.label || step.type.replaceAll("_", " "),
-          config: {
-            ...step.config,
-            message: step.config.message || undefined,
-          },
-        })),
+      await api.patch(`/organizations/${orgId}/workflows/${workflow.id}`, {
+        isActive: !workflow.isActive,
       });
-      toast.success("Workflow created");
-      setForm(emptyWorkflow);
-      setSteps([starterStep()]);
-      await loadWorkflows();
+      setWorkflows((prev) =>
+        prev.map((w) =>
+          w.id === workflow.id ? { ...w, isActive: !w.isActive } : w,
+        ),
+      );
+      toast.success(
+        `Workflow ${!workflow.isActive ? "activated" : "deactivated"}`,
+      );
     } catch {
-      toast.error("Could not save workflow");
-    } finally {
-      setSaving(false);
+      toast.error("Failed to update workflow");
     }
   };
 
-  const toggleWorkflow = async (workflow: Workflow) => {
-    await api.patch(`/organizations/${orgId}/workflows/${workflow.id}`, {
-      isActive: !workflow.isActive,
-    });
-    await loadWorkflows();
+  const handleDelete = async (workflowId: string) => {
+    try {
+      await api.delete(`/organizations/${orgId}/workflows/${workflowId}`);
+      setWorkflows((prev) => prev.filter((w) => w.id !== workflowId));
+      toast.success("Workflow deleted");
+    } catch {
+      toast.error("Failed to delete workflow");
+    }
   };
 
-  const updateStep = (id: string, updates: Partial<WorkflowStep>) => {
-    setSteps((current) => current.map((step) => (step.id === id ? { ...step, ...updates } : step)));
+  const handleCreate = async (data: {
+    name: string;
+    description: string;
+    triggerType: string;
+  }) => {
+    try {
+      const res = await api.post(`/organizations/${orgId}/workflows`, {
+        ...data,
+        steps: [],
+        isActive: true,
+      });
+      setWorkflows((prev) => [res.data.workflow, ...prev]);
+      setDrawerOpen(false);
+      toast.success("Workflow created!");
+    } catch {
+      toast.error("Failed to create workflow");
+    }
   };
 
-  const updateStepMessage = (id: string, message: string) => {
-    setSteps((current) =>
-      current.map((step) =>
-        step.id === id ? { ...step, config: { ...step.config, message } } : step,
-      ),
-    );
+  const triggerLabel = (type: string) => {
+    switch (type) {
+      case "WHATSAPP_MESSAGE":
+        return "WhatsApp";
+      case "PRODUCT_PURCHASE":
+        return "Purchase";
+      case "APPOINTMENT_BOOKING":
+        return "Booking";
+      default:
+        return type;
+    }
   };
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[420px_1fr]">
-      <Card className="rounded-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <WorkflowIcon className="size-4" />
-            Create workflow
-          </CardTitle>
-          <CardDescription>Build task flows for WhatsApp purchase, appointment booking, reminders, and custom operations.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={createWorkflow}>
-            <div className="space-y-2">
-              <Label htmlFor="workflowName">Name</Label>
-              <Input
-                id="workflowName"
-                required
-                value={form.name}
-                onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                placeholder="WhatsApp lead qualification"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Trigger</Label>
-              <Select
-                value={form.triggerType}
-                onValueChange={(value) => setForm((current) => ({ ...current, triggerType: value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="WHATSAPP_MESSAGE">WhatsApp message</SelectItem>
-                  <SelectItem value="PRODUCT_PURCHASE">Product purchase</SelectItem>
-                  <SelectItem value="APPOINTMENT_BOOKING">Appointment booking</SelectItem>
-                  <SelectItem value="CUSTOM_EVENT">Custom event</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="workflowDescription">Description</Label>
-              <Textarea
-                id="workflowDescription"
-                value={form.description}
-                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-              />
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.isActive}
-                onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked === true }))}
-              />
-              Activate immediately
-            </label>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Steps</Label>
-                <Button type="button" size="sm" variant="outline" onClick={() => setSteps((current) => [...current, starterStep()])}>
-                  <Plus />
-                  Add step
-                </Button>
-              </div>
-              {steps.map((step, index) => (
-                <div key={step.id} className="space-y-3 rounded-lg border p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <Badge variant="outline">Step {index + 1}</Badge>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      disabled={steps.length === 1}
-                      onClick={() => setSteps((current) => current.filter((item) => item.id !== step.id))}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                  <Input
-                    value={step.label}
-                    onChange={(event) => updateStep(step.id, { label: event.target.value })}
-                    placeholder="Step label"
-                  />
-                  <Select value={step.type} onValueChange={(value) => updateStep(step.id, { type: value })}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {stepTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type.replaceAll("_", " ")}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Textarea
-                    value={step.config.message || ""}
-                    onChange={(event) => updateStepMessage(step.id, event.target.value)}
-                    placeholder="Message, condition, or action notes"
-                  />
-                </div>
-              ))}
-            </div>
-
-            <Button className="w-full" disabled={saving}>
-              <Save />
-              {saving ? "Saving..." : "Save workflow"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-3">
-          <Card className="rounded-lg">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Workflows</p>
-              <p className="mt-1 text-2xl font-semibold">{workflows.length}</p>
-            </CardContent>
-          </Card>
-          <Card className="rounded-lg">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Active</p>
-              <p className="mt-1 text-2xl font-semibold">{activeCount}</p>
-            </CardContent>
-          </Card>
-          <Card className="rounded-lg">
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Pre-created flows</p>
-              <p className="mt-1 text-2xl font-semibold">3</p>
-            </CardContent>
-          </Card>
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Workflows</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Create and manage your automation flows
+          </p>
         </div>
+        <Button onClick={() => setDrawerOpen(true)} size="lg">
+          <Plus className="size-4 mr-1.5" />
+          Create Flow
+        </Button>
+      </div>
 
-        <Card className="rounded-lg">
-          <CardHeader>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <CardTitle>Workflow library</CardTitle>
-                <CardDescription>Includes WhatsApp to product purchase, appointment booking, and abandoned cart reminders.</CardDescription>
-              </div>
-              <Button variant="outline" size="icon" onClick={loadWorkflows}>
-                <RefreshCw />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {loading ? (
-              <p className="text-sm text-muted-foreground">Loading workflows...</p>
-            ) : (
-              workflows.map((workflow) => (
-                <div key={workflow.id} className="rounded-lg border p-4">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium">{workflow.name}</p>
-                        <Badge variant={workflow.isActive ? "outline" : "destructive"}>
-                          {workflow.isActive ? "ACTIVE" : "OFF"}
-                        </Badge>
-                        <Badge variant="outline">{workflow.triggerType.replaceAll("_", " ")}</Badge>
-                      </div>
-                      <p className="mt-1 text-sm text-muted-foreground">{workflow.description || "No description"}</p>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : workflows.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-40 px-18 py-24 border border-dashed rounded-xl">
+          <p className="text-muted-foreground text-sm">
+            No workflows yet. Create your first flow!
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {workflows.map((workflow) => (
+            <Card
+              key={workflow.id}
+              className="group cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-primary/20 hover:shadow-md"
+              onClick={() => router.push(`/${orgId}/workflows/${workflow.id}`)}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-center size-9 rounded-lg bg-primary/10 text-primary">
+                      <Zap className="size-4" />
                     </div>
-                    <Button variant="outline" onClick={() => toggleWorkflow(workflow)}>
-                      {workflow.isActive ? "Pause" : "Activate"}
-                    </Button>
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-sm font-medium truncate">
+                        {workflow.name}
+                      </CardTitle>
+                    </div>
                   </div>
-                  <div className="mt-4 grid gap-2 md:grid-cols-2">
-                    {workflow.steps.map((step, index) => (
-                      <div key={`${workflow.id}-${step.id}-${index}`} className="rounded-md border bg-muted/30 p-3">
-                        <p className="text-xs text-muted-foreground">Step {index + 1}</p>
-                        <p className="font-medium">{step.label}</p>
-                        <p className="text-xs text-muted-foreground">{step.type.replaceAll("_", " ")}</p>
-                      </div>
-                    ))}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      asChild
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <MoreVertical className="size-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(workflow.id);
+                        }}
+                      >
+                        <Trash2 className="size-3.5 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                  {workflow.description || "No description"}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-[11px]">
+                    <MessageSquare className="size-3 mr-1" />
+                    {triggerLabel(workflow.triggerType)}
+                  </Badge>
+                  <Badge variant="outline" className="text-[11px]">
+                    {workflow.steps?.length || 0} steps
+                  </Badge>
+                </div>
+              </CardContent>
+              <CardFooter className="pt-3">
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(workflow.createdAt).toLocaleDateString()}
+                  </span>
+                  <div
+                    className="flex items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span className="text-xs text-muted-foreground">
+                      {workflow.isActive ? "Active" : "Inactive"}
+                    </span>
+                    <Switch
+                      checked={workflow.isActive}
+                      onCheckedChange={() => handleToggleActive(workflow)}
+                    />
                   </div>
                 </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Create Workflow Drawer */}
+      <CreateWorkflowDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        onCreate={handleCreate}
+      />
     </div>
   );
 }

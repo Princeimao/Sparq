@@ -1,22 +1,12 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Plus, RefreshCw, Search, Users } from "lucide-react";
-import { toast } from "react-hot-toast";
 import { api } from "@/lib/api";
-import { Badge } from "@/components/ui/badge";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Loader2, Plus, Users, Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { CustomerDrawer } from "@/components/customers/CustomerDrawer";
 import {
   Table,
   TableBody,
@@ -25,192 +15,178 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 
-type Customer = {
+export interface Customer {
   id: string;
-  name: string | null;
+  name?: string;
   phone: string;
-  externalId: string | null;
-  address: string | null;
+  externalId?: string;
+  address?: string;
   optedIn: boolean;
   createdAt: string;
-  _count?: { orders: number; conversations: number };
-};
-
-const emptyForm = {
-  name: "",
-  phone: "",
-  externalId: "",
-  address: "",
-  optedIn: true,
-};
+  _count?: {
+    orders: number;
+    conversations: number;
+  };
+}
 
 export default function CustomersPage() {
-  const { orgId } = useParams<{ orgId: string }>();
+  const { orgId } = useParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [form, setForm] = useState(emptyForm);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
-  const loadCustomers = async () => {
-    setLoading(true);
-    const response = await api.get(`/organizations/${orgId}/customers`, {
-      params: { search: search || undefined, limit: 50 },
-    });
-    setCustomers(response.data.customers);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadCustomers().catch(() => setLoading(false));
+  const fetchCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/organizations/${orgId}/customers`);
+      setCustomers(res.data.customers);
+    } catch {
+      toast.error("Failed to load customers");
+    } finally {
+      setLoading(false);
+    }
   }, [orgId]);
 
-  const createCustomer = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSaving(true);
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
+
+  const handleDelete = async (customerId: string) => {
+    if (!confirm("Are you sure you want to delete this customer?")) return;
     try {
-      await api.post(`/organizations/${orgId}/customers`, {
-        phone: form.phone,
-        name: form.name || undefined,
-        externalId: form.externalId || undefined,
-        address: form.address || undefined,
-        optedIn: form.optedIn,
-      });
-      toast.success("Customer added");
-      setForm(emptyForm);
-      await loadCustomers();
+      await api.delete(`/organizations/${orgId}/customers/${customerId}`);
+      setCustomers((prev) => prev.filter((c) => c.id !== customerId));
+      toast.success("Customer deleted successfully");
     } catch {
-      toast.error("Could not add customer");
-    } finally {
-      setSaving(false);
+      toast.error("Failed to delete customer");
     }
   };
 
-  return (
-    <div className="grid gap-4 xl:grid-cols-[360px_1fr]">
-      <Card className="rounded-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="size-4" />
-            Add customer
-          </CardTitle>
-          <CardDescription>Store customer data for WhatsApp, orders, and appointments.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={createCustomer}>
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={form.name}
-                onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                placeholder="Aarav Mehta"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                required
-                value={form.phone}
-                onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-                placeholder="+919876543210"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="externalId">External ID</Label>
-              <Input
-                id="externalId"
-                value={form.externalId}
-                onChange={(event) => setForm((current) => ({ ...current, externalId: event.target.value }))}
-                placeholder="Shopify or CRM ID"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={form.address}
-                onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))}
-                placeholder="Delivery address"
-              />
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.optedIn}
-                onCheckedChange={(checked) => setForm((current) => ({ ...current, optedIn: checked === true }))}
-              />
-              WhatsApp opt-in
-            </label>
-            <Button className="w-full" disabled={saving}>
-              <Plus />
-              {saving ? "Saving..." : "Create customer"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+  const handleSaveCustomer = (savedCustomer: Customer, isUpdate: boolean) => {
+    if (isUpdate) {
+      setCustomers((prev) =>
+        prev.map((c) => (c.id === savedCustomer.id ? { ...c, ...savedCustomer } : c))
+      );
+    } else {
+      setCustomers((prev) => [savedCustomer, ...prev]);
+    }
+    setDrawerOpen(false);
+  };
 
-      <Card className="rounded-lg">
-        <CardHeader>
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <CardTitle>Customer table</CardTitle>
-              <CardDescription>Contacts, order counts, and conversation history signals.</CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                <Input
-                  className="w-56 pl-8"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") loadCustomers();
-                  }}
-                  placeholder="Search customer"
-                />
-              </div>
-              <Button variant="outline" size="icon" onClick={loadCustomers}>
-                <RefreshCw />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <p className="text-sm text-muted-foreground">Loading customers...</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Orders</TableHead>
-                  <TableHead>Conversations</TableHead>
-                  <TableHead>Status</TableHead>
+  const openCreateDrawer = () => {
+    setSelectedCustomer(null);
+    setDrawerOpen(true);
+  };
+
+  const openUpdateDrawer = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setDrawerOpen(true);
+  };
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Customers</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage your customers and their details.
+          </p>
+        </div>
+        <Button onClick={openCreateDrawer}>
+          <Plus className="size-4 mr-2" />
+          Add Customer
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : customers.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-xl bg-muted/5">
+          <Users className="size-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium">No customers found</h3>
+          <p className="text-sm text-muted-foreground mt-1 mb-4">
+            Add your first customer to start tracking conversations and orders.
+          </p>
+          <Button onClick={openCreateDrawer} variant="outline">
+            <Plus className="size-4 mr-2" />
+            Add Customer
+          </Button>
+        </div>
+      ) : (
+        <div className="border rounded-lg bg-card text-card-foreground shadow-sm overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead>Name</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>External ID</TableHead>
+                <TableHead>Opted In</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {customers.map((customer) => (
+                <TableRow key={customer.id}>
+                  <TableCell className="font-medium">
+                    {customer.name || <span className="text-muted-foreground italic">Unknown</span>}
+                  </TableCell>
+                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell>
+                    {customer.externalId ? (
+                      <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
+                        {customer.externalId}
+                      </span>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {customer.optedIn ? (
+                      <div className="flex items-center text-green-600 dark:text-green-400 text-sm">
+                        <CheckCircle2 className="size-4 mr-1.5" />
+                        Yes
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-muted-foreground text-sm">
+                        <XCircle className="size-4 mr-1.5" />
+                        No
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openUpdateDrawer(customer)}
+                    >
+                      <Edit className="size-4 text-muted-foreground" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => handleDelete(customer.id)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {customers.map((customer) => (
-                  <TableRow key={customer.id}>
-                    <TableCell className="font-medium">{customer.name || "Unnamed customer"}</TableCell>
-                    <TableCell>{customer.phone}</TableCell>
-                    <TableCell>{customer._count?.orders ?? 0}</TableCell>
-                    <TableCell>{customer._count?.conversations ?? 0}</TableCell>
-                    <TableCell>
-                      <Badge variant={customer.optedIn ? "outline" : "destructive"}>
-                        {customer.optedIn ? "OPTED IN" : "OPTED OUT"}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <CustomerDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        customer={selectedCustomer}
+        onSave={handleSaveCustomer}
+      />
     </div>
   );
 }
