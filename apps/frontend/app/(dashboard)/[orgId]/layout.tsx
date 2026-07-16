@@ -21,36 +21,36 @@ export default function DashboardLayout({
     (state) => state.auth,
   );
 
-  // useEffect(() => {
-  //   if (isLoading) return;
+  useEffect(() => {
+    if (isLoading) return;
 
-  //   if (!isAuthenticated) {
-  //     router.push("/");
-  //     return;
-  //   }
+    if (!isAuthenticated) {
+      router.push("/");
+      return;
+    }
 
-  //   const isMember = organizations.some((org) => org.id === orgId);
-  //   if (!isMember) {
-  //     toast.error("You are not a member of this organization");
-  //     if (organizations.length > 0) {
-  //       router.push(`/${organizations[0].id}/dashboard`);
-  //     } else {
-  //       router.push("/onboarding");
-  //     }
-  //   }
-  // }, [isAuthenticated, organizations, orgId, isLoading, router]);
+    const isMember = organizations.some((org) => org.id === orgId);
+    if (!isMember) {
+      toast.error("You are not a member of this organization");
+      if (organizations.length > 0) {
+        router.push(`/${organizations[0].id}/dashboard`);
+      } else {
+        router.push("/onboarding");
+      }
+    }
+  }, [isAuthenticated, organizations, orgId, isLoading, router]);
 
-  // if (
-  //   isLoading ||
-  //   !isAuthenticated ||
-  //   !organizations.some((org) => org.id === orgId)
-  // ) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
-  //       <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-  //     </div>
-  //   );
-  // }
+  if (
+    isLoading ||
+    !isAuthenticated ||
+    !organizations.some((org) => org.id === orgId)
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+      </div>
+    );
+  }
 
   const path = pathname.split("/")[2] || "Dashboard";
   return (

@@ -21,6 +21,7 @@ import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/store";
 
 export type NavigationSection = {
   title: string;
@@ -36,9 +37,11 @@ type HeaderProps = {
 const CollaborateButton = ({
   className,
   onClick,
+  isAuthenticated,
 }: {
   className?: string;
   onClick: () => void;
+  isAuthenticated: boolean;
 }) => (
   <Button
     onClick={onClick}
@@ -49,7 +52,7 @@ const CollaborateButton = ({
     )}
   >
     <span className="relative z-10 transition-all duration-500">
-      Get Started
+      {isAuthenticated ? "Dashboard" : "Get Started"}
     </span>
     <span className="absolute right-1 w-8 h-8 bg-background text-foreground rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-36px)] group-hover:rotate-45">
       <ArrowUpRight size={16} />
@@ -61,6 +64,9 @@ const Header = ({ navigationData, className }: HeaderProps) => {
   const [sticky, setSticky] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const { currentOrganizationId, isAuthenticated } = useAppSelector(
+    (state) => state.auth,
+  );
 
   const handleScroll = useCallback(() => {
     setSticky(window.scrollY >= 50);
@@ -131,8 +137,13 @@ const Header = ({ navigationData, className }: HeaderProps) => {
         <div className="flex gap-4">
           <CollaborateButton
             onClick={() =>
-              router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`)
+              isAuthenticated
+                ? router.push(`/${currentOrganizationId}/dashboard`)
+                : router.push(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
+                  )
             }
+            isAuthenticated={isAuthenticated}
             className="hidden lg:flex"
           />
 
@@ -198,10 +209,14 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                     <div className="w-fit">
                       <CollaborateButton
                         onClick={() =>
-                          router.push(
-                            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
-                          )
+                          isAuthenticated
+                            ? router.push(`/${currentOrganizationId}/dashboard`)
+                            : router.push(
+                                `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
+                              )
                         }
+                        isAuthenticated={isAuthenticated}
+                        className="hidden lg:flex"
                       />
                     </div>
                   </div>

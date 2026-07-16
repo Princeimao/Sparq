@@ -14,7 +14,9 @@ export default function FacebookSDK() {
     <>
       <Script
         src="https://connect.facebook.net/en_US/sdk.js"
-        strategy="afterInteractive"
+        async
+        defer
+        crossOrigin="anonymous"
       />
 
       <Script id="facebook-init" strategy="afterInteractive">
@@ -23,8 +25,9 @@ export default function FacebookSDK() {
             FB.init({
               appId: "${process.env.NEXT_PUBLIC_FACEBOOK_APP_ID}",
               cookie: true,
-              xfbml: false,
-              version: "v23.0"
+              autoLogAppEvents : true,
+              xfbml: true,
+              version: "v25.0"
             });
           };
         `}

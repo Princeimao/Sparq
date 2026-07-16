@@ -12,10 +12,10 @@ router.get("/webhook", (req: Request, res: Response) => {
   const challenge = req.query["hub.challenge"];
 
   if (mode === "subscribe" && token === env.WHATSAPP_VERIFY_TOKEN) {
-    console.log("✅ WhatsApp webhook verified");
+    console.log("WhatsApp webhook verified");
     res.status(200).send(challenge);
   } else {
-    console.warn("❌ WhatsApp webhook verification failed");
+    console.warn("WhatsApp webhook verification failed");
     res.sendStatus(403);
   }
 });
@@ -61,26 +61,71 @@ router.post("/webhook", async (req: Request, res: Response, _next: NextFunction)
 });
 
 router.post("/exchange", async (req: Request, res: Response) => {
-  const code = req.body.code;
+  const { code, orgId, wabaId, phoneNumberId } = req.body;
 
-  if (!code) {
-    return res.status(400).json({ error: "No code provided" });
+  console.log("Exchange request:", { code: !!code, orgId, wabaId, phoneNumberId });
+  if (!code || !orgId) {
+    return res.status(400).json({ error: "No code or orgId provided" });
   }
 
-  const resToken = await axios.get("https://graph.facebook.com/v23.0/oauth/access_token", {
-    params: {
+  try {
+    const url = "https://graph.facebook.com/v25.0/oauth/access_token";
+
+    const resToken = await axios.post(url, {
       client_id: process.env.FB_APP_ID,
       client_secret: process.env.FB_APP_SECRET,
-      redirect_uri: process.env.FB_REDIRECT_URI,
-      code: code,
+      code,
+    });
+
+    const accessToken = resToken.data.access_token;
+    console.log("Exchanging code for token:", !!accessToken);
+
+    const credentials = {
+      accessToken,
+      wabaId,
+      phoneNumberId,
+    };
+
+    const existing = await prisma.integration.findFirst({
+      where: { organizationId: orgId, type: "WHATSAPP" }
+    });
+
+    if (existing) {
+      await prisma.integration.update({
+        where: { id: existing.id },
+        data: { credentials, isActive: true }
+      });
+    } else {
+      await prisma.integration.create({
+        data: {
+          organizationId: orgId,
+          type: "WHATSAPP",
+          name: "WhatsApp",
+          credentials
+        }
+      });
     }
-  })
 
-  const accessToken = resToken.data.access_token;
+    res.status(200).json({ success: true, token: accessToken });
+  } catch (error: any) {
+    if (error.response) {
+      console.error("Meta API Error:", {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers,
+      });
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Axios setup error:", error.message);
+    }
 
-  console.log("Exchanging code for token:", accessToken);
-  res.status(200).json({ token: accessToken });
-})
+    res.status(500).json({
+      error: "Failed to exchange code for token",
+    });
+  }
+});
+
 
 async function handleIncomingMessage(
   message: Record<string, unknown>,

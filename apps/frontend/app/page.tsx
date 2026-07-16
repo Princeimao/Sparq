@@ -16,6 +16,7 @@ import { ArrowUpRight, PlusIcon } from "lucide-react";
 import { Instrument_Serif } from "next/font/google";
 import PricingSection from "@/components/pricing-section";
 import Footer from "@/components/footer";
+import { useAppSelector } from "@/lib/store";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],

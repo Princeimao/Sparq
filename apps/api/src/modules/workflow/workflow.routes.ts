@@ -22,105 +22,6 @@ const updateWorkflowSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-// Pre-created workflow templates
-const DEFAULT_WORKFLOWS = (orgId: string) => [
-  {
-    organizationId: orgId,
-    name: "WhatsApp to Product Purchase Flow",
-    description: "Guides customers from product catalog selection to payment checkout via automated WhatsApp conversation steps.",
-    triggerType: "WHATSAPP_MESSAGE",
-    isActive: true,
-    steps: [
-      {
-        id: "step_1",
-        type: "send_message",
-        label: "Send Welcome & Catalog",
-        config: {
-          message: "Welcome! Here is our latest catalog. Respond with the product name you'd like to buy.",
-        },
-      },
-      {
-        id: "step_2",
-        type: "wait_reply",
-        label: "Wait for Product Selection",
-        config: { timeoutMinutes: 60 },
-      },
-      {
-        id: "step_3",
-        type: "request_address",
-        label: "Request Shipping Address",
-        config: { message: "Great choice! Please reply with your shipping address." },
-      },
-      {
-        id: "step_4",
-        type: "generate_payment_link",
-        label: "Generate Stripe Link & Send",
-        config: { message: "Thank you! Here is your secure checkout link: {{payment_link}}" },
-      },
-    ],
-  },
-  {
-    organizationId: orgId,
-    name: "WhatsApp Appointment Booking",
-    description: "Allows leads to select schedules and book time slots that instantly sync with the Sparq Calendar and Cal.com.",
-    triggerType: "WHATSAPP_MESSAGE",
-    isActive: true,
-    steps: [
-      {
-        id: "step_1",
-        type: "send_message",
-        label: "Send Appointment Options",
-        config: { message: "Hello! Would you like to schedule an appointment? Please reply with 'Yes' or 'Book'." },
-      },
-      {
-        id: "step_2",
-        type: "wait_reply",
-        label: "Wait for confirmation",
-        config: { timeoutMinutes: 30 },
-      },
-      {
-        id: "step_3",
-        type: "offer_slots",
-        label: "Send Calendar Slots",
-        config: { message: "Here are our available slots for tomorrow:\n1. 10:00 AM\n2. 2:00 PM\n3. 4:00 PM\nReply with a number." },
-      },
-      {
-        id: "step_4",
-        type: "create_appointment",
-        label: "Confirm Appointment & Sync",
-        config: { message: "Perfect! Your appointment has been booked and synchronized." },
-      },
-    ],
-  },
-  {
-    organizationId: orgId,
-    name: "Abandoned Cart Reminder",
-    description: "Tracks incomplete checkouts and follow up 30 minutes later with a friendly coupon code.",
-    triggerType: "PRODUCT_PURCHASE",
-    isActive: false,
-    steps: [
-      {
-        id: "step_1",
-        type: "delay",
-        label: "Wait 30 minutes",
-        config: { durationMinutes: 30 },
-      },
-      {
-        id: "step_2",
-        type: "condition",
-        label: "Check payment status",
-        config: { field: "status", equals: "PENDING" },
-      },
-      {
-        id: "step_3",
-        type: "send_message",
-        label: "Send checkout reminder",
-        config: { message: "Hi! We noticed you left items in your cart. Use code SPARQ10 for 10% off: {{checkout_url}}" },
-      },
-    ],
-  },
-];
-
 // ─── GET /api/organizations/:orgId/workflows ─────────────────────────────────
 router.get(
   "/:orgId/workflows",
@@ -130,23 +31,10 @@ router.get(
     try {
       const orgId = req.organizationId as string;
 
-      let workflows = await prisma.workflow.findMany({
+      const workflows = await prisma.workflow.findMany({
         where: { organizationId: orgId },
         orderBy: { createdAt: "desc" },
       });
-
-      // Seed default workflows if none exist
-      if (workflows.length === 0) {
-        const defaults = DEFAULT_WORKFLOWS(orgId);
-        await prisma.workflow.createMany({
-          data: defaults,
-        });
-
-        workflows = await prisma.workflow.findMany({
-          where: { organizationId: orgId },
-          orderBy: { createdAt: "desc" },
-        });
-      }
 
       res.json({ workflows });
     } catch (error) {
