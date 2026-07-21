@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
-import jwt, { type SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { authenticate, AuthPayload } from "../../middleware/auth";
 import { exchangeToken, getGoogleAuthUrl, getUserInfo } from "../../lib/auth";
+import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.utils";
 
 const codeVerifierStore = new Map<string, string>();
 
@@ -185,12 +186,6 @@ router.get("/me", authenticate, async (req, res, next) => {
         email: true,
         name: true,
         avatarUrl: true,
-        createdAt: true,
-        memberships: {
-          include: {
-            organization: { select: { id: true, name: true } },
-          },
-        },
       },
     });
 
@@ -261,27 +256,6 @@ router.get("/test", async (req, res, next) => {
     next(error);
   }
 });
-
-function generateAccessToken(userId: string, email: string): string {
-  return jwt.sign({
-    userId,
-    email
-  },
-    env.JWT_ACCESS_SECRET, {
-      expiresIn: env.JWT_ACCESS_EXPIRES_IN as string,
-    } as SignOptions);
-}
-
-function generateRefreshToken(userId: string, email: string): string {
-  return jwt.sign({
-    userId,
-    email
-  },
-    env.JWT_REFRESH_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN as string,
-    } as SignOptions);
-}
-
 
 export default router;
 

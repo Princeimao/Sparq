@@ -1,8 +1,10 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
-import { processMessage } from "../../services/conversation-engine";
 import axios from "axios";
+import { encrypt } from "../../lib/encryption";
+import { hasBusinessIntend } from "../../services/whatsappRule";
+import { enqueueWhatsAppMessage } from "../../queues/whatsapp.queue";
 
 const router = Router();
 
@@ -20,37 +22,31 @@ router.get("/webhook", (req: Request, res: Response) => {
   }
 });
 
-router.post("/webhook", async (req: Request, res: Response, _next: NextFunction) => {
+router.post("/webhook", async (req: Request, res: Response) => {
   res.sendStatus(200);
 
   try {
     const body = req.body;
-
-    // Validate it's a WhatsApp message notification
     if (body.object !== "whatsapp_business_account") return;
 
-    const entries = body.entry || [];
-
-    for (const entry of entries) {
-      const changes = entry.changes || [];
-
-      for (const change of changes) {
-        if (change.field !== "messages") continue;
-
+    for (const entry of body.entry) {
+      for (const change of entry.changes) {
         const value = change.value;
+        if (!value.messages) continue;
+        
+        for (const message of value.messages) {
+          if (message.type !== "text") continue;
 
-        // Handle status updates (sent, delivered, read, failed)
-        if (value.statuses) {
-          await handleStatusUpdates(value.statuses);
-        }
-
-        // Handle incoming messages
-        if (value.messages) {
-          const metadata = value.metadata;
-          const contacts = value.contacts || [];
-
-          for (const message of value.messages) {
-            await handleIncomingMessage(message, metadata, contacts);
+          const textMessage = message.text?.body;
+          if (hasBusinessIntend(textMessage)) {
+            await enqueueWhatsAppMessage({
+              messageId: message.id,
+              phoneNumberId: value.metadata.phone_number_id,
+              wabaId: entry.id,
+              customerWaId: message.from,
+              customerName: value.contacts?.[0]?.profile?.name || "",
+              text: textMessage,
+            });
           }
         }
       }
@@ -61,9 +57,8 @@ router.post("/webhook", async (req: Request, res: Response, _next: NextFunction)
 });
 
 router.post("/exchange", async (req: Request, res: Response) => {
-  const { code, orgId, wabaId, phoneNumberId } = req.body;
+  const { businessId, code, orgId, wabaId, phoneNumberId } = req.body;
 
-  console.log("Exchange request:", { code: !!code, orgId, wabaId, phoneNumberId });
   if (!code || !orgId) {
     return res.status(400).json({ error: "No code or orgId provided" });
   }
@@ -78,35 +73,38 @@ router.post("/exchange", async (req: Request, res: Response) => {
     });
 
     const accessToken = resToken.data.access_token;
-    console.log("Exchanging code for token:", !!accessToken);
+
+    const encryptedToken = encrypt(accessToken);
 
     const credentials = {
-      accessToken,
+      businessId,
+      accessToken: encryptedToken,
       wabaId,
       phoneNumberId,
     };
 
-    const existing = await prisma.integration.findFirst({
-      where: { organizationId: orgId, type: "WHATSAPP" }
+    const existing = await prisma.whatsappIntegration.findFirst({
+      where: { organizationId: orgId }
     });
 
     if (existing) {
-      await prisma.integration.update({
+      await prisma.whatsappIntegration.update({
         where: { id: existing.id },
-        data: { credentials, isActive: true }
+        data: credentials
       });
     } else {
-      await prisma.integration.create({
+      await prisma.whatsappIntegration.create({
         data: {
           organizationId: orgId,
-          type: "WHATSAPP",
-          name: "WhatsApp",
-          credentials
+          ...credentials,
         }
       });
     }
 
-    res.status(200).json({ success: true, token: accessToken });
+    res.status(200).json({
+      success: true,
+      message: "Successfully connected whatsapp"
+    });
   } catch (error: any) {
     if (error.response) {
       console.error("Meta API Error:", {
@@ -126,6 +124,18 @@ router.post("/exchange", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/callback", (req: Request, res: Response) => {
+  const { code, state, error } = req.query;
+
+  if (error) {
+    return res.status(400).send(error);
+  }
+
+  console.log("Authorization code:", code);
+  console.log("State:", state);
+
+  res.send("Signup completed");
+})
 
 async function handleIncomingMessage(
   message: Record<string, unknown>,

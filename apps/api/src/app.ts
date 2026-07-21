@@ -24,6 +24,8 @@ import productRoutes from "./modules/product/product.routes";
 import appointmentRoutes from "./modules/appointment/appointment.routes";
 import workflowRoutes from "./modules/workflow/workflow.routes";
 
+import { startWhatsAppWorker } from "./workers/whatsapp.worker";
+
 const app = express();
 
 app.use(helmet());
@@ -63,6 +65,9 @@ app.use("/api/organizations", workflowRoutes);
 // Payment 
 app.use("/api/payments", paymentRoutes);
 
+// Integration 
+app.use("/api/integrations", integrationRoutes)
+
 // ─── Admin: Manually trigger campaign engine ─────────────────────────────────
 app.post(
   "/api/admin/trigger-campaigns",
@@ -83,6 +88,9 @@ async function main() {
   try {
     await prisma.$connect();
     console.log("Database connected");
+
+    // Start the WhatsApp worker
+    startWhatsAppWorker();
 
     // Start the campaign engine
     // if (env.NODE_ENV !== "test") {

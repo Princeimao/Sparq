@@ -34,6 +34,12 @@ const envSchema = z.object({
 
   // Frontend
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
+
+  // Redis
+  REDIS_URL: z.string().url().default("redis://127.0.0.1:6379"),
+
+  // Langchain Gemini
+  GEMINI_API_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

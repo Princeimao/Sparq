@@ -1,16 +1,17 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
+import { prisma } from "../config/prisma";
+import { decrypt } from "../lib/encryption";
 
-const WHATSAPP_API_VERSION = "v21.0";
+const WHATSAPP_API_VERSION = "v25.0";
 const WHATSAPP_API_BASE = `https://graph.facebook.com/${WHATSAPP_API_VERSION}`;
 
 export interface WhatsAppConfig {
+  messageId: string;
   phoneNumberId: string;
-  accessToken: string;
-}
-
-export interface WhatsAppTextMessage {
-  to: string;
-  body: string;
+  wabaId: string;
+  customerWaId: string;
+  customerName: string;
+  text: string;
 }
 
 export interface WhatsAppTemplateMessage {
@@ -42,45 +43,69 @@ export interface WhatsAppMessageResponse {
   messages: Array<{ id: string }>;
 }
 
-/**
- * WhatsApp Cloud API Service — Direct integration with Meta's API.
- * Each organization has its own WhatsApp credentials stored in integrations.
- */
 export class WhatsAppService {
   private client: AxiosInstance;
   private phoneNumberId: string;
+  private wabaId: string;
+  private customerWaId: string;
 
   constructor(config: WhatsAppConfig) {
     this.phoneNumberId = config.phoneNumberId;
+    this.wabaId = config.wabaId;
+    this.customerWaId = config.customerWaId;
+
     this.client = axios.create({
       baseURL: WHATSAPP_API_BASE,
       headers: {
-        Authorization: `Bearer ${config.accessToken}`,
         "Content-Type": "application/json",
       },
     });
   }
 
-  /**
-   * Send a text message to a WhatsApp number.
-   */
-  async sendTextMessage(message: WhatsAppTextMessage): Promise<WhatsAppMessageResponse> {
+  private async getAccessToken(): Promise<string> {
+    const integration = await prisma.whatsappIntegration.findFirst({
+      where: {
+        wabaId: this.wabaId,
+      },
+      select: {
+        accessToken: true,
+      },
+    });
+
+    if (!integration) {
+      throw new Error(
+        `No WhatsApp integration found for WABA ID: ${this.wabaId}`
+      );
+    }
+
+    return integration.accessToken;
+  }
+
+  async sendTextMessage(
+    messageOrObj: string | { to: string; body: string }
+  ): Promise<WhatsAppMessageResponse> {
+    const accessToken = await this.getAccessToken();
+    const to = typeof messageOrObj === "string" ? this.customerWaId : messageOrObj.to;
+    const body = typeof messageOrObj === "string" ? messageOrObj : messageOrObj.body;
+
     const { data } = await this.client.post<WhatsAppMessageResponse>(
       `/${this.phoneNumberId}/messages`,
       {
         messaging_product: "whatsapp",
         recipient_type: "individual",
-        to: message.to,
+        to,
         type: "text",
-        text: { preview_url: false, body: message.body },
+        text: { preview_url: false, body },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     return data;
   }
 
-  /**
-   * Send a template message (pre-approved by Meta).
-   */
   async sendTemplateMessage(message: WhatsAppTemplateMessage): Promise<WhatsAppMessageResponse> {
     const { data } = await this.client.post<WhatsAppMessageResponse>(
       `/${this.phoneNumberId}/messages`,
@@ -98,10 +123,6 @@ export class WhatsAppService {
     return data;
   }
 
-  /**
-   * Send an interactive message with reply buttons.
-   * WhatsApp supports up to 3 reply buttons.
-   */
   async sendInteractiveButtons(
     message: WhatsAppInteractiveMessage
   ): Promise<WhatsAppMessageResponse> {
@@ -133,38 +154,65 @@ export class WhatsAppService {
     return data;
   }
 
-  /**
-   * Mark a message as read (sends "read" receipt to user).
-   */
-  async markAsRead(messageId: string): Promise<void> {
-    await this.client.post(`/${this.phoneNumberId}/messages`, {
-      messaging_product: "whatsapp",
-      status: "read",
-      message_id: messageId,
-    });
-  }
+  async sendList({ headerMessage, footerMessage, listItems, title, actionText, type }:
+    {
+      headerMessage: string; footerMessage: string; listItems: Array<{
+        id: string; title: string; price: string;
+      }>; title: string; actionText: string, type: string;
+    }) {
 
-  /**
-   * Get WhatsApp Business Profile info.
-   */
-  async getBusinessProfile(): Promise<unknown> {
-    const { data } = await this.client.get(
-      `/${this.phoneNumberId}/whatsapp_business_profile`,
-      { params: { fields: "about,address,description,email,profile_picture_url,websites,vertical" } }
-    );
-    return data;
-  }
-}
+    try {
+      const accessToken = await this.getAccessToken();
+      const buttonsRows = listItems.map((item) => ({
+        id: item.id,
+        title: item.title,
+        description: item.price
+      }));
 
-/**
- * Factory: Create a WhatsApp service from an organization's integration credentials.
- */
-export function createWhatsAppService(credentials: {
-  phoneNumberId: string;
-  accessToken: string;
-}): WhatsAppService {
-  return new WhatsAppService({
-    phoneNumberId: credentials.phoneNumberId,
-    accessToken: credentials.accessToken,
-  });
+      const { data } = await this.client.post(`${this.phoneNumberId}/messages`, {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: this.customerWaId,
+        type: "interactive",
+        interactive: {
+          type: "list",
+          header: {
+            type: "text",
+            text: headerMessage,
+          },
+          body: {
+            text: title,
+          },
+          footer: {
+            text: footerMessage
+          },
+          action: {
+            button: actionText,
+            sections: [
+              {
+                title: type,
+                rows: buttonsRows,
+              },
+            ],
+          },
+        },
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken} `
+        }
+      })
+
+      console.log("here in the whatsapp", data)
+
+      return {
+        success: true,
+        data
+      }
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.response?.data
+      }
+    }
+  }
 }

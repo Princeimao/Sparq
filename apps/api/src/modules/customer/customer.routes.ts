@@ -1,23 +1,20 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../../config/prisma";
-import { authenticate, requireOrg } from "../../middleware/auth";
+import { authenticate } from "../../middleware/auth";
 import { validateBody } from "../../middleware/validate";
+import { ApiResponse, ErrorResponse } from "../../middleware/responseHandler";
 
 const router = Router();
 
 // ─── Schemas ─────────────────────────────────────────────────────────────────
 
 const createCustomerSchema = z.object({
-  phone: z
-    .string()
-    .min(10)
-    .max(15)
-    .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format (E.164)"),
-  name: z.string().max(200).optional(),
-  externalId: z.string().max(200).optional(),
-  address: z.string().max(500).optional(),
-  optedIn: z.boolean().default(true),
+  phone: z.string().max(15),
+  name: z.string().max(200),
+  email: z.string().max(200),
+  customFields: z.object({}).optional(),
+  address: z.object({}).optional(),
 });
 
 const updateCustomerSchema = z.object({
@@ -29,110 +26,152 @@ const updateCustomerSchema = z.object({
 
 // ─── POST /api/organizations/:orgId/customers ────────────────────────────────
 router.post(
-  "/:orgId/customers",
+  "/customers",
   authenticate,
-  requireOrg,
   validateBody(createCustomerSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { phone, name, externalId, address, optedIn } = req.body;
+      const { phone, name, email, customFields, address } = req.body;
+      const userId = req.user?.userId as string;
 
-      // Check if phone already exists for this org
-      const existing = await prisma.customer.findUnique({
+      const existing = await prisma.customer.findFirst({
         where: {
-          organizationId_phone: {
-            organizationId: req.organizationId!,
-            phone,
-          },
-        },
-      });
+          userId: userId,
+          phone: phone
+        }
+      })
+
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return
+      }
 
       if (existing) {
         res.status(409).json({ error: "Customer with this phone already exists" });
         return;
       }
 
-      const customer = await prisma.customer.create({
-        data: {
-          organizationId: req.organizationId!,
-          phone,
-          name,
-          externalId,
-          address,
-          optedIn,
-        },
-      });
+      const result = await prisma.$transaction(async (tx) => {
+        const customer = await tx.customer.create({
+          data: {
+            userId,
+            phone,
+            name,
+            email,
+            customFields
+          }
+        })
 
-      res.status(201).json({ customer });
+        if (address) {
+          await tx.address.create({
+            data: {
+              customerId: customer.id,
+              ...address
+            }
+          })
+        }
+
+        return {
+          customer: customer
+        }
+      })
+
+      res.status(201).json(new ApiResponse(result, "customer created successfully", true));
     } catch (error) {
-      next(error);
+      res.status(500).json(new ErrorResponse(error, "Internal server error", false, 500));
+      // next(error);
     }
   }
 );
 
-// ─── GET /api/organizations/:orgId/customers ─────────────────────────────────
 router.get(
-  "/:orgId/customers",
+  "/customers",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
-      const search = req.query.search as string;
+      const page = Number(req.query.page) || 1;
+      const limit = Math.min(Number(req.query.limit) || 20, 100);
+      const search = req.query.search as string | undefined;
 
-      const orgId = req.organizationId as string;
-      const where: Record<string, unknown> = {
-        organizationId: orgId,
-      };
+      const userId = req.user?.userId;
 
-      if (search) {
-        where.OR = [
-          { name: { contains: search as string, mode: "insensitive" } },
-          { phone: { contains: search as string } },
-        ];
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
       }
 
-      const [customers, total] = await Promise.all([
+      const where = {
+        userId,
+        ...(search && {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              phone: {
+                contains: search,
+              },
+            },
+          ],
+        }),
+      };
+
+      const [customers, total] = await prisma.$transaction([
         prisma.customer.findMany({
           where,
           include: {
-            _count: { select: { orders: true, conversations: true } },
+            _count: {
+              select: {
+                orders: true,
+                conversations: true,
+              },
+            },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: {
+            createdAt: "desc",
+          },
           skip: (page - 1) * limit,
           take: limit,
         }),
-        prisma.customer.count({ where }),
+
+        prisma.customer.count({
+          where,
+        }),
       ]);
 
-      res.json({
+      res.status(200).json(new ApiResponse({
         customers,
         pagination: {
           page,
           limit,
           total,
           totalPages: Math.ceil(total / limit),
-        },
-      });
+        }
+      }, "customers fetched successfully", true));
+
     } catch (error) {
       next(error);
     }
   }
 );
 
+
 // ─── GET /api/organizations/:orgId/customers/:customerId ─────────────────────
 router.get(
-  "/:orgId/customers/:customerId",
+  "/customer/:customerId",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const customerId = req.params.customerId as string;
+      const userId = req.user?.userId as string;
+
       const customer = await prisma.customer.findFirst({
         where: {
           id: customerId,
-          organizationId: req.organizationId,
+          userId: userId,
         },
         include: {
           orders: { orderBy: { purchaseDate: "desc" }, take: 10 },
@@ -155,15 +194,16 @@ router.get(
 
 // ─── PATCH /api/organizations/:orgId/customers/:customerId ───────────────────
 router.patch(
-  "/:orgId/customers/:customerId",
+  "/customer/:customerId",
   authenticate,
-  requireOrg,
   validateBody(updateCustomerSchema),
   async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.userId as string;
+
     try {
       const customerId = req.params.customerId as string;
       const existing = await prisma.customer.findFirst({
-        where: { id: customerId, organizationId: req.organizationId },
+        where: { id: customerId, userId: userId },
       });
 
       if (!existing) {
@@ -184,14 +224,15 @@ router.patch(
 
 // ─── DELETE /api/organizations/:orgId/customers/:customerId ──────────────────
 router.delete(
-  "/:orgId/customers/:customerId",
+  "/customer/:customerId",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.userId as string;
+
     try {
       const customerId = req.params.customerId as string;
       const existing = await prisma.customer.findFirst({
-        where: { id: customerId, organizationId: req.organizationId },
+        where: { id: customerId, userId: userId },
       });
 
       if (!existing) {

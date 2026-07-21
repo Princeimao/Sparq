@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../../config/prisma";
-import { authenticate, requireOrg, requireRole } from "../../middleware/auth";
+import { authenticate } from "../../middleware/auth";
 import { validateBody } from "../../middleware/validate";
 import { encryptJson, decryptJson } from "../../lib/encryption";
 
@@ -21,20 +21,19 @@ const updateIntegrationSchema = z.object({
 });
 
 router.post(
-  "/:orgId/integrations",
+  "/integrations",
   authenticate,
-  requireOrg,
-  requireRole("OWNER", "ADMIN"),
   validateBody(createIntegrationSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { type, name, credentials, isActive } = req.body;
+      const userId = req.user?.userId as string;
 
       const encryptedCreds = encryptJson(credentials)
 
       const integration = await prisma.integration.create({
         data: {
-          organizationId: req.organizationId!,
+          userId,
           type,
           name,
           credentials: encryptedCreds,
@@ -55,21 +54,18 @@ router.post(
 );
 
 router.get(
-  "/:orgId/integrations",
+  "/integrations",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
       const integrations = await prisma.integration.findMany({
-        where: { organizationId: orgId },
+        where: { userId: userId },
         select: {
           id: true,
           type: true,
           name: true,
-          isActive: true,
-          createdAt: true,
-          updatedAt: true,
+          isActive: true
         },
       });
 
@@ -81,18 +77,16 @@ router.get(
 );
 
 router.get(
-  "/:orgId/integrations/:integrationId",
+  "/integrations/:integrationId",
   authenticate,
-  requireOrg,
-  requireRole("OWNER", "ADMIN"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const integrationId = req.params.integrationId as string;
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
       const integration = await prisma.integration.findFirst({
         where: {
           id: integrationId,
-          organizationId: orgId,
+          userId: userId,
         },
       });
 
@@ -124,10 +118,8 @@ router.get(
 );
 
 router.patch(
-  "/:orgId/integrations/:integrationId",
+  "/integrations/:integrationId",
   authenticate,
-  requireOrg,
-  requireRole("OWNER", "ADMIN"),
   validateBody(updateIntegrationSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -159,10 +151,8 @@ router.patch(
 );
 
 router.delete(
-  "/:orgId/integrations/:integrationId",
+  "/integrations/:integrationId",
   authenticate,
-  requireOrg,
-  requireRole("OWNER"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const integrationId = req.params.integrationId as string;

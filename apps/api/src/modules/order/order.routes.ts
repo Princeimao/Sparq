@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../../config/prisma";
-import { authenticate, requireOrg } from "../../middleware/auth";
+import { authenticate } from "../../middleware/auth";
 import { validateBody } from "../../middleware/validate";
+import { ApiResponse } from "../../middleware/responseHandler";
 
 const router = Router();
 
@@ -23,56 +24,57 @@ const updateOrderSchema = z.object({
   paymentLink: z.string().optional(),
 });
 
-// ─── POST /api/organizations/:orgId/orders ───────────────────────────────────
 router.post(
-  "/:orgId/orders",
+  "/orders",
   authenticate,
-  requireOrg,
   validateBody(createOrderSchema),
   async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.userId
     try {
-      const customer = await prisma.customer.findFirst({
-        where: {
-          id: req.body.customerId,
-          organizationId: req.organizationId,
-        },
-      });
+      const result = await prisma.$transaction(async () => {
+        const customer = await prisma.customer.findFirst({
+          where: {
+            id: req.body.customerId,
+            userId
+          },
+        });
 
-      if (!customer) {
-        res.status(404).json({ error: "Customer not found" });
-        return;
-      }
+        const order = await prisma.order.create({
+          data: {
+            userId,
+            ...req.body,
+          },
+          include: {
+            customer: { select: { id: true, phone: true, name: true } },
+          },
+        });
 
-      const order = await prisma.order.create({
-        data: {
-          organizationId: req.organizationId!,
-          ...req.body,
-        },
-        include: {
-          customer: { select: { id: true, phone: true, name: true } },
-        },
-      });
-      res.status(201).json({ order });
+        return {
+          customer, order
+        }
+      })
+      res.status(201).json(new ApiResponse({
+        result,
+      }, "Order created successfully", true));
     } catch (error) {
       next(error);
     }
   }
 );
 
-// ─── GET /api/organizations/:orgId/orders ────────────────────────────────────
 router.get(
-  "/:orgId/orders",
+  "/orders",
   authenticate,
-  requireOrg,
+
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
       const status = req.query.status as string | undefined;
 
       const where: Record<string, unknown> = {
-        organizationId: orgId,
+        userId
       };
       if (status) where.status = status;
 
@@ -81,7 +83,6 @@ router.get(
           where,
           include: {
             customer: { select: { id: true, phone: true, name: true } },
-            campaign: { select: { id: true, name: true } },
           },
           orderBy: { createdAt: "desc" },
           skip: (page - 1) * limit,
@@ -90,61 +91,61 @@ router.get(
         prisma.order.count({ where }),
       ]);
 
-      res.json({
+      res.json(new ApiResponse({
         orders,
         pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-      });
+      }, "Orders fetched successfully", true));
     } catch (error) {
       next(error);
     }
   }
 );
 
-// ─── GET /api/organizations/:orgId/orders/:orderId ───────────────────────────
 router.get(
-  "/:orgId/orders/:orderId",
+  "/orders/:orderId",
   authenticate,
-  requireOrg,
+
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const orderId = req.params.orderId as string;
+      const userId = req.user?.userId as string;
+
       const order = await prisma.order.findFirst({
         where: {
           id: orderId,
-          organizationId: req.organizationId,
+          userId,
         },
         include: {
           customer: true,
-          campaign: true,
-          conversation: true,
         },
       });
 
       if (!order) {
-        res.status(404).json({ error: "Order not found" });
+        res.status(404).json(new ApiResponse(null, "Order not found", false));
         return;
       }
 
-      res.json({ order });
+      res.json(new ApiResponse(order, "Order fetched successfully", true));
     } catch (error) {
       next(error);
     }
   }
 );
 
-// ─── PATCH /api/organizations/:orgId/orders/:orderId ─────────────────────────
 router.patch(
-  "/:orgId/orders/:orderId",
+  "/orders/:orderId",
   authenticate,
-  requireOrg,
+
   validateBody(updateOrderSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const orderId = req.params.orderId as string;
+      const userId = req.user?.userId as string;
+
       const existing = await prisma.order.findFirst({
         where: {
           id: orderId,
-          organizationId: req.organizationId,
+          userId,
         },
       });
 
@@ -160,7 +161,7 @@ router.patch(
           customer: { select: { id: true, phone: true, name: true } },
         },
       });
-      res.json({ order });
+      res.json(new ApiResponse(order, "Order updated successfully", true));
     } catch (error) {
       next(error);
     }

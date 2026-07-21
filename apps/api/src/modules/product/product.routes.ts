@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../../config/prisma";
-import { authenticate, requireOrg, requireRole } from "../../middleware/auth";
+import { authenticate } from "../../middleware/auth";
 import { validateBody } from "../../middleware/validate";
+import { ApiResponse } from "../../middleware/responseHandler";
 
 const router = Router();
 
@@ -10,112 +11,90 @@ const createProductSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   price: z.number().nonnegative(),
-  sku: z.string().max(100).optional(),
   stock: z.number().int().default(0),
+  imageUrl: z.string().url().optional(),
 });
 
 const updateProductSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   description: z.string().max(1000).optional(),
   price: z.number().nonnegative().optional(),
-  sku: z.string().max(100).optional(),
   stock: z.number().int().optional(),
 });
 
 // ─── GET /api/organizations/:orgId/products ─────────────────────────────────
 router.get(
-  "/:orgId/products",
+  "/products",
   authenticate,
-  requireOrg,
+
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
       const search = req.query.search as string;
 
-      const where: any = { organizationId: orgId };
-
-      if (search) {
-        where.OR = [
-          { name: { contains: search, mode: "insensitive" } },
-          { sku: { contains: search, mode: "insensitive" } },
-        ];
-      }
-
       const products = await prisma.product.findMany({
-        where,
+        where: {
+          userId,
+          name: {
+            contains: search,
+            mode: "insensitive"
+          }
+        },
         orderBy: { createdAt: "desc" },
       });
 
-      res.json({ products });
+      res.status(200).json(new ApiResponse(products, 'Products fetched successfully', true))
     } catch (error) {
       next(error);
     }
   }
 );
 
-// ─── POST /api/organizations/:orgId/products ────────────────────────────────
 router.post(
-  "/:orgId/products",
+  "/products",
   authenticate,
-  requireOrg,
-  requireRole("OWNER", "ADMIN"),
   validateBody(createProductSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
-      const { name, description, price, sku, stock } = req.body;
-
-      // Check if product name already exists for this org
-      const existing = await prisma.product.findUnique({
-        where: {
-          organizationId_name: {
-            organizationId: orgId,
-            name,
-          },
-        },
-      });
-
-      if (existing) {
-        res.status(409).json({ error: "Product with this name already exists in organization" });
-        return;
-      }
+      const userId = req.user?.userId as string;
+      const { name, description, price, stock, imageUrl } = req.body;
 
       const product = await prisma.product.create({
         data: {
-          organizationId: orgId,
+          userId,
           name,
           description,
           price,
-          sku,
           stock,
+          image: imageUrl
         },
       });
 
-      res.status(201).json({ product });
+      res.status(201).json(new ApiResponse(product, 'Product created successfully', true))
     } catch (error) {
       next(error);
     }
   }
 );
 
-// ─── PATCH /api/organizations/:orgId/products/:productId ─────────────────────
 router.patch(
-  "/:orgId/products/:productId",
+  "/products/:productId",
   authenticate,
-  requireOrg,
-  requireRole("OWNER", "ADMIN"),
   validateBody(updateProductSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const productId = req.params.productId as string;
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
 
       const existing = await prisma.product.findFirst({
-        where: { id: productId, organizationId: orgId },
+        where: {
+          id: productId,
+          userId
+        },
       });
 
       if (!existing) {
-        res.status(404).json({ error: "Product not found" });
+        res.status(404).json(new ApiResponse(null, 'Product not found', false));
         return;
       }
 
@@ -124,30 +103,27 @@ router.patch(
         data: req.body,
       });
 
-      res.json({ product });
+      res.status(200).json(new ApiResponse(product, 'Product updated successfully', true))
     } catch (error) {
       next(error);
     }
   }
 );
 
-// ─── DELETE /api/organizations/:orgId/products/:productId ────────────────────
 router.delete(
-  "/:orgId/products/:productId",
+  "/products/:productId",
   authenticate,
-  requireOrg,
-  requireRole("OWNER", "ADMIN"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const productId = req.params.productId as string;
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
 
       const existing = await prisma.product.findFirst({
-        where: { id: productId, organizationId: orgId },
+        where: { id: productId, userId },
       });
 
       if (!existing) {
-        res.status(404).json({ error: "Product not found" });
+        res.status(404).json(new ApiResponse(null, 'Product not found', false));
         return;
       }
 
@@ -155,7 +131,7 @@ router.delete(
         where: { id: productId },
       });
 
-      res.json({ message: "Product deleted successfully" });
+      res.status(200).json(new ApiResponse(null, 'Product deleted successfully', true))
     } catch (error) {
       next(error);
     }

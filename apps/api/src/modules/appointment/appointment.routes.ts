@@ -50,7 +50,7 @@ router.get(
       });
 
       const isGoogleConnected = integrations.some(
-        (i) => i.name.toLowerCase().includes("google") || i.type === "CUSTOM_API"
+        (i) => i.name.toLowerCase().includes("google") || (i.type as string) === "CUSTOM_API"
       );
       const isCalConnected = integrations.some(
         (i) => i.name.toLowerCase().includes("cal.com") || i.name.toLowerCase().includes("cal")

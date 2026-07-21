@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../../config/prisma";
-import { authenticate, requireOrg } from "../../middleware/auth";
+import { authenticate } from "../../middleware/auth";
 import { validateBody } from "../../middleware/validate";
+import { ApiResponse } from "../../middleware/responseHandler";
 
 const router = Router();
 
@@ -24,19 +25,18 @@ const updateWorkflowSchema = z.object({
 
 // ─── GET /api/organizations/:orgId/workflows ─────────────────────────────────
 router.get(
-  "/:orgId/workflows",
+  "/workflows",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
 
       const workflows = await prisma.workflow.findMany({
-        where: { organizationId: orgId },
+        where: { userId },
         orderBy: { createdAt: "desc" },
       });
 
-      res.json({ workflows });
+      res.status(200).json(new ApiResponse(workflows, 'Workflows fetched successfully', true));
     } catch (error) {
       next(error);
     }
@@ -45,24 +45,23 @@ router.get(
 
 // ─── GET /api/organizations/:orgId/workflows/:workflowId ───────────────────
 router.get(
-  "/:orgId/workflows/:workflowId",
+  "/workflows/:workflowId",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
       const workflowId = req.params.workflowId as string;
+      const userId = req.user?.userId as string;
 
       const workflow = await prisma.workflow.findFirst({
-        where: { id: workflowId, organizationId: orgId },
+        where: { id: workflowId, userId },
       });
 
       if (!workflow) {
-        res.status(404).json({ error: "Workflow not found" });
+        res.status(404).json(new ApiResponse(null, 'Workflow not found', false));
         return;
       }
 
-      res.json({ workflow });
+      res.status(200).json(new ApiResponse(workflow, 'Workflow fetched successfully', true));
     } catch (error) {
       next(error);
     }
@@ -71,18 +70,17 @@ router.get(
 
 // ─── POST /api/organizations/:orgId/workflows ────────────────────────────────
 router.post(
-  "/:orgId/workflows",
+  "/workflows",
   authenticate,
-  requireOrg,
   validateBody(createWorkflowSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
       const { name, description, triggerType, steps, isActive } = req.body;
 
       const workflow = await prisma.workflow.create({
         data: {
-          organizationId: orgId,
+          userId,
           name,
           description,
           triggerType,
@@ -100,15 +98,19 @@ router.post(
 
 // ─── PATCH /api/organizations/:orgId/workflows/:workflowId ───────────────────
 router.patch(
-  "/:orgId/workflows/:workflowId",
+  "/workflows/:workflowId",
   authenticate,
-  requireOrg,
   validateBody(updateWorkflowSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const workflowId = req.params.workflowId as string;
+      const userId = req.user?.userId as string;
+
       const existing = await prisma.workflow.findFirst({
-        where: { id: workflowId, organizationId: req.organizationId },
+        where: {
+          id: workflowId,
+          userId
+        },
       });
 
       if (!existing) {
@@ -130,18 +132,22 @@ router.patch(
 
 // ─── DELETE /api/organizations/:orgId/workflows/:workflowId ──────────────────
 router.delete(
-  "/:orgId/workflows/:workflowId",
+  "/workflows/:workflowId",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const workflowId = req.params.workflowId as string;
+      const userId = req.user?.userId as string;
+
       const existing = await prisma.workflow.findFirst({
-        where: { id: workflowId, organizationId: req.organizationId },
+        where: {
+          id: workflowId,
+          userId
+        },
       });
 
       if (!existing) {
-        res.status(404).json({ error: "Workflow not found" });
+        res.status(404).json(new ApiResponse(null, 'Workflow not found', false));
         return;
       }
 
@@ -149,7 +155,7 @@ router.delete(
         where: { id: workflowId },
       });
 
-      res.json({ message: "Workflow deleted successfully" });
+      res.status(200).json(new ApiResponse(null, 'Workflow deleted successfully', true));
     } catch (error) {
       next(error);
     }

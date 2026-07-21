@@ -34,10 +34,11 @@ export function decrypt(ciphertext: string): string {
   return decrypted.toString("utf8");
 }
 
-export function encryptJson(data: Record<string, unknown>): string {
+export function encryptJson(data: any): string {
   return encrypt(JSON.stringify(data));
 }
 
-export function decryptJson<T = Record<string, unknown>>(ciphertext: string): T {
-  return JSON.parse(decrypt(ciphertext)) as T;
+export function decryptJson<T = any>(ciphertext: string): T {
+  return JSON.parse(decrypt(ciphertext));
 }
+

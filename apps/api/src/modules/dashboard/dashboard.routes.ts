@@ -1,48 +1,41 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../../config/prisma";
-import { authenticate, requireOrg } from "../../middleware/auth";
+import { authenticate } from "../../middleware/auth";
+import { ApiResponse } from "../../middleware/responseHandler";
 
 const router = Router();
 
-// ─── GET /api/organizations/:orgId/dashboard/stats ──────────────────────────
 router.get(
-  "/:orgId/dashboard/stats",
+  "/dashboard/stats",
   authenticate,
-  requireOrg,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const orgId = req.organizationId as string;
+      const userId = req.user?.userId as string;
 
       const now = new Date();
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - 6);
       startOfWeek.setHours(0, 0, 0, 0);
 
-      const [
-        orders,
-        customersCount,
-        messagesCount,
-        productsCount,
-        appointmentsCount,
-        activeWorkflowsCount,
-        integrationsCount,
-      ] = await Promise.all([
+      const [orders, customersCount, messagesCount, productsCount, appointmentsCount, activeWorkflowsCount, integrationsCount,] = await Promise.all([
         prisma.order.findMany({
-          where: { organizationId: orgId },
+          where: { userId },
         }),
-        prisma.customer.count({ where: { organizationId: orgId } }),
+
+        prisma.customer.count({ where: { userId } }),
+
         prisma.message.count({
           where: {
-            customer: { organizationId: orgId },
+            customer: { userId },
           },
         }),
-        prisma.product.count({ where: { organizationId: orgId } }),
-        prisma.appointment.count({ where: { organizationId: orgId } }),
-        prisma.workflow.count({ where: { organizationId: orgId, isActive: true } }),
-        prisma.integration.count({ where: { organizationId: orgId, isActive: true } }),
+
+        prisma.product.count({ where: { userId } }),
+        prisma.appointment.count({ where: { userId } }),
+        prisma.workflow.count({ where: { userId, isActive: true } }),
+        prisma.integration.count({ where: { userId, isActive: true } }),
       ]);
 
-      // 2. Aggregate Sales & Revenue
       const totalSales = orders.length;
       const totalRevenue = orders
         .filter((o) => o.status === "PAID" || o.status === "COMPLETED")
@@ -108,7 +101,7 @@ router.get(
       const [recentOrders, recentCustomers, upcomingAppointments, workflows] =
         await Promise.all([
           prisma.order.findMany({
-            where: { organizationId: orgId },
+            where: { userId },
             orderBy: { createdAt: "desc" },
             take: 5,
             include: {
@@ -121,26 +114,26 @@ router.get(
             },
           }),
           prisma.customer.findMany({
-            where: { organizationId: orgId },
+            where: { userId },
             orderBy: { createdAt: "desc" },
             take: 5,
           }),
           prisma.appointment.findMany({
             where: {
-              organizationId: orgId,
+              userId,
               startTime: { gte: now },
             },
             orderBy: { startTime: "asc" },
             take: 5,
           }),
           prisma.workflow.findMany({
-            where: { organizationId: orgId },
+            where: { userId },
             orderBy: { updatedAt: "desc" },
             take: 5,
           }),
         ]);
 
-      res.json({
+      res.status(200).json(new ApiResponse({
         metrics: {
           totalSales,
           totalRevenue,
@@ -161,7 +154,7 @@ router.get(
         recentCustomers,
         upcomingAppointments,
         workflows,
-      });
+      }, "Dashboard data fetched successfully", true))
     } catch (error) {
       next(error);
     }
