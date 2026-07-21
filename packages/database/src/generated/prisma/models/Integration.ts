@@ -26,7 +26,7 @@ export type AggregateIntegration = {
 
 export type IntegrationMinAggregateOutputType = {
   id: string | null
-  organizationId: string | null
+  userId: string | null
   type: $Enums.IntegrationType | null
   name: string | null
   isActive: boolean | null
@@ -36,7 +36,7 @@ export type IntegrationMinAggregateOutputType = {
 
 export type IntegrationMaxAggregateOutputType = {
   id: string | null
-  organizationId: string | null
+  userId: string | null
   type: $Enums.IntegrationType | null
   name: string | null
   isActive: boolean | null
@@ -46,7 +46,7 @@ export type IntegrationMaxAggregateOutputType = {
 
 export type IntegrationCountAggregateOutputType = {
   id: number
-  organizationId: number
+  userId: number
   type: number
   name: number
   isActive: number
@@ -59,7 +59,7 @@ export type IntegrationCountAggregateOutputType = {
 
 export type IntegrationMinAggregateInputType = {
   id?: true
-  organizationId?: true
+  userId?: true
   type?: true
   name?: true
   isActive?: true
@@ -69,7 +69,7 @@ export type IntegrationMinAggregateInputType = {
 
 export type IntegrationMaxAggregateInputType = {
   id?: true
-  organizationId?: true
+  userId?: true
   type?: true
   name?: true
   isActive?: true
@@ -79,7 +79,7 @@ export type IntegrationMaxAggregateInputType = {
 
 export type IntegrationCountAggregateInputType = {
   id?: true
-  organizationId?: true
+  userId?: true
   type?: true
   name?: true
   isActive?: true
@@ -163,7 +163,7 @@ export type IntegrationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type IntegrationGroupByOutputType = {
   id: string
-  organizationId: string
+  userId: string
   type: $Enums.IntegrationType
   name: string
   isActive: boolean
@@ -195,26 +195,26 @@ export type IntegrationWhereInput = {
   OR?: Prisma.IntegrationWhereInput[]
   NOT?: Prisma.IntegrationWhereInput | Prisma.IntegrationWhereInput[]
   id?: Prisma.StringFilter<"Integration"> | string
-  organizationId?: Prisma.StringFilter<"Integration"> | string
+  userId?: Prisma.StringFilter<"Integration"> | string
   type?: Prisma.EnumIntegrationTypeFilter<"Integration"> | $Enums.IntegrationType
   name?: Prisma.StringFilter<"Integration"> | string
   isActive?: Prisma.BoolFilter<"Integration"> | boolean
   credentials?: Prisma.JsonNullableFilter<"Integration">
   createdAt?: Prisma.DateTimeFilter<"Integration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Integration"> | Date | string
-  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type IntegrationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   credentials?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  organization?: Prisma.OrganizationOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type IntegrationWhereUniqueInput = Prisma.AtLeast<{
@@ -222,19 +222,19 @@ export type IntegrationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.IntegrationWhereInput | Prisma.IntegrationWhereInput[]
   OR?: Prisma.IntegrationWhereInput[]
   NOT?: Prisma.IntegrationWhereInput | Prisma.IntegrationWhereInput[]
-  organizationId?: Prisma.StringFilter<"Integration"> | string
+  userId?: Prisma.StringFilter<"Integration"> | string
   type?: Prisma.EnumIntegrationTypeFilter<"Integration"> | $Enums.IntegrationType
   name?: Prisma.StringFilter<"Integration"> | string
   isActive?: Prisma.BoolFilter<"Integration"> | boolean
   credentials?: Prisma.JsonNullableFilter<"Integration">
   createdAt?: Prisma.DateTimeFilter<"Integration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Integration"> | Date | string
-  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type IntegrationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -251,7 +251,7 @@ export type IntegrationScalarWhereWithAggregatesInput = {
   OR?: Prisma.IntegrationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.IntegrationScalarWhereWithAggregatesInput | Prisma.IntegrationScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Integration"> | string
-  organizationId?: Prisma.StringWithAggregatesFilter<"Integration"> | string
+  userId?: Prisma.StringWithAggregatesFilter<"Integration"> | string
   type?: Prisma.EnumIntegrationTypeWithAggregatesFilter<"Integration"> | $Enums.IntegrationType
   name?: Prisma.StringWithAggregatesFilter<"Integration"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"Integration"> | boolean
@@ -268,12 +268,12 @@ export type IntegrationCreateInput = {
   credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  organization: Prisma.OrganizationCreateNestedOneWithoutIntegrationsInput
+  user: Prisma.UserCreateNestedOneWithoutIntegrationsInput
 }
 
 export type IntegrationUncheckedCreateInput = {
   id?: string
-  organizationId: string
+  userId: string
   type: $Enums.IntegrationType
   name: string
   isActive?: boolean
@@ -290,12 +290,12 @@ export type IntegrationUpdateInput = {
   credentials?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  organization?: Prisma.OrganizationUpdateOneRequiredWithoutIntegrationsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutIntegrationsNestedInput
 }
 
 export type IntegrationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumIntegrationTypeFieldUpdateOperationsInput | $Enums.IntegrationType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -306,7 +306,7 @@ export type IntegrationUncheckedUpdateInput = {
 
 export type IntegrationCreateManyInput = {
   id?: string
-  organizationId: string
+  userId: string
   type: $Enums.IntegrationType
   name: string
   isActive?: boolean
@@ -327,7 +327,7 @@ export type IntegrationUpdateManyMutationInput = {
 
 export type IntegrationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumIntegrationTypeFieldUpdateOperationsInput | $Enums.IntegrationType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -348,7 +348,7 @@ export type IntegrationOrderByRelationAggregateInput = {
 
 export type IntegrationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -359,7 +359,7 @@ export type IntegrationCountOrderByAggregateInput = {
 
 export type IntegrationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -369,7 +369,7 @@ export type IntegrationMaxOrderByAggregateInput = {
 
 export type IntegrationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  organizationId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -377,45 +377,45 @@ export type IntegrationMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type IntegrationCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutOrganizationInput, Prisma.IntegrationUncheckedCreateWithoutOrganizationInput> | Prisma.IntegrationCreateWithoutOrganizationInput[] | Prisma.IntegrationUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutOrganizationInput | Prisma.IntegrationCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.IntegrationCreateManyOrganizationInputEnvelope
+export type IntegrationCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutUserInput, Prisma.IntegrationUncheckedCreateWithoutUserInput> | Prisma.IntegrationCreateWithoutUserInput[] | Prisma.IntegrationUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutUserInput | Prisma.IntegrationCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.IntegrationCreateManyUserInputEnvelope
   connect?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
 }
 
-export type IntegrationUncheckedCreateNestedManyWithoutOrganizationInput = {
-  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutOrganizationInput, Prisma.IntegrationUncheckedCreateWithoutOrganizationInput> | Prisma.IntegrationCreateWithoutOrganizationInput[] | Prisma.IntegrationUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutOrganizationInput | Prisma.IntegrationCreateOrConnectWithoutOrganizationInput[]
-  createMany?: Prisma.IntegrationCreateManyOrganizationInputEnvelope
+export type IntegrationUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutUserInput, Prisma.IntegrationUncheckedCreateWithoutUserInput> | Prisma.IntegrationCreateWithoutUserInput[] | Prisma.IntegrationUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutUserInput | Prisma.IntegrationCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.IntegrationCreateManyUserInputEnvelope
   connect?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
 }
 
-export type IntegrationUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutOrganizationInput, Prisma.IntegrationUncheckedCreateWithoutOrganizationInput> | Prisma.IntegrationCreateWithoutOrganizationInput[] | Prisma.IntegrationUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutOrganizationInput | Prisma.IntegrationCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.IntegrationUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.IntegrationUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.IntegrationCreateManyOrganizationInputEnvelope
+export type IntegrationUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutUserInput, Prisma.IntegrationUncheckedCreateWithoutUserInput> | Prisma.IntegrationCreateWithoutUserInput[] | Prisma.IntegrationUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutUserInput | Prisma.IntegrationCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.IntegrationUpsertWithWhereUniqueWithoutUserInput | Prisma.IntegrationUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.IntegrationCreateManyUserInputEnvelope
   set?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
   disconnect?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
   delete?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
   connect?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
-  update?: Prisma.IntegrationUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.IntegrationUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.IntegrationUpdateManyWithWhereWithoutOrganizationInput | Prisma.IntegrationUpdateManyWithWhereWithoutOrganizationInput[]
+  update?: Prisma.IntegrationUpdateWithWhereUniqueWithoutUserInput | Prisma.IntegrationUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.IntegrationUpdateManyWithWhereWithoutUserInput | Prisma.IntegrationUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.IntegrationScalarWhereInput | Prisma.IntegrationScalarWhereInput[]
 }
 
-export type IntegrationUncheckedUpdateManyWithoutOrganizationNestedInput = {
-  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutOrganizationInput, Prisma.IntegrationUncheckedCreateWithoutOrganizationInput> | Prisma.IntegrationCreateWithoutOrganizationInput[] | Prisma.IntegrationUncheckedCreateWithoutOrganizationInput[]
-  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutOrganizationInput | Prisma.IntegrationCreateOrConnectWithoutOrganizationInput[]
-  upsert?: Prisma.IntegrationUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.IntegrationUpsertWithWhereUniqueWithoutOrganizationInput[]
-  createMany?: Prisma.IntegrationCreateManyOrganizationInputEnvelope
+export type IntegrationUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.IntegrationCreateWithoutUserInput, Prisma.IntegrationUncheckedCreateWithoutUserInput> | Prisma.IntegrationCreateWithoutUserInput[] | Prisma.IntegrationUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.IntegrationCreateOrConnectWithoutUserInput | Prisma.IntegrationCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.IntegrationUpsertWithWhereUniqueWithoutUserInput | Prisma.IntegrationUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.IntegrationCreateManyUserInputEnvelope
   set?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
   disconnect?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
   delete?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
   connect?: Prisma.IntegrationWhereUniqueInput | Prisma.IntegrationWhereUniqueInput[]
-  update?: Prisma.IntegrationUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.IntegrationUpdateWithWhereUniqueWithoutOrganizationInput[]
-  updateMany?: Prisma.IntegrationUpdateManyWithWhereWithoutOrganizationInput | Prisma.IntegrationUpdateManyWithWhereWithoutOrganizationInput[]
+  update?: Prisma.IntegrationUpdateWithWhereUniqueWithoutUserInput | Prisma.IntegrationUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.IntegrationUpdateManyWithWhereWithoutUserInput | Prisma.IntegrationUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.IntegrationScalarWhereInput | Prisma.IntegrationScalarWhereInput[]
 }
 
@@ -427,7 +427,7 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type IntegrationCreateWithoutOrganizationInput = {
+export type IntegrationCreateWithoutUserInput = {
   id?: string
   type: $Enums.IntegrationType
   name: string
@@ -437,7 +437,7 @@ export type IntegrationCreateWithoutOrganizationInput = {
   updatedAt?: Date | string
 }
 
-export type IntegrationUncheckedCreateWithoutOrganizationInput = {
+export type IntegrationUncheckedCreateWithoutUserInput = {
   id?: string
   type: $Enums.IntegrationType
   name: string
@@ -447,30 +447,30 @@ export type IntegrationUncheckedCreateWithoutOrganizationInput = {
   updatedAt?: Date | string
 }
 
-export type IntegrationCreateOrConnectWithoutOrganizationInput = {
+export type IntegrationCreateOrConnectWithoutUserInput = {
   where: Prisma.IntegrationWhereUniqueInput
-  create: Prisma.XOR<Prisma.IntegrationCreateWithoutOrganizationInput, Prisma.IntegrationUncheckedCreateWithoutOrganizationInput>
+  create: Prisma.XOR<Prisma.IntegrationCreateWithoutUserInput, Prisma.IntegrationUncheckedCreateWithoutUserInput>
 }
 
-export type IntegrationCreateManyOrganizationInputEnvelope = {
-  data: Prisma.IntegrationCreateManyOrganizationInput | Prisma.IntegrationCreateManyOrganizationInput[]
+export type IntegrationCreateManyUserInputEnvelope = {
+  data: Prisma.IntegrationCreateManyUserInput | Prisma.IntegrationCreateManyUserInput[]
   skipDuplicates?: boolean
 }
 
-export type IntegrationUpsertWithWhereUniqueWithoutOrganizationInput = {
+export type IntegrationUpsertWithWhereUniqueWithoutUserInput = {
   where: Prisma.IntegrationWhereUniqueInput
-  update: Prisma.XOR<Prisma.IntegrationUpdateWithoutOrganizationInput, Prisma.IntegrationUncheckedUpdateWithoutOrganizationInput>
-  create: Prisma.XOR<Prisma.IntegrationCreateWithoutOrganizationInput, Prisma.IntegrationUncheckedCreateWithoutOrganizationInput>
+  update: Prisma.XOR<Prisma.IntegrationUpdateWithoutUserInput, Prisma.IntegrationUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.IntegrationCreateWithoutUserInput, Prisma.IntegrationUncheckedCreateWithoutUserInput>
 }
 
-export type IntegrationUpdateWithWhereUniqueWithoutOrganizationInput = {
+export type IntegrationUpdateWithWhereUniqueWithoutUserInput = {
   where: Prisma.IntegrationWhereUniqueInput
-  data: Prisma.XOR<Prisma.IntegrationUpdateWithoutOrganizationInput, Prisma.IntegrationUncheckedUpdateWithoutOrganizationInput>
+  data: Prisma.XOR<Prisma.IntegrationUpdateWithoutUserInput, Prisma.IntegrationUncheckedUpdateWithoutUserInput>
 }
 
-export type IntegrationUpdateManyWithWhereWithoutOrganizationInput = {
+export type IntegrationUpdateManyWithWhereWithoutUserInput = {
   where: Prisma.IntegrationScalarWhereInput
-  data: Prisma.XOR<Prisma.IntegrationUpdateManyMutationInput, Prisma.IntegrationUncheckedUpdateManyWithoutOrganizationInput>
+  data: Prisma.XOR<Prisma.IntegrationUpdateManyMutationInput, Prisma.IntegrationUncheckedUpdateManyWithoutUserInput>
 }
 
 export type IntegrationScalarWhereInput = {
@@ -478,7 +478,7 @@ export type IntegrationScalarWhereInput = {
   OR?: Prisma.IntegrationScalarWhereInput[]
   NOT?: Prisma.IntegrationScalarWhereInput | Prisma.IntegrationScalarWhereInput[]
   id?: Prisma.StringFilter<"Integration"> | string
-  organizationId?: Prisma.StringFilter<"Integration"> | string
+  userId?: Prisma.StringFilter<"Integration"> | string
   type?: Prisma.EnumIntegrationTypeFilter<"Integration"> | $Enums.IntegrationType
   name?: Prisma.StringFilter<"Integration"> | string
   isActive?: Prisma.BoolFilter<"Integration"> | boolean
@@ -487,7 +487,7 @@ export type IntegrationScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Integration"> | Date | string
 }
 
-export type IntegrationCreateManyOrganizationInput = {
+export type IntegrationCreateManyUserInput = {
   id?: string
   type: $Enums.IntegrationType
   name: string
@@ -497,7 +497,7 @@ export type IntegrationCreateManyOrganizationInput = {
   updatedAt?: Date | string
 }
 
-export type IntegrationUpdateWithoutOrganizationInput = {
+export type IntegrationUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumIntegrationTypeFieldUpdateOperationsInput | $Enums.IntegrationType
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -507,7 +507,7 @@ export type IntegrationUpdateWithoutOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type IntegrationUncheckedUpdateWithoutOrganizationInput = {
+export type IntegrationUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumIntegrationTypeFieldUpdateOperationsInput | $Enums.IntegrationType
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -517,7 +517,7 @@ export type IntegrationUncheckedUpdateWithoutOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type IntegrationUncheckedUpdateManyWithoutOrganizationInput = {
+export type IntegrationUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumIntegrationTypeFieldUpdateOperationsInput | $Enums.IntegrationType
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -531,43 +531,43 @@ export type IntegrationUncheckedUpdateManyWithoutOrganizationInput = {
 
 export type IntegrationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
+  userId?: boolean
   type?: boolean
   name?: boolean
   isActive?: boolean
   credentials?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["integration"]>
 
 export type IntegrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
+  userId?: boolean
   type?: boolean
   name?: boolean
   isActive?: boolean
   credentials?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["integration"]>
 
 export type IntegrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  organizationId?: boolean
+  userId?: boolean
   type?: boolean
   name?: boolean
   isActive?: boolean
   credentials?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["integration"]>
 
 export type IntegrationSelectScalar = {
   id?: boolean
-  organizationId?: boolean
+  userId?: boolean
   type?: boolean
   name?: boolean
   isActive?: boolean
@@ -576,25 +576,25 @@ export type IntegrationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type IntegrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "type" | "name" | "isActive" | "credentials" | "createdAt" | "updatedAt", ExtArgs["result"]["integration"]>
+export type IntegrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "name" | "isActive" | "credentials" | "createdAt" | "updatedAt", ExtArgs["result"]["integration"]>
 export type IntegrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type IntegrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type IntegrationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $IntegrationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Integration"
   objects: {
-    organization: Prisma.$OrganizationPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    organizationId: string
+    userId: string
     type: $Enums.IntegrationType
     name: string
     isActive: boolean
@@ -995,7 +995,7 @@ readonly fields: IntegrationFieldRefs;
  */
 export interface Prisma__IntegrationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1026,7 +1026,7 @@ export interface Prisma__IntegrationClient<T, Null = never, ExtArgs extends runt
  */
 export interface IntegrationFieldRefs {
   readonly id: Prisma.FieldRef<"Integration", 'String'>
-  readonly organizationId: Prisma.FieldRef<"Integration", 'String'>
+  readonly userId: Prisma.FieldRef<"Integration", 'String'>
   readonly type: Prisma.FieldRef<"Integration", 'IntegrationType'>
   readonly name: Prisma.FieldRef<"Integration", 'String'>
   readonly isActive: Prisma.FieldRef<"Integration", 'Boolean'>

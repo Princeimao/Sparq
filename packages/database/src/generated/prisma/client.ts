@@ -45,30 +45,25 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model Organization
- * 
- */
-export type Organization = Prisma.OrganizationModel
-/**
- * Model Membership
- * 
- */
-export type Membership = Prisma.MembershipModel
-/**
  * Model Integration
  * 
  */
 export type Integration = Prisma.IntegrationModel
 /**
- * Model Campaign
+ * Model WhatsappIntegration
  * 
  */
-export type Campaign = Prisma.CampaignModel
+export type WhatsappIntegration = Prisma.WhatsappIntegrationModel
 /**
  * Model Customer
  * 
  */
 export type Customer = Prisma.CustomerModel
+/**
+ * Model Address
+ * 
+ */
+export type Address = Prisma.AddressModel
 /**
  * Model Order
  * 
@@ -90,12 +85,32 @@ export type Message = Prisma.MessageModel
  */
 export type Product = Prisma.ProductModel
 /**
- * Model Appointment
- * 
- */
-export type Appointment = Prisma.AppointmentModel
-/**
  * Model Workflow
  * 
  */
 export type Workflow = Prisma.WorkflowModel
+/**
+ * Model Flow
+ * 
+ */
+export type Flow = Prisma.FlowModel
+/**
+ * Model Service
+ * 
+ */
+export type Service = Prisma.ServiceModel
+/**
+ * Model Staff
+ * 
+ */
+export type Staff = Prisma.StaffModel
+/**
+ * Model Availability
+ * 
+ */
+export type Availability = Prisma.AvailabilityModel
+/**
+ * Model Appointment
+ * 
+ */
+export type Appointment = Prisma.AppointmentModel

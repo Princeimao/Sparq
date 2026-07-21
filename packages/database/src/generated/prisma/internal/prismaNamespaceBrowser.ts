@@ -52,17 +52,20 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Organization: 'Organization',
-  Membership: 'Membership',
   Integration: 'Integration',
-  Campaign: 'Campaign',
+  WhatsappIntegration: 'WhatsappIntegration',
   Customer: 'Customer',
+  Address: 'Address',
   Order: 'Order',
   ConversationState: 'ConversationState',
   Message: 'Message',
   Product: 'Product',
-  Appointment: 'Appointment',
-  Workflow: 'Workflow'
+  Workflow: 'Workflow',
+  Flow: 'Flow',
+  Service: 'Service',
+  Staff: 'Staff',
+  Availability: 'Availability',
+  Appointment: 'Appointment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -94,30 +97,9 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const OrganizationScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
-
-
-export const MembershipScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  organizationId: 'organizationId',
-  role: 'role',
-  createdAt: 'createdAt'
-} as const
-
-export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof typeof MembershipScalarFieldEnum]
-
-
 export const IntegrationScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
+  userId: 'userId',
   type: 'type',
   name: 'name',
   isActive: 'isActive',
@@ -129,29 +111,28 @@ export const IntegrationScalarFieldEnum = {
 export type IntegrationScalarFieldEnum = (typeof IntegrationScalarFieldEnum)[keyof typeof IntegrationScalarFieldEnum]
 
 
-export const CampaignScalarFieldEnum = {
+export const WhatsappIntegrationScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
-  name: 'name',
-  productName: 'productName',
-  reorderAfterDays: 'reorderAfterDays',
-  messageTemplate: 'messageTemplate',
+  userId: 'userId',
   isActive: 'isActive',
+  businessId: 'businessId',
+  wabaId: 'wabaId',
+  phoneNumberId: 'phoneNumberId',
+  accessToken: 'accessToken',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
+export type WhatsappIntegrationScalarFieldEnum = (typeof WhatsappIntegrationScalarFieldEnum)[keyof typeof WhatsappIntegrationScalarFieldEnum]
 
 
 export const CustomerScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
+  userId: 'userId',
   phone: 'phone',
   name: 'name',
-  externalId: 'externalId',
-  address: 'address',
-  optedIn: 'optedIn',
+  email: 'email',
+  customFields: 'customFields',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -159,11 +140,31 @@ export const CustomerScalarFieldEnum = {
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
+export const AddressScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  type: 'type',
+  name: 'name',
+  phone: 'phone',
+  line1: 'line1',
+  line2: 'line2',
+  city: 'city',
+  state: 'state',
+  country: 'country',
+  pincode: 'pincode',
+  landmark: 'landmark',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
+
+
 export const OrderScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
+  userId: 'userId',
   customerId: 'customerId',
-  campaignId: 'campaignId',
+  shippingAddressId: 'shippingAddressId',
   productName: 'productName',
   amount: 'amount',
   currency: 'currency',
@@ -195,9 +196,12 @@ export type ConversationStateScalarFieldEnum = (typeof ConversationStateScalarFi
 export const MessageScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
+  userId: 'userId',
   waMessageId: 'waMessageId',
   direction: 'direction',
+  type: 'type',
   body: 'body',
+  payload: 'payload',
   templateName: 'templateName',
   status: 'status',
   createdAt: 'createdAt',
@@ -209,11 +213,11 @@ export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeo
 
 export const ProductScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
+  userId: 'userId',
   name: 'name',
   description: 'description',
   price: 'price',
-  sku: 'sku',
+  image: 'image',
   stock: 'stock',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -222,27 +226,9 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
-export const AppointmentScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  title: 'title',
-  description: 'description',
-  startTime: 'startTime',
-  endTime: 'endTime',
-  customerName: 'customerName',
-  customerEmail: 'customerEmail',
-  customerPhone: 'customerPhone',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
-
-
 export const WorkflowScalarFieldEnum = {
   id: 'id',
-  organizationId: 'organizationId',
+  userId: 'userId',
   name: 'name',
   description: 'description',
   triggerType: 'triggerType',
@@ -253,6 +239,85 @@ export const WorkflowScalarFieldEnum = {
 } as const
 
 export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
+
+
+export const FlowScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  userId: 'userId',
+  status: 'status',
+  flowSchema: 'flowSchema',
+  whatsappSchema: 'whatsappSchema',
+  endpointUrl: 'endpointUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FlowScalarFieldEnum = (typeof FlowScalarFieldEnum)[keyof typeof FlowScalarFieldEnum]
+
+
+export const ServiceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  duration: 'duration',
+  bookingMode: 'bookingMode',
+  availabilityMode: 'availabilityMode',
+  price: 'price',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const StaffScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof StaffScalarFieldEnum]
+
+
+export const AvailabilityScalarFieldEnum = {
+  id: 'id',
+  staffId: 'staffId',
+  dayOfWeek: 'dayOfWeek',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  capacity: 'capacity',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AvailabilityScalarFieldEnum = (typeof AvailabilityScalarFieldEnum)[keyof typeof AvailabilityScalarFieldEnum]
+
+
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  serviceId: 'serviceId',
+  staffId: 'staffId',
+  customerName: 'customerName',
+  customerEmail: 'customerEmail',
+  customerPhone: 'customerPhone',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
 
 
 export const SortOrder = {

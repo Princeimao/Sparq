@@ -19,10 +19,11 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 
 export const IntegrationType = {
-  WHATSAPP: 'WHATSAPP',
-  PAYMENT: 'PAYMENT',
-  STORE: 'STORE',
-  CUSTOM_API: 'CUSTOM_API'
+  STRIPE: 'STRIPE',
+  RAZORPAY: 'RAZORPAY',
+  CALCOM: 'CALCOM',
+  GOOGLE_CALENDAR: 'GOOGLE_CALENDAR',
+  WOOCOMMERCE: 'WOOCOMMERCE'
 } as const
 
 export type IntegrationType = (typeof IntegrationType)[keyof typeof IntegrationType]
@@ -58,6 +59,56 @@ export const MessageDirection = {
 export type MessageDirection = (typeof MessageDirection)[keyof typeof MessageDirection]
 
 
+export const FlowStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type FlowStatus = (typeof FlowStatus)[keyof typeof FlowStatus]
+
+
+export const BookingMode = {
+  ANY_STAFF: 'ANY_STAFF',
+  SELECT_STAFF: 'SELECT_STAFF'
+} as const
+
+export type BookingMode = (typeof BookingMode)[keyof typeof BookingMode]
+
+
+export const AppointmentStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus]
+
+
+export const AvailabilityMode = {
+  MANUAL: 'MANUAL',
+  GENERATED: 'GENERATED'
+} as const
+
+export type AvailabilityMode = (typeof AvailabilityMode)[keyof typeof AvailabilityMode]
+
+
+export const MessageType = {
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  AUDIO: 'AUDIO',
+  DOCUMENT: 'DOCUMENT',
+  TEMPLATE: 'TEMPLATE',
+  INTERACTIVE: 'INTERACTIVE',
+  FLOW: 'FLOW'
+} as const
+
+export type MessageType = (typeof MessageType)[keyof typeof MessageType]
+
+
 export const MessageStatus = {
   SENT: 'SENT',
   DELIVERED: 'DELIVERED',
@@ -66,3 +117,11 @@ export const MessageStatus = {
 } as const
 
 export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus]
+
+
+export const AddressType = {
+  SHIPPING: 'SHIPPING',
+  BILLING: 'BILLING'
+} as const
+
+export type AddressType = (typeof AddressType)[keyof typeof AddressType]
