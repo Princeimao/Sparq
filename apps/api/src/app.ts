@@ -7,21 +7,15 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env";
 import { prisma } from "./config/prisma";
 import { errorHandler } from "./middleware/errorHandler";
-import { startCampaignEngine, triggerCampaignEngine } from "./services/campaign-engine";
-import { authenticate, requireOrg, requireRole } from "./middleware/auth";
+import { authenticate } from "./middleware/auth";
 
 import authRoutes from "./modules/auth/auth.routes";
-import organizationRoutes from "./modules/organization/organization.routes";
 import integrationRoutes from "./modules/integration/integration.routes";
-import campaignRoutes from "./modules/campaign/campaign.routes";
 import customerRoutes from "./modules/customer/customer.routes";
 import orderRoutes from "./modules/order/order.routes";
 import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
-import paymentRoutes from "./modules/payment/payment.routes";
-import conversationRoutes from "./modules/conversation/conversation.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import productRoutes from "./modules/product/product.routes";
-import appointmentRoutes from "./modules/appointment/appointment.routes";
 import workflowRoutes from "./modules/workflow/workflow.routes";
 
 import { startWhatsAppWorker } from "./workers/whatsapp.worker";
@@ -47,40 +41,16 @@ app.get("/api/health", (_req, res) => {
 // Auth (public)
 app.use("/api/auth", authRoutes);
 
-// WhatsApp webhook (public — verified by token)
+// whatsapp route
 app.use("/api/whatsapp", whatsappRoutes);
 
-// Organization-scoped routes
-app.use("/api/organizations", organizationRoutes);
-app.use("/api/organizations", integrationRoutes);
-app.use("/api/organizations", campaignRoutes);
-app.use("/api/organizations", customerRoutes);
-app.use("/api/organizations", orderRoutes);
-app.use("/api/organizations", conversationRoutes);
-app.use("/api/organizations", dashboardRoutes);
-app.use("/api/organizations", productRoutes);
-app.use("/api/organizations", appointmentRoutes);
-app.use("/api/organizations", workflowRoutes);
-
-// Payment 
-app.use("/api/payments", paymentRoutes);
-
-// Integration 
-app.use("/api/integrations", integrationRoutes)
-
-// ─── Admin: Manually trigger campaign engine ─────────────────────────────────
-app.post(
-  "/api/admin/trigger-campaigns",
-  authenticate,
-  async (req, res, next) => {
-    try {
-      const result = await triggerCampaignEngine();
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+// authenticated routes
+app.use("/api/integrations", authenticate, integrationRoutes);
+app.use("/api/customers", authenticate, customerRoutes);
+app.use("/api/orders", authenticate, orderRoutes);
+app.use("/api/dashboard", authenticate, dashboardRoutes);
+app.use("/api/products", authenticate, productRoutes);
+app.use("/api/workflows", authenticate, workflowRoutes);
 
 app.use(errorHandler);
 
@@ -89,13 +59,7 @@ async function main() {
     await prisma.$connect();
     console.log("Database connected");
 
-    // Start the WhatsApp worker
     startWhatsAppWorker();
-
-    // Start the campaign engine
-    // if (env.NODE_ENV !== "test") {
-    //   startCampaignEngine();
-    // }
 
     app.listen(env.PORT, () => {
       console.log(`Sparq API running on http://localhost:${env.PORT}`);

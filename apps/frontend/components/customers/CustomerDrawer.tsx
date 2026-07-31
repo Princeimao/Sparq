@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import type { Customer } from "@/app/(dashboard)/[orgId]/customers/page";
+import type { Customer } from "@/app/(dashboard)/customers/page";
 
 interface CustomerDrawerProps {
   open: boolean;
@@ -32,7 +32,6 @@ export function CustomerDrawer({
   customer,
   onSave,
 }: CustomerDrawerProps) {
-  const { orgId } = useParams();
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -99,14 +98,14 @@ export function CustomerDrawer({
           optedIn: formData.optedIn,
         };
         const res = await api.patch(
-          `/organizations/${orgId}/customers/${customer.id}`,
+          `/customers/${customer.id}`,
           updatePayload
         );
         toast.success("Customer updated successfully!");
         onSave(res.data.customer, true);
       } else {
         // Create
-        const res = await api.post(`/organizations/${orgId}/customers`, payload);
+        const res = await api.post(`/customers`, payload);
         toast.success("Customer added successfully!");
         onSave(res.data.customer, false);
       }

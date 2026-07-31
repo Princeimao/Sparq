@@ -1,0 +1,58 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "0",
+      "changes": [
+        {
+          "field": "history",
+          "value": {
+            "messaging_product": "whatsapp",
+            "history": [
+              {
+                "metadata": { "phase": 1, "chunk_order": 131, "progress": 30 },
+                "threads": [
+                  {
+                    "id": "1234567890",
+                    "context": {
+                      "wa_id": "1234567890",
+                      "user_id": "user.abc.efghijklmn123",
+                      "username": "@alice",
+                      "logical_id": "1234567890"
+                    },
+                    "messages": [
+                      {
+                        "from": "16505551111",
+                        "from_user_id": "user.abc.efghijklmn123",
+                        "id": "ABGGFlA5Fpa",
+                        "timestamp": "1504902988",
+                        "type": "media_placeholder",
+                        "history_context": { "status": "read", "from_me": true }
+                      },
+                      {
+                        "from": "16315551181",
+                        "from_user_id": "user.abc.efghijklmn123",
+                        "id": "ABGGFlA5Fpa",
+                        "timestamp": "1504902988",
+                        "type": "text",
+                        "text": { "body": "this is a text message" },
+                        "history_context": {
+                          "status": "delivered",
+                          "from_me": false
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "metadata": {
+              "display_phone_number": "16505551111",
+              "phone_number_id": "123123123"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

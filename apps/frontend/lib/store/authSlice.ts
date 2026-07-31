@@ -1,12 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { api } from "../api";
 
-export interface Organization {
-  id: string;
-  name: string;
-  role: string;
-}
-
 export interface User {
   id: string;
   email: string;
@@ -16,8 +10,6 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
-  organizations: Organization[];
-  currentOrganizationId: string | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
@@ -38,8 +30,6 @@ const initialTokens = getInitialTokens();
 
 const initialState: AuthState = {
   user: null,
-  organizations: [],
-  currentOrganizationId: null,
   accessToken: initialTokens.accessToken,
   refreshToken: initialTokens.refreshToken,
   isAuthenticated: !!initialTokens.accessToken,
@@ -47,7 +37,6 @@ const initialState: AuthState = {
   isInitialized: false,
 };
 
-// Async thunk to fetch user info and their organizations
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
@@ -92,16 +81,8 @@ const authSlice = createSlice({
         localStorage.setItem("isLoggedIn", "true");
       }
     },
-    setCurrentOrganizationId: (state, action: PayloadAction<string | null>) => {
-      state.currentOrganizationId = action.payload;
-      if (typeof window !== "undefined" && action.payload) {
-        localStorage.setItem("currentOrganizationId", action.payload);
-      }
-    },
     clearAuth: (state) => {
       state.user = null;
-      state.organizations = [];
-      state.currentOrganizationId = null;
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
@@ -110,7 +91,6 @@ const authSlice = createSlice({
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("currentOrganizationId");
       }
     },
     setInitialized: (state) => {
@@ -133,30 +113,7 @@ const authSlice = createSlice({
             name: user.name,
             avatarUrl: user.avatarUrl,
           };
-          
-          // Map memberships to organizations
-          const orgs: Organization[] = (user.memberships || []).map((m: any) => ({
-            id: m.organization.id,
-            name: m.organization.name,
-            role: m.role,
-          }));
-          
-          state.organizations = orgs;
-          
-          // Select default organization if none selected or if selected is not part of memberships
-          const savedOrgId = typeof window !== "undefined" ? localStorage.getItem("currentOrganizationId") : null;
-          const isSavedOrgValid = orgs.some((o) => o.id === savedOrgId);
-          
-          if (isSavedOrgValid) {
-            state.currentOrganizationId = savedOrgId;
-          } else if (orgs.length > 0) {
-            state.currentOrganizationId = orgs[0].id;
-            if (typeof window !== "undefined") {
-              localStorage.setItem("currentOrganizationId", orgs[0].id);
-            }
-          } else {
-            state.currentOrganizationId = null;
-          }
+
           state.isAuthenticated = true;
         } else {
           // If no user object is returned, clear authentication
@@ -171,5 +128,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokens, setCurrentOrganizationId, clearAuth, setInitialized } = authSlice.actions;
+export const { setTokens, clearAuth, setInitialized } = authSlice.actions;
 export default authSlice.reducer;

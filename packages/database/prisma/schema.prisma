@@ -97,7 +97,7 @@ model User {
   googleId  String?  @unique
 
   integrations Integration[]
-  whatsappIntegrations WhatsappIntegration[]
+  whatsappIntegrations WhatsappIntegration?
   customers    Customer[]
   orders       Order[]
   products     Product[]
@@ -137,7 +137,7 @@ model Integration {
 model WhatsappIntegration {
   id String @id @default(cuid())
 
-  userId String
+  userId String @unique
   isActive Boolean @default(true)
 
   businessId   String
@@ -150,7 +150,6 @@ model WhatsappIntegration {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
   @@map("whatsapp_integrations")
 }
 

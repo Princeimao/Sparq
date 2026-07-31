@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
-import type { Product } from "@/app/(dashboard)/[orgId]/products/page";
+import type { Product } from "@/app/(dashboard)/products/page";
 
 interface ProductDrawerProps {
   open: boolean;
@@ -32,7 +32,6 @@ export function ProductDrawer({
   product,
   onSave,
 }: ProductDrawerProps) {
-  const { orgId } = useParams();
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -97,14 +96,14 @@ export function ProductDrawer({
       if (product) {
         // Update
         const res = await api.patch(
-          `/organizations/${orgId}/products/${product.id}`,
+          `/products/${product.id}`,
           payload
         );
         toast.success("Product updated successfully!");
         onSave(res.data.product, true);
       } else {
         // Create
-        const res = await api.post(`/organizations/${orgId}/products`, payload);
+        const res = await api.post(`/products`, payload);
         toast.success("Product created successfully!");
         onSave(res.data.product, false);
       }

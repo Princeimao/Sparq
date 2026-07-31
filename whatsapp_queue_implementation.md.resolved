@@ -1,0 +1,78 @@
+# WhatsApp Queue & LLM Worker Integration Walkthrough
+
+We have successfully integrated a Redis-backed **BullMQ Queue & Worker** architecture for processing incoming WhatsApp messages asynchronously. The system uses **Langchain Gemini** for structured intent analysis and features a multi-provider payment class structure for scalability.
+
+---
+
+## 🏗️ Architecture Overview
+
+The background processing pipeline works as follows:
+
+```mermaid
+sequenceDiagram
+    participant WhatsApp as Meta API Webhook
+    participant Route as Express Route
+    participant Queue as BullMQ (Redis)
+    participant Worker as BullMQ Worker
+    participant DB as Postgres (Prisma)
+    participant LLM as Langchain Gemini
+    participant Payment as Payment provider (Stripe)
+
+    WhatsApp->>Route: POST /webhook
+    Route->>Queue: Enqueue message data
+    Route-->>WhatsApp: 200 OK (Immediate response)
+    
+    Worker->>Queue: Pull job (concurrently)
+    Worker->>DB: Fetch WhatsappIntegration & Customer
+    alt In WAITING_ADDRESS state (Redis)
+        Worker->>DB: Save Address & Create Order
+        Worker->>Payment: Generate Payment Link
+        Worker->>WhatsApp: Send Payment Link (WhatsApp API)
+    else No Active State (Initial)
+        Worker->>LLM: Analyze text (Sanitized, no credentials)
+        LLM-->>Worker: Return structured intent & product
+        alt Intent is ORDER
+            alt Customer has address
+                Worker->>DB: Create Order
+                Worker->>Payment: Generate Payment Link
+                Worker->>WhatsApp: Send Payment Link
+            else Customer has no address
+                Worker->>Queue: Save WAITING_ADDRESS state (Redis)
+                Worker->>WhatsApp: Ask for Address (WhatsApp API)
+            end
+        end
+    end
+```
+
+---
+
+## 🛠️ Files Created & Modified
+
+### 1. Redis Configuration
+* **File**: `apps/api/src/config/redis.ts`
+* **Details**: Instantiates a shared `ioredis` connection instance with parameters optimized for BullMQ (e.g. `maxRetriesPerRequest: null`).
+
+### 2. Extensible Payment Integration Class Structure
+* **File**: `apps/api/src/services/integrations.ts`
+* **Details**: 
+  - `BasePaymentProvider`: Abstract class for payment interfaces.
+  - `StripePaymentProvider` & `RazorpayPaymentProvider`: Subclasses handling provider-specific payment link creations and webhook verifications.
+  - `PaymentIntegrationManager`: Dynamically retrieves the organization's active payment configuration from Prisma, decrypts credentials, and returns the appropriate provider class.
+
+### 3. Langchain Gemini LLM Service
+* **File**: `apps/api/src/services/llm.service.ts`
+* **Details**: 
+  - `sanitizeInputForLlm`: A scrubbing function that masks all phone numbers, alphanumeric IDs (15+ chars), and access tokens from user input before sending it to the LLM.
+  - `LlmTaskAnalysisSchema`: A Zod schema mapping structured fields (`intent`, `productName`, `address`).
+  - Calls Gemini using the `withStructuredOutput()` method from `@langchain/google-genai` for structured intent classification.
+
+### 4. BullMQ Queue & Worker
+* **Files**: 
+  - `apps/api/src/queues/whatsapp.queue.ts`: Exports `whatsappQueue` and the helper `enqueueWhatsAppMessage` to add jobs to Redis.
+  - `apps/api/src/workers/whatsapp.worker.ts`: Contains the main processing loops. Set with `concurrency: 15` to enable multi-threaded message handling for fast performance.
+  - Configures Redis state caching using `sparq:conversation:<customer_id>` to store pending orders when asking for addresses.
+
+### 5. Webhook & Startup Integrations
+* **Files**:
+  - `apps/api/src/modules/whatsapp/whatsapp.routes.ts`: POST `/webhook` updated to push matching messages directly to the BullMQ queue rather than executing blocking API calls synchronously.
+  - `apps/api/src/app.ts`: Updated to launch the `startWhatsAppWorker()` daemon when the API server boots.

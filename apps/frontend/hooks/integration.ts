@@ -4,12 +4,9 @@ import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 
 import { useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
 
 export function useWhatsAppConnect() {
     const signupData = useRef<{ waba_id?: string; phone_number_id?: string }>({});
-    const params = useParams();
-    const orgId = params?.orgId as string;
 
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
@@ -55,7 +52,7 @@ export function useWhatsAppConnect() {
                     const code = response.authResponse.code;
                     const { waba_id: wabaId, phone_number_id: phoneNumberId } = signupData.current;
 
-                    api.post("/whatsapp/exchange", { code, orgId, wabaId, phoneNumberId }).then((res) => {
+                    api.post("/whatsapp/exchange", { code, wabaId, phoneNumberId }).then((res) => {
                         console.log(res.data);
                         toast.success("Whatsapp connected successfully");
                     }).catch(() => {

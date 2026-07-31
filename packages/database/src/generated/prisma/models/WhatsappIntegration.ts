@@ -232,10 +232,10 @@ export type WhatsappIntegrationOrderByWithRelationInput = {
 
 export type WhatsappIntegrationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  userId?: string
   AND?: Prisma.WhatsappIntegrationWhereInput | Prisma.WhatsappIntegrationWhereInput[]
   OR?: Prisma.WhatsappIntegrationWhereInput[]
   NOT?: Prisma.WhatsappIntegrationWhereInput | Prisma.WhatsappIntegrationWhereInput[]
-  userId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   isActive?: Prisma.BoolFilter<"WhatsappIntegration"> | boolean
   businessId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   wabaId?: Prisma.StringFilter<"WhatsappIntegration"> | string
@@ -244,7 +244,7 @@ export type WhatsappIntegrationWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"WhatsappIntegration"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WhatsappIntegration"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "userId">
 
 export type WhatsappIntegrationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -359,14 +359,9 @@ export type WhatsappIntegrationUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type WhatsappIntegrationListRelationFilter = {
-  every?: Prisma.WhatsappIntegrationWhereInput
-  some?: Prisma.WhatsappIntegrationWhereInput
-  none?: Prisma.WhatsappIntegrationWhereInput
-}
-
-export type WhatsappIntegrationOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type WhatsappIntegrationNullableScalarRelationFilter = {
+  is?: Prisma.WhatsappIntegrationWhereInput | null
+  isNot?: Prisma.WhatsappIntegrationWhereInput | null
 }
 
 export type WhatsappIntegrationCountOrderByAggregateInput = {
@@ -405,46 +400,36 @@ export type WhatsappIntegrationMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type WhatsappIntegrationCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput> | Prisma.WhatsappIntegrationCreateWithoutUserInput[] | Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput | Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.WhatsappIntegrationCreateManyUserInputEnvelope
-  connect?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
+export type WhatsappIntegrationCreateNestedOneWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput
+  connect?: Prisma.WhatsappIntegrationWhereUniqueInput
 }
 
-export type WhatsappIntegrationUncheckedCreateNestedManyWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput> | Prisma.WhatsappIntegrationCreateWithoutUserInput[] | Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput | Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput[]
-  createMany?: Prisma.WhatsappIntegrationCreateManyUserInputEnvelope
-  connect?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
+export type WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput
+  connect?: Prisma.WhatsappIntegrationWhereUniqueInput
 }
 
-export type WhatsappIntegrationUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput> | Prisma.WhatsappIntegrationCreateWithoutUserInput[] | Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput | Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.WhatsappIntegrationUpsertWithWhereUniqueWithoutUserInput | Prisma.WhatsappIntegrationUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.WhatsappIntegrationCreateManyUserInputEnvelope
-  set?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  disconnect?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  delete?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  connect?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  update?: Prisma.WhatsappIntegrationUpdateWithWhereUniqueWithoutUserInput | Prisma.WhatsappIntegrationUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.WhatsappIntegrationUpdateManyWithWhereWithoutUserInput | Prisma.WhatsappIntegrationUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.WhatsappIntegrationScalarWhereInput | Prisma.WhatsappIntegrationScalarWhereInput[]
+export type WhatsappIntegrationUpdateOneWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput
+  upsert?: Prisma.WhatsappIntegrationUpsertWithoutUserInput
+  disconnect?: Prisma.WhatsappIntegrationWhereInput | boolean
+  delete?: Prisma.WhatsappIntegrationWhereInput | boolean
+  connect?: Prisma.WhatsappIntegrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WhatsappIntegrationUpdateToOneWithWhereWithoutUserInput, Prisma.WhatsappIntegrationUpdateWithoutUserInput>, Prisma.WhatsappIntegrationUncheckedUpdateWithoutUserInput>
 }
 
-export type WhatsappIntegrationUncheckedUpdateManyWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput> | Prisma.WhatsappIntegrationCreateWithoutUserInput[] | Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput[]
-  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput | Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput[]
-  upsert?: Prisma.WhatsappIntegrationUpsertWithWhereUniqueWithoutUserInput | Prisma.WhatsappIntegrationUpsertWithWhereUniqueWithoutUserInput[]
-  createMany?: Prisma.WhatsappIntegrationCreateManyUserInputEnvelope
-  set?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  disconnect?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  delete?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  connect?: Prisma.WhatsappIntegrationWhereUniqueInput | Prisma.WhatsappIntegrationWhereUniqueInput[]
-  update?: Prisma.WhatsappIntegrationUpdateWithWhereUniqueWithoutUserInput | Prisma.WhatsappIntegrationUpdateWithWhereUniqueWithoutUserInput[]
-  updateMany?: Prisma.WhatsappIntegrationUpdateManyWithWhereWithoutUserInput | Prisma.WhatsappIntegrationUpdateManyWithWhereWithoutUserInput[]
-  deleteMany?: Prisma.WhatsappIntegrationScalarWhereInput | Prisma.WhatsappIntegrationScalarWhereInput[]
+export type WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput>
+  connectOrCreate?: Prisma.WhatsappIntegrationCreateOrConnectWithoutUserInput
+  upsert?: Prisma.WhatsappIntegrationUpsertWithoutUserInput
+  disconnect?: Prisma.WhatsappIntegrationWhereInput | boolean
+  delete?: Prisma.WhatsappIntegrationWhereInput | boolean
+  connect?: Prisma.WhatsappIntegrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WhatsappIntegrationUpdateToOneWithWhereWithoutUserInput, Prisma.WhatsappIntegrationUpdateWithoutUserInput>, Prisma.WhatsappIntegrationUncheckedUpdateWithoutUserInput>
 }
 
 export type WhatsappIntegrationCreateWithoutUserInput = {
@@ -474,51 +459,15 @@ export type WhatsappIntegrationCreateOrConnectWithoutUserInput = {
   create: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput>
 }
 
-export type WhatsappIntegrationCreateManyUserInputEnvelope = {
-  data: Prisma.WhatsappIntegrationCreateManyUserInput | Prisma.WhatsappIntegrationCreateManyUserInput[]
-  skipDuplicates?: boolean
-}
-
-export type WhatsappIntegrationUpsertWithWhereUniqueWithoutUserInput = {
-  where: Prisma.WhatsappIntegrationWhereUniqueInput
+export type WhatsappIntegrationUpsertWithoutUserInput = {
   update: Prisma.XOR<Prisma.WhatsappIntegrationUpdateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedUpdateWithoutUserInput>
   create: Prisma.XOR<Prisma.WhatsappIntegrationCreateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedCreateWithoutUserInput>
+  where?: Prisma.WhatsappIntegrationWhereInput
 }
 
-export type WhatsappIntegrationUpdateWithWhereUniqueWithoutUserInput = {
-  where: Prisma.WhatsappIntegrationWhereUniqueInput
+export type WhatsappIntegrationUpdateToOneWithWhereWithoutUserInput = {
+  where?: Prisma.WhatsappIntegrationWhereInput
   data: Prisma.XOR<Prisma.WhatsappIntegrationUpdateWithoutUserInput, Prisma.WhatsappIntegrationUncheckedUpdateWithoutUserInput>
-}
-
-export type WhatsappIntegrationUpdateManyWithWhereWithoutUserInput = {
-  where: Prisma.WhatsappIntegrationScalarWhereInput
-  data: Prisma.XOR<Prisma.WhatsappIntegrationUpdateManyMutationInput, Prisma.WhatsappIntegrationUncheckedUpdateManyWithoutUserInput>
-}
-
-export type WhatsappIntegrationScalarWhereInput = {
-  AND?: Prisma.WhatsappIntegrationScalarWhereInput | Prisma.WhatsappIntegrationScalarWhereInput[]
-  OR?: Prisma.WhatsappIntegrationScalarWhereInput[]
-  NOT?: Prisma.WhatsappIntegrationScalarWhereInput | Prisma.WhatsappIntegrationScalarWhereInput[]
-  id?: Prisma.StringFilter<"WhatsappIntegration"> | string
-  userId?: Prisma.StringFilter<"WhatsappIntegration"> | string
-  isActive?: Prisma.BoolFilter<"WhatsappIntegration"> | boolean
-  businessId?: Prisma.StringFilter<"WhatsappIntegration"> | string
-  wabaId?: Prisma.StringFilter<"WhatsappIntegration"> | string
-  phoneNumberId?: Prisma.StringFilter<"WhatsappIntegration"> | string
-  accessToken?: Prisma.StringFilter<"WhatsappIntegration"> | string
-  createdAt?: Prisma.DateTimeFilter<"WhatsappIntegration"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"WhatsappIntegration"> | Date | string
-}
-
-export type WhatsappIntegrationCreateManyUserInput = {
-  id?: string
-  isActive?: boolean
-  businessId: string
-  wabaId: string
-  phoneNumberId: string
-  accessToken: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type WhatsappIntegrationUpdateWithoutUserInput = {
@@ -533,17 +482,6 @@ export type WhatsappIntegrationUpdateWithoutUserInput = {
 }
 
 export type WhatsappIntegrationUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
-  wabaId?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
-  accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type WhatsappIntegrationUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   businessId?: Prisma.StringFieldUpdateOperationsInput | string

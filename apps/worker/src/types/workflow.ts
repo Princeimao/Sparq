@@ -1,0 +1,6 @@
+export enum WorkflowType {
+  ORDER = "ORDER",
+  APPOINTMENT = "APPOINTMENT",
+  RESERVATION = "RESERVATION",
+  SUPPORT = "SUPPORT",
+}

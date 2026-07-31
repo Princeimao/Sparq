@@ -20,18 +20,15 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 
-export function NavMain({ items, orgId }: { items: NavItem[]; orgId: string }) {
+export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
 
   const getHref = (href?: string) => {
     if (!href) return "#";
     if (href.startsWith("http") || href.startsWith("/")) return href;
-    return `/${orgId}/${href}`;
   };
 
-  // Recursive render function
   const renderItem = (item: NavItem) => {
-    //  Section label
     if (item.isSection && item.label) {
       return (
         <SidebarGroup key={item.label} className="p-0 pt-5 first:pt-0">

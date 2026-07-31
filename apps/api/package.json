@@ -42,6 +42,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^10.0.0",
     "tsx": "^4.19.4",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "@sparq/types": "*"
   }
 }

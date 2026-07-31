@@ -1,14 +1,6 @@
 import { Queue } from "bullmq";
 import { redis } from "../config/redis";
-
-export interface WhatsAppJobData {
-  messageId: string;
-  phoneNumberId: string;
-  wabaId: string;
-  customerWaId: string;
-  customerName: string;
-  text: string;
-}
+import type { WhatsAppJobData } from '@sparq/types'
 
 export const whatsappQueue = new Queue<WhatsAppJobData>("whatsapp-messages", {
   connection: redis,
@@ -23,7 +15,11 @@ export const whatsappQueue = new Queue<WhatsAppJobData>("whatsapp-messages", {
   },
 });
 
-export async function enqueueWhatsAppMessage(data: WhatsAppJobData): Promise<void> {
+export async function enqueueWhatsAppMessage(
+  data: WhatsAppJobData,
+): Promise<void> {
   await whatsappQueue.add(`message_${data.messageId}`, data);
-  console.log(`Enqueued message ${data.messageId} from ${data.customerWaId} for background processing`);
+  console.log(
+    `Enqueued message ${data.messageId} from ${data.customerWaId} for background processing`,
+  );
 }

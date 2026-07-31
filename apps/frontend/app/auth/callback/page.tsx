@@ -18,17 +18,11 @@ function AuthCallbackHandler() {
     if (accessToken && refreshToken) {
       dispatch(setTokens({ accessToken, refreshToken }));
 
-      // Fetch user profile and organization memberships
+      // Fetch user profile 
       dispatch(fetchCurrentUser())
         .unwrap()
         .then((data) => {
-          const userOrgs = data.user.memberships || [];
-          if (userOrgs.length > 0) {
-            const firstOrgId = userOrgs[0].organization.id;
-            router.push(`/${firstOrgId}/dashboard`);
-          } else {
-            router.push("/onboarding");
-          }
+          router.push("/");
         })
         .catch(() => {
           router.push("/");

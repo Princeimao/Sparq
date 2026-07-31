@@ -12,7 +12,9 @@ const createProductSchema = z.object({
   description: z.string().max(1000).optional(),
   price: z.number().nonnegative(),
   stock: z.number().int().default(0),
-  imageUrl: z.string().url().optional(),
+  image: z.string().url().optional().or(z.string().length(0)),
+  imageUrl: z.string().url().optional().or(z.string().length(0)),
+  sku: z.string().optional(),
 });
 
 const updateProductSchema = z.object({
@@ -20,36 +22,78 @@ const updateProductSchema = z.object({
   description: z.string().max(1000).optional(),
   price: z.number().nonnegative().optional(),
   stock: z.number().int().optional(),
+  image: z.string().url().optional().or(z.string().length(0)),
+  imageUrl: z.string().url().optional().or(z.string().length(0)),
+  sku: z.string().optional(),
 });
 
-// ─── GET /api/organizations/:orgId/products ─────────────────────────────────
+// GET /products
 router.get(
   "/products",
   authenticate,
-
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.userId as string;
-      const search = req.query.search as string;
+      const search = req.query.search as string | undefined;
 
       const products = await prisma.product.findMany({
         where: {
           userId,
-          name: {
-            contains: search,
-            mode: "insensitive"
-          }
+          ...(search && {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          }),
         },
         orderBy: { createdAt: "desc" },
       });
 
-      res.status(200).json(new ApiResponse(products, 'Products fetched successfully', true))
+      res
+        .status(200)
+        .json(
+          new ApiResponse(
+            { products },
+            "Products fetched successfully",
+            true
+          )
+        );
     } catch (error) {
       next(error);
     }
   }
 );
 
+// GET /products/:productId
+router.get(
+  "/products/:productId",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const productId = req.params.productId as string;
+      const userId = req.user?.userId as string;
+
+      const product = await prisma.product.findFirst({
+        where: { id: productId, userId },
+      });
+
+      if (!product) {
+        res
+          .status(404)
+          .json(new ApiResponse(null, "Product not found", false));
+        return;
+      }
+
+      res
+        .status(200)
+        .json(new ApiResponse({ product }, "Product fetched successfully", true));
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// POST /products
 router.post(
   "/products",
   authenticate,
@@ -57,7 +101,7 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.userId as string;
-      const { name, description, price, stock, imageUrl } = req.body;
+      const { name, description, price, stock, image, imageUrl } = req.body;
 
       const product = await prisma.product.create({
         data: {
@@ -66,17 +110,22 @@ router.post(
           description,
           price,
           stock,
-          image: imageUrl
+          image: image || imageUrl || null,
         },
       });
 
-      res.status(201).json(new ApiResponse(product, 'Product created successfully', true))
+      res
+        .status(201)
+        .json(
+          new ApiResponse({ product }, "Product created successfully", true)
+        );
     } catch (error) {
       next(error);
     }
   }
 );
 
+// PATCH /products/:productId
 router.patch(
   "/products/:productId",
   authenticate,
@@ -87,29 +136,39 @@ router.patch(
       const userId = req.user?.userId as string;
 
       const existing = await prisma.product.findFirst({
-        where: {
-          id: productId,
-          userId
-        },
+        where: { id: productId, userId },
       });
 
       if (!existing) {
-        res.status(404).json(new ApiResponse(null, 'Product not found', false));
+        res
+          .status(404)
+          .json(new ApiResponse(null, "Product not found", false));
         return;
       }
 
+      const updateData: Record<string, unknown> = { ...req.body };
+      if (updateData.imageUrl && !updateData.image) {
+        updateData.image = updateData.imageUrl;
+      }
+      delete updateData.imageUrl;
+
       const product = await prisma.product.update({
         where: { id: productId },
-        data: req.body,
+        data: updateData,
       });
 
-      res.status(200).json(new ApiResponse(product, 'Product updated successfully', true))
+      res
+        .status(200)
+        .json(
+          new ApiResponse({ product }, "Product updated successfully", true)
+        );
     } catch (error) {
       next(error);
     }
   }
 );
 
+// DELETE /products/:productId
 router.delete(
   "/products/:productId",
   authenticate,
@@ -123,7 +182,9 @@ router.delete(
       });
 
       if (!existing) {
-        res.status(404).json(new ApiResponse(null, 'Product not found', false));
+        res
+          .status(404)
+          .json(new ApiResponse(null, "Product not found", false));
         return;
       }
 
@@ -131,7 +192,9 @@ router.delete(
         where: { id: productId },
       });
 
-      res.status(200).json(new ApiResponse(null, 'Product deleted successfully', true))
+      res
+        .status(200)
+        .json(new ApiResponse(null, "Product deleted successfully", true));
     } catch (error) {
       next(error);
     }

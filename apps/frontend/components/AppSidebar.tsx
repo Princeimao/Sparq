@@ -15,27 +15,10 @@ import { SiteHeader } from "./SiteHeader";
 import { NavMain } from "./NavMain";
 import Image from "next/image";
 import { navData } from "@/constant";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/store";
 
-const AppSidebar = ({
-  children,
-  orgId,
-}: {
-  children: React.ReactNode;
-  orgId: string;
-}) => {
-  const router = useRouter();
-  const { organizations } = useAppSelector((state) => state.auth);
+const AppSidebar = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
@@ -54,28 +37,7 @@ const AppSidebar = ({
         <SidebarContent className="overflow-hidden gap-0 px-0 mt-5">
           <SimpleBar autoHide={true} className="h-full border-b border-border">
             <div className="px-4">
-              {/* SELECT ORGINIZATION */}
-              <Select
-                value={orgId}
-                onValueChange={(value) => router.push(`/${value}/dashboard`)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Organization</SelectLabel>
-                    {organizations.map((org) => (
-                      <SelectItem key={org.id} value={org.id}>
-                        {org.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-
-              <NavMain items={navData} orgId={orgId} />
+              <NavMain items={navData} />
             </div>
           </SimpleBar>
         </SidebarContent>
