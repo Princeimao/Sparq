@@ -2,6 +2,9 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
 import { env } from "../config/env";
 import { intentClassificationPrompt } from "../templets/systemPrompt";
+import { intentClassificationPrompt as fullIntentPrompt } from "../templets/intentPrompt";
+import { Intent } from "../types/intent";
+import { LLMResponse } from "../types/llm";
 
 function extractJson(content: string): unknown {
   const cleaned = content
@@ -82,6 +85,36 @@ export const ProductSearchSchema = z.object({
 export type LlmTaskAnalysis = z.infer<typeof LlmTaskAnalysisSchema>;
 export type ProductSearch = z.infer<typeof ProductSearchSchema>;
 
+const ExtractedEntitiesSchema = z.object({
+  productQuery: z.string().nullable().optional(),
+  serviceQuery: z.string().nullable().optional(),
+  quantity: z.number().nullable().optional(),
+  date: z.string().nullable().optional(),
+  time: z.string().nullable().optional(),
+  timeOfDay: z.string().nullable().optional(),
+  partySize: z.number().nullable().optional(),
+  customerName: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
+});
+
+const IntentParseSchema = z.object({
+  intent: z.enum([
+    "ORDER_PRODUCT",
+    "BOOK_APPOINTMENT",
+    "RESERVE_TABLE",
+    "ORDER_STATUS",
+    "CANCEL_ORDER",
+    "GREETING",
+    "HELP",
+    "UNKNOWN",
+  ]),
+  confidence: z.number().min(0).max(1),
+  needsSelection: z.boolean(),
+  entities: ExtractedEntitiesSchema,
+});
+
 export class LlmService {
   private model: ChatGoogleGenerativeAI;
 
@@ -128,6 +161,45 @@ export class LlmService {
         actionText: "",
         type: "",
         title: "",
+      };
+    }
+  }
+
+  async parseIntent(message: string): Promise<LLMResponse> {
+    try {
+      const response = await this.model.invoke([
+        { role: "system", content: fullIntentPrompt },
+        { role: "user", content: sanitizeInputForLlm(message) },
+      ]);
+
+      const parsed = extractJson(response.content as string);
+      const validated = IntentParseSchema.parse(parsed);
+
+      return {
+        intent: validated.intent as Intent,
+        confidence: validated.confidence,
+        needsSelection: validated.needsSelection,
+        entities: {
+          productQuery: validated.entities.productQuery ?? undefined,
+          serviceQuery: validated.entities.serviceQuery ?? undefined,
+          quantity: validated.entities.quantity ?? undefined,
+          date: validated.entities.date ?? undefined,
+          time: validated.entities.time ?? undefined,
+          timeOfDay: validated.entities.timeOfDay ?? undefined,
+          partySize: validated.entities.partySize ?? undefined,
+          customerName: validated.entities.customerName ?? undefined,
+          phone: validated.entities.phone ?? undefined,
+          address: validated.entities.address ?? undefined,
+          notes: validated.entities.notes ?? undefined,
+        },
+      };
+    } catch (error) {
+      console.error("Error during LLM intent parsing:", error);
+      return {
+        intent: Intent.UNKNOWN,
+        confidence: 0,
+        needsSelection: false,
+        entities: {},
       };
     }
   }

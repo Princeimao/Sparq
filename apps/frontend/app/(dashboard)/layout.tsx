@@ -14,28 +14,28 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  // const pathname = usePathname();
+  // const router = useRouter();
+  // const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (isLoading) return;
+  // useEffect(() => {
+  //   if (isLoading) return;
 
-    if (!isAuthenticated) {
-      router.push("/");
-      return;
-    }
-  }, [isAuthenticated, isLoading, router]);
+  //   if (!isAuthenticated) {
+  //     router.push("/");
+  //     return;
+  //   }
+  // }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading || !isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-      </div>
-    );
-  }
+  // if (isLoading || !isAuthenticated) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
+  //       <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+  //     </div>
+  //   );
+  // }
 
-  const path = pathname.split("/")[2] || "Dashboard";
+  // const path = pathname.split("/")[2] || "Dashboard";
 
   return (
     <TooltipProvider>

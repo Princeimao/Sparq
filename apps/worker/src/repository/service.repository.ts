@@ -9,11 +9,23 @@ export class ServiceRepository extends BaseRepository {
             phoneNumberId,
           },
         },
-        name: {
-          contains: query,
-          mode: "insensitive",
-        },
+        ...(query
+          ? {
+              name: {
+                contains: query,
+                mode: "insensitive",
+              },
+            }
+          : {}),
       },
+      orderBy: { name: "asc" },
+      take: 10,
+    });
+  }
+
+  async findById(id: string) {
+    return this.prisma.service.findUnique({
+      where: { id },
     });
   }
 }

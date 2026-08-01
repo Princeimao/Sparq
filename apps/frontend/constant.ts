@@ -20,6 +20,7 @@ import {
     ShoppingBag,
     Home,
     Calendar,
+    MessageSquareCode,
 } from "lucide-react";
 import { useWhatsAppConnect } from "./hooks/integration";
 
@@ -203,14 +204,14 @@ export const comparisonData = {
 };
 
 export const footerLinks = [
-    { label: "Home", href: "#" },
-    { label: "Categories", href: "#" },
-    { label: "Properties", href: "#" },
-    { label: "Featured property", href: "#" },
-    { label: "Testimonials", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "FAQs", href: "#" },
-    { label: "404 page", href: "#" },
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "FAQs", href: "/#faq" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "WhatsApp Flows", href: "/flows" },
+    { label: "Contact", href: "mailto:support@sparq.app" },
 ]
 
 export type NavItem = {
@@ -228,6 +229,7 @@ export const navData: NavItem[] = [
     { title: "Dashboard", icon: Home, href: "dashboard" },
     { title: "Calendar", icon: Calendar, href: "calendar" },
     { title: "Integrations", icon: Blocks, href: "integrations" },
+    { title: "WhatsApp Flows", icon: MessageSquareCode, href: "flows" },
     { title: "Workflows", icon: Workflow, href: "workflows" },
     { title: "Customers", icon: Contact, href: "customers" },
     { title: "Products", icon: ShoppingBag, href: "products" },

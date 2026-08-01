@@ -8,11 +8,32 @@ export class OrderRepository extends BaseRepository {
     });
   }
 
+  async findById(id: string) {
+    return this.prisma.order.findUnique({
+      where: { id },
+    });
+  }
+
   async findByCustomer(customerId: string) {
     return this.prisma.order.findMany({
       where: {
         customerId,
       },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async updatePaymentLink(id: string, paymentLink: string) {
+    return this.prisma.order.update({
+      where: { id },
+      data: { paymentLink },
+    });
+  }
+
+  async updateStatus(id: string, status: "PENDING" | "PAID" | "COMPLETED" | "CANCELLED") {
+    return this.prisma.order.update({
+      where: { id },
+      data: { status },
     });
   }
 }

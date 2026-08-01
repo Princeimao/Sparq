@@ -130,13 +130,18 @@ export class RazorpayPaymentProvider extends BasePaymentProvider {
 }
 
 export class PaymentIntegrationManager {
-  static async getActiveProvider(): Promise<BasePaymentProvider> {
+  /**
+   * @param userId - Optional SaaS user/organization ID to scope the lookup.
+   *                 If omitted, returns the first globally active integration.
+   */
+  static async getActiveProvider(userId?: string): Promise<BasePaymentProvider> {
     const integration = await prisma.integration.findFirst({
       where: {
         isActive: true,
         type: {
           in: [IntegrationType.STRIPE, IntegrationType.RAZORPAY],
         },
+        ...(userId ? { userId } : {}),
       },
     });
 

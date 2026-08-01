@@ -1,16 +1,91 @@
 import { Worker, Job } from "bullmq";
 import { redis } from "../config/redis";
 import { prisma } from "../config/prisma";
-import { WhatsAppService } from "../services/whatsapp.service";
-import { PaymentIntegrationManager } from "../services/integrations";
-import { llmService } from "../services/llm.service";
 import type { WhatsAppJobData } from "@sparq/types";
 
-const getStateKey = (customerWaId: string) =>
-  `sparq:conversation:${customerWaId}`;
+// Services
+import { WhatsAppService } from "../services/whatsapp.service";
+import { LlmService } from "../services/llm.service";
+
+// Store
+import { RedisConversationStore } from "../services/store/redis.conversation.store";
+
+// Repositories
+import { CustomerRepository } from "../repository/customer.repository";
+import { ProductRepository } from "../repository/product.repository";
+import { OrderRepository } from "../repository/order.repository";
+import { ServiceRepository } from "../repository/service.repository";
+import { AppointmentRepository } from "../repository/appointment.repository";
+import { FlowRepository } from "../repository/flow.repository";
+
+// Handlers
+import { OrderHandler } from "../workflow/order/order.handler";
+import { AppointmentHandler } from "../workflow/appointment/appointment.handler";
+import { ReservationHandler } from "../workflow/reservation/reservation.handler";
+
+// Engine & Registry
+import { WorkflowEngine } from "../workflow/workflow.engine";
+import { WorkflowRegistry } from "../workflow/workflow.registry";
+import { Intent } from "../types/intent";
+import { IncomingMessage } from "../types/message";
+
+// ─── Bootstrap ────────────────────────────────────────────────────────────────
+
+/**
+ * Build the workflow graph once at startup.
+ * All handlers are stateless (state is stored in Redis), so sharing a single
+ * instance per worker process is safe and memory-efficient.
+ */
+function buildEngine(): WorkflowEngine {
+  // Infrastructure
+  const conversationStore = new RedisConversationStore();
+  const llmService = new LlmService();
+
+  // Repositories
+  const customerRepo = new CustomerRepository();
+  const productRepo = new ProductRepository();
+  const orderRepo = new OrderRepository();
+  const serviceRepo = new ServiceRepository();
+  const appointmentRepo = new AppointmentRepository();
+  const flowRepo = new FlowRepository();
+
+  // Handlers
+  const orderHandler = new OrderHandler(
+    productRepo,
+    customerRepo,
+    orderRepo,
+    flowRepo,
+    conversationStore,
+  );
+
+  const appointmentHandler = new AppointmentHandler(
+    serviceRepo,
+    appointmentRepo,
+    customerRepo,
+    flowRepo,
+    conversationStore,
+  );
+
+  const reservationHandler = new ReservationHandler(
+    customerRepo,
+    conversationStore,
+  );
+
+  // Registry
+  const registry = new WorkflowRegistry();
+  registry.register(Intent.ORDER_PRODUCT, orderHandler);
+  registry.register(Intent.BOOK_APPOINTMENT, appointmentHandler);
+  registry.register(Intent.RESERVE_TABLE, reservationHandler);
+
+  return new WorkflowEngine(conversationStore, llmService, registry);
+}
+
+// ─── Worker ────────────────────────────────────────────────────────────────────
 
 export function startWhatsAppWorker() {
-  console.log("Initializing WhatsApp BullMQ worker...");
+  console.log("[WhatsApp Worker] Initializing BullMQ worker…");
+
+  const engine = buildEngine();
 
   const worker = new Worker<WhatsAppJobData>(
     "whatsapp-messages",
@@ -22,198 +97,90 @@ export function startWhatsAppWorker() {
         customerWaId,
         customerName,
         text,
+        interactiveId,
+        messageType,
+        timestamp,
+        userId,
       } = job.data;
 
       console.log(
-        `[Worker] Processing job ${job.id} for message: "${text}" from: ${customerWaId}`,
+        `[Worker] Job ${job.id} | from: ${customerWaId} | type: ${messageType ?? "text"} | text: "${text.slice(0, 60)}"`,
       );
 
       try {
-        const customer = await prisma.customer.findFirst({
-          where: {
-            phone: customerWaId,
-            user: {
-              whatsappIntegrations: {
-                phoneNumberId: phoneNumberId,
-                isActive: true,
-              },
-            },
-          },
-          include: {
-            conversations: true,
-            orders: true,
-          },
-        });
-
+        // Build the service for this specific message's WABA
         const whatsapp = new WhatsAppService({
-          customerName,
-          customerWaId,
+          messageId,
           phoneNumberId,
           wabaId,
-          messageId,
+          customerWaId,
+          customerName,
           text,
         });
 
-        if (!customer) {
-          const redisState = await redis.get(getStateKey(customerWaId));
-          if (!redisState) {
-            const res = await llmService.findProduct(text);
+        // Build the strongly-typed incoming message object
+        const incomingMessage: IncomingMessage = {
+          messageId,
+          customerWaId,
+          customerName,
+          phoneNumberId,
+          wabaId,
+          userId: userId ?? await resolveUserId(phoneNumberId),
+          text,
+          interactiveId,
+          messageType: (messageType as any) ?? "text",
+          timestamp: timestamp ?? Date.now(),
+        };
 
-            if (res.intent === "ORDER_PRODUCT" && res.productQuery) {
-              const products = await prisma.product.findMany({
-                take: 5,
-                where: {
-                  user: {
-                    whatsappIntegrations: {
-                      phoneNumberId: phoneNumberId,
-                    },
-                  },
-                  name: {
-                    contains: res.productQuery,
-                    mode: "insensitive",
-                  },
-                },
-              });
-
-              // store state in redis
-              await redis.set(
-                getStateKey(customerWaId),
-                JSON.stringify({
-                  intent: res.intent,
-                  productQuery: res.productQuery,
-                  quantity: res.quantity,
-                  products,
-                }),
-              );
-
-              redis.expire(getStateKey(customerWaId), 60 * 60);
-
-              const result = await whatsapp.sendList({
-                headerMessage: res.headerMessage,
-                actionText: res.actionText,
-                type: res.type,
-                listItems: products.map((prod) => ({
-                  id: prod.id,
-                  title: prod.name.slice(0, 24),
-                  price: prod.price.toString(),
-                })),
-                footerMessage: res.footerMessage,
-                title: res.title,
-              });
-
-              if (!result.success) {
-                await whatsapp.sendTextMessage(
-                  "I was unable to send you the list of products. Please try again.",
-                );
-                console.log(result.error);
-              }
-            } else {
-              await whatsapp.sendTextMessage(
-                "I was unable to understand your request. Please try again.",
-              );
-            }
-          }
-        } else {
-        }
+        // Run the workflow engine — it decides whether to start or resume
+        await engine.process(incomingMessage, whatsapp);
       } catch (error) {
         console.error(`[Worker] Error processing job ${job.id}:`, error);
-        throw error;
+        throw error; // BullMQ will retry according to queue config
       }
     },
     {
       connection: redis,
       concurrency: 15,
       limiter: {
-        max: 50,
-        duration: 1000,
+        max: 50,        // max 50 jobs
+        duration: 1000, // per second (WhatsApp rate limit safe zone)
       },
     },
   );
 
   worker.on("completed", (job) => {
-    console.log(`[Worker] Job ${job.id} completed successfully`);
+    console.log(`[Worker] Job ${job.id} completed`);
   });
 
   worker.on("failed", (job, err) => {
-    console.error(`[Worker] Job ${job?.id} failed with error:`, err);
+    console.error(`[Worker] Job ${job?.id} failed:`, err.message);
+  });
+
+  worker.on("error", (err) => {
+    console.error("[Worker] Worker error:", err);
   });
 
   return worker;
 }
 
-// async function finalizeOrderAndNotify({
-//   prismaClient,
-//   userId,
-//   customer,
-//   pendingOrder,
-//   address,
-//   whatsappService,
-// }: {
-//   prismaClient: typeof prisma;
-//   userId: string;
-//   customer: any;
-//   pendingOrder: { productName: string; amount: number; currency: string };
-//   address: string;
-//   whatsappService: WhatsAppService;
-// }) {
-//   const order = await prismaClient.order.create({
-//     data: {
-//       customerId: customer.id,
-//       productName: pendingOrder.productName,
-//       amount: pendingOrder.amount,
-//       currency: pendingOrder.currency,
-//       status: "PENDING",
-//       userId: customer.userId,
-//     },
-//   });
+// ─── Helper: Resolve userId ────────────────────────────────────────────────────
 
-//   try {
-//     const paymentProvider = await PaymentIntegrationManager.getActiveProvider();
+/**
+ * Resolves the SaaS user ID from the WhatsApp phoneNumberId
+ * when the API job data doesn't include it directly.
+ */
+async function resolveUserId(phoneNumberId: string): Promise<string> {
+  const integration = await prisma.whatsappIntegration.findFirst({
+    where: { phoneNumberId },
+    select: { userId: true },
+  });
 
-//     const paymentLink = await paymentProvider.createPaymentLink({
-//       amount: Math.round(pendingOrder.amount * 100),
-//       currency: pendingOrder.currency,
-//       productName: pendingOrder.productName,
-//       customerPhone: customer.phone,
-//       orderId: order.id,
-//       userId,
-//     });
+  if (!integration) {
+    throw new Error(
+      `[Worker] Could not resolve userId for phoneNumberId: ${phoneNumberId}`,
+    );
+  }
 
-//     await prismaClient.order.update({
-//       where: { id: order.id },
-//       data: { paymentLink: paymentLink.url },
-//     });
-
-//     await whatsappService.sendTextMessage(
-//       `Thank you! Order placed for ${pendingOrder.productName}.\n\nDeliver to:\n📍 ${address}\n\nHere is your payment link to complete the order:\n💳 ${paymentLink.url}\n\nOnce paid, we will ship it out!`,
-//     );
-
-//     await prismaClient.message.create({
-//       data: {
-//         customerId: customer.id,
-//         direction: "OUTBOUND",
-//         body: `Payment link sent: ${paymentLink.url}`,
-//         status: "SENT",
-//       },
-//     });
-//   } catch (paymentError: any) {
-//     console.warn(
-//       `[Worker] Payment connection not found or error:`,
-//       paymentError.message,
-//     );
-
-//     // Fallback: If payment integration is not set up, send the receipt instead
-//     const receiptMessage = `Thank you! Order placed for ${pendingOrder.productName}.\n\n🧾 Order Receipt:\n- Order ID: ${order.id}\n- Product: ${pendingOrder.productName}\n- Amount: ${pendingOrder.currency} ${pendingOrder.amount}\n- Delivery Address: ${address}\n\n(Online payment is currently unavailable for this store. We will contact you to arrange payment/delivery!)`;
-
-//     await whatsappService.sendTextMessage(receiptMessage);
-
-//     await prismaClient.message.create({
-//       data: {
-//         customerId: customer.id,
-//         direction: "OUTBOUND",
-//         body: receiptMessage,
-//         status: "SENT",
-//       },
-//     });
-//   }
-// }
+  return integration.userId;
+}

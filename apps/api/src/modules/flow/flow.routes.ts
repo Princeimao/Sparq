@@ -5,10 +5,18 @@ import { authenticate } from "../../middleware/auth";
 import { validateBody } from "../../middleware/validate";
 import { ApiResponse } from "../../middleware/responseHandler";
 import { FlowPublishService } from "../../services/flow-publish.service";
-import { FlowStatus } from "@prisma/client";
+
+// FlowStatus enum — matches Prisma schema
+const FlowStatus = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+  ARCHIVED: "ARCHIVED",
+} as const;
+type FlowStatus = (typeof FlowStatus)[keyof typeof FlowStatus];
 
 const router = Router();
 const flowPublishService = new FlowPublishService();
+
 
 const flowBlockSchema = z.object({
   id: z.string().min(1),

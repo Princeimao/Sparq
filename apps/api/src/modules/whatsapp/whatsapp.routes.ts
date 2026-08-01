@@ -30,22 +30,77 @@ router.post("/webhook", async (req: Request, res: Response) => {
     if (body.object !== "whatsapp_business_account") return;
 
     for (const entry of body.entry) {
+      const wabaId: string = entry.id;
+
+      // Resolve the userId (SaaS owner) for this WABA once per entry
+      const integration = await prisma.whatsappIntegration.findFirst({
+        where: { wabaId },
+        select: { userId: true },
+      });
+      const userId = integration?.userId ?? undefined;
+
       for (const change of entry.changes) {
         const value = change.value;
         if (!value.messages) continue;
-        
-        for (const message of value.messages) {
-          if (message.type !== "text") continue;
 
-          const textMessage = message.text?.body;
-          if (hasBusinessIntend(textMessage)) {
+        const phoneNumberId: string = value.metadata?.phone_number_id ?? "";
+        const customerName: string =
+          value.contacts?.[0]?.profile?.name ?? "";
+
+        for (const message of value.messages) {
+          const msgType: string = message.type;
+
+          let text = "";
+          let interactiveId: string | undefined;
+          let messageType: "text" | "interactive" | "button" = "text";
+
+          if (msgType === "text") {
+            text = message.text?.body ?? "";
+            messageType = "text";
+          } else if (msgType === "interactive") {
+            const interactive = message.interactive ?? {};
+            messageType = "interactive";
+
+            if (interactive.type === "button_reply") {
+              interactiveId = interactive.button_reply?.id;
+              text = interactive.button_reply?.title ?? "";
+            } else if (interactive.type === "list_reply") {
+              interactiveId = interactive.list_reply?.id;
+              text = interactive.list_reply?.title ?? "";
+            } else if (interactive.type === "nfm_reply") {
+              // WhatsApp native flow response
+              interactiveId = "FLOW_RESPONSE";
+              text = JSON.stringify(
+                interactive.nfm_reply?.response_json ?? {},
+              );
+            }
+          } else if (msgType === "button") {
+            messageType = "button";
+            interactiveId = message.button?.payload;
+            text = message.button?.text ?? "";
+          } else {
+            // Image, audio, video, etc. — skip for now
+            continue;
+          }
+
+          if (!text && !interactiveId) continue;
+
+          // Only enqueue if it's interactive OR has business intent
+          if (
+            messageType !== "text" ||
+            hasBusinessIntend(text)
+          ) {
             await enqueueWhatsAppMessage({
               messageId: message.id,
-              phoneNumberId: value.metadata.phone_number_id,
-              wabaId: entry.id,
+              phoneNumberId,
+              wabaId,
               customerWaId: message.from,
-              customerName: value.contacts?.[0]?.profile?.name || "",
-              text: textMessage,
+              customerName,
+              text,
+              messageType,
+              interactiveId,
+              userId,
+              timestamp: parseInt(message.timestamp ?? "0", 10) * 1000,
             });
           }
         }
@@ -84,7 +139,7 @@ router.post("/exchange", async (req: Request, res: Response) => {
     };
 
     const existing = await prisma.whatsappIntegration.findFirst({
-      where: { organizationId: orgId }
+      where: { wabaId }
     });
 
     if (existing) {
@@ -95,7 +150,7 @@ router.post("/exchange", async (req: Request, res: Response) => {
     } else {
       await prisma.whatsappIntegration.create({
         data: {
-          organizationId: orgId,
+          userId: orgId,
           ...credentials,
         }
       });
@@ -137,96 +192,4 @@ router.get("/callback", (req: Request, res: Response) => {
   res.send("Signup completed");
 })
 
-async function handleIncomingMessage(
-  message: Record<string, unknown>,
-  metadata: Record<string, unknown>,
-  contacts: Array<Record<string, unknown>>
-): Promise<void> {
-  const from = message.from as string; // Customer's phone number
-  const timestamp = message.timestamp as string;
-  const messageId = message.id as string;
-  const messageType = message.type as string;
-
-  // Extract message text
-  let messageText = "";
-  let buttonId = "";
-
-  if (messageType === "text") {
-    messageText = (message.text as Record<string, string>)?.body || "";
-  } else if (messageType === "interactive") {
-    const interactive = message.interactive as Record<string, unknown>;
-    const interactiveType = interactive.type as string;
-
-    if (interactiveType === "button_reply") {
-      const buttonReply = interactive.button_reply as Record<string, string>;
-      buttonId = buttonReply.id || "";
-      messageText = buttonReply.title || "";
-    } else if (interactiveType === "list_reply") {
-      const listReply = interactive.list_reply as Record<string, string>;
-      buttonId = listReply.id || "";
-      messageText = listReply.title || "";
-    }
-  } else if (messageType === "button") {
-    const button = message.button as Record<string, string>;
-    buttonId = button.payload || "";
-    messageText = button.text || "";
-  }
-
-  // Find customer by phone number
-  const customers = await prisma.customer.findMany({
-    where: { phone: from },
-  });
-
-  if (customers.length === 0) {
-    console.log(`Unknown customer: ${from}`);
-    return;
-  }
-
-  // Process for each org the customer belongs to (usually one)
-  for (const customer of customers) {
-    // Log the inbound message
-    await prisma.message.create({
-      data: {
-        customerId: customer.id,
-        waMessageId: messageId,
-        direction: "INBOUND",
-        body: messageText,
-        status: "DELIVERED",
-      },
-    });
-
-    // Feed into conversation state machine
-    await processMessage(customer.id, messageText, buttonId || undefined);
-  }
-}
-
-async function handleStatusUpdates(
-  statuses: Array<Record<string, unknown>>
-): Promise<void> {
-  for (const status of statuses) {
-    const waMessageId = status.id as string;
-    const statusValue = status.status as string;
-
-    const statusMap: Record<string, string> = {
-      sent: "SENT",
-      delivered: "DELIVERED",
-      read: "READ",
-      failed: "FAILED",
-    };
-
-    const mappedStatus = statusMap[statusValue];
-    if (!mappedStatus || !waMessageId) continue;
-
-    try {
-      await prisma.message.updateMany({
-        where: { waMessageId },
-        data: { status: mappedStatus as "SENT" | "DELIVERED" | "READ" | "FAILED" },
-      });
-    } catch {
-      // Message might not exist in our DB (e.g., pre-existing messages)
-    }
-  }
-}
-
 export default router;
-

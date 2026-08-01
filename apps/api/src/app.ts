@@ -17,8 +17,9 @@ import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import productRoutes from "./modules/product/product.routes";
 import workflowRoutes from "./modules/workflow/workflow.routes";
+import flowRoutes from "./modules/flow/flow.routes";
+import queueRoutes from "./queues/queue.routes";
 
-import { startWhatsAppWorker } from "./workers/whatsapp.worker";
 
 const app = express();
 
@@ -51,6 +52,8 @@ app.use("/api/orders", authenticate, orderRoutes);
 app.use("/api/dashboard", authenticate, dashboardRoutes);
 app.use("/api/products", authenticate, productRoutes);
 app.use("/api/workflows", authenticate, workflowRoutes);
+app.use("/api", authenticate, flowRoutes);       // /api/flows
+app.use("/api/queue", authenticate, queueRoutes); // /api/queue/stats, /api/queue/jobs
 
 app.use(errorHandler);
 
@@ -59,7 +62,9 @@ async function main() {
     await prisma.$connect();
     console.log("Database connected");
 
-    startWhatsAppWorker();
+    // Note: WhatsApp worker is started in apps/worker — not in the API process.
+    // Uncomment the line below only if running in a monolith mode:
+    // startWhatsAppWorker();
 
     app.listen(env.PORT, () => {
       console.log(`Sparq API running on http://localhost:${env.PORT}`);
