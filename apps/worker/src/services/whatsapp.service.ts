@@ -62,8 +62,6 @@ export class WhatsAppService {
     });
   }
 
-  // ─── Token Resolution ──────────────────────────────────────────────────────
-
   private async getAccessToken(): Promise<string> {
     const integration = await prisma.whatsappIntegration.findFirst({
       where: {
@@ -99,8 +97,6 @@ export class WhatsAppService {
     return data;
   }
 
-  // ─── Text ──────────────────────────────────────────────────────────────────
-
   async sendTextMessage(
     messageOrObj: string | { to: string; body: string },
   ): Promise<WhatsAppMessageResponse> {
@@ -117,8 +113,6 @@ export class WhatsAppService {
       text: { preview_url: false, body },
     });
   }
-
-  // ─── Interactive Buttons ───────────────────────────────────────────────────
 
   async sendInteractiveButtons({
     to,
@@ -153,7 +147,6 @@ export class WhatsAppService {
     });
   }
 
-  // ─── Interactive List ──────────────────────────────────────────────────────
 
   async sendInteractiveListMessage({
     to,
@@ -206,11 +199,6 @@ export class WhatsAppService {
     });
   }
 
-  // ─── WhatsApp Native Flow ──────────────────────────────────────────────────
-
-  /**
-   * Sends a WhatsApp native Flow (created in the Meta Flow Builder).
-   */
   async sendWhatsAppFlow({
     flowId,
     flowToken,
@@ -251,8 +239,6 @@ export class WhatsAppService {
     });
   }
 
-  // ─── Template ──────────────────────────────────────────────────────────────
-
   async sendTemplateMessage(
     message: WhatsAppTemplateMessage,
   ): Promise<WhatsAppMessageResponse> {
@@ -267,8 +253,6 @@ export class WhatsAppService {
       },
     });
   }
-
-  // ─── Legacy list helper (used by old worker) ───────────────────────────────
 
   async sendList({
     headerMessage,

@@ -11,9 +11,16 @@ export const hasBusinessIntend = (message: string) => {
     "table",
     "buy",
     "purchase",
+    "hi",
+    "hello",
+    "hey",
+    "hy",
+    "hyy",
   ];
 
   const normalized = message.toLowerCase();
 
-  return ACTION_KEYWORDS.some((keyword) => normalized.includes(keyword));
+  // return ACTION_KEYWORDS.some((keyword) => normalized.includes(keyword));
+
+  return true;
 };

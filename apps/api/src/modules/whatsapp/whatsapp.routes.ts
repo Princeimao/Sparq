@@ -37,6 +37,7 @@ router.post("/webhook", async (req: Request, res: Response) => {
         where: { wabaId },
         select: { userId: true },
       });
+
       const userId = integration?.userId ?? undefined;
 
       for (const change of entry.changes) {
@@ -44,8 +45,7 @@ router.post("/webhook", async (req: Request, res: Response) => {
         if (!value.messages) continue;
 
         const phoneNumberId: string = value.metadata?.phone_number_id ?? "";
-        const customerName: string =
-          value.contacts?.[0]?.profile?.name ?? "";
+        const customerName: string = value.contacts?.[0]?.profile?.name ?? "";
 
         for (const message of value.messages) {
           const msgType: string = message.type;
@@ -70,26 +70,20 @@ router.post("/webhook", async (req: Request, res: Response) => {
             } else if (interactive.type === "nfm_reply") {
               // WhatsApp native flow response
               interactiveId = "FLOW_RESPONSE";
-              text = JSON.stringify(
-                interactive.nfm_reply?.response_json ?? {},
-              );
+              text = JSON.stringify(interactive.nfm_reply?.response_json ?? {});
             }
           } else if (msgType === "button") {
             messageType = "button";
             interactiveId = message.button?.payload;
             text = message.button?.text ?? "";
           } else {
-            // Image, audio, video, etc. — skip for now
             continue;
           }
 
           if (!text && !interactiveId) continue;
 
           // Only enqueue if it's interactive OR has business intent
-          if (
-            messageType !== "text" ||
-            hasBusinessIntend(text)
-          ) {
+          if (messageType !== "text" || hasBusinessIntend(text)) {
             await enqueueWhatsAppMessage({
               messageId: message.id,
               phoneNumberId,
@@ -139,26 +133,26 @@ router.post("/exchange", async (req: Request, res: Response) => {
     };
 
     const existing = await prisma.whatsappIntegration.findFirst({
-      where: { wabaId }
+      where: { wabaId },
     });
 
     if (existing) {
       await prisma.whatsappIntegration.update({
         where: { id: existing.id },
-        data: credentials
+        data: credentials,
       });
     } else {
       await prisma.whatsappIntegration.create({
         data: {
           userId: orgId,
           ...credentials,
-        }
+        },
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Successfully connected whatsapp"
+      message: "Successfully connected whatsapp",
     });
   } catch (error: any) {
     if (error.response) {
@@ -190,6 +184,6 @@ router.get("/callback", (req: Request, res: Response) => {
   console.log("State:", state);
 
   res.send("Signup completed");
-})
+});
 
 export default router;

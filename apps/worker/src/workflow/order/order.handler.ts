@@ -26,6 +26,7 @@ export class OrderHandler implements WorkflowHandler {
   async start(ctx: WorkflowContext): Promise<void> {
     const query = ctx.llm?.entities.productQuery;
 
+    console.log(query);
     if (!query) {
       await ctx.whatsapp.sendTextMessage(
         "What product would you like to order? Just tell me the name! 🛒",
@@ -132,7 +133,7 @@ export class OrderHandler implements WorkflowHandler {
             })),
           },
         ],
-        token: "",       // token fetched internally by WhatsAppService
+        token: "", // token fetched internally by WhatsAppService
         footer: "Powered by Sparq",
       });
     }
@@ -256,8 +257,16 @@ export class OrderHandler implements WorkflowHandler {
       // Fallback: collect details one by one
       const fields: Array<{ id: string; label: string; required?: boolean }> = [
         { id: "name", label: "What is your full name?", required: true },
-        { id: "phone", label: "Your phone number (with country code)?", required: true },
-        { id: "address_line1", label: "Street address (line 1)?", required: true },
+        {
+          id: "phone",
+          label: "Your phone number (with country code)?",
+          required: true,
+        },
+        {
+          id: "address_line1",
+          label: "Street address (line 1)?",
+          required: true,
+        },
         { id: "city", label: "City?", required: true },
         { id: "state", label: "State?", required: true },
         { id: "pincode", label: "Pincode / ZIP?", required: true },
@@ -299,7 +308,11 @@ export class OrderHandler implements WorkflowHandler {
     } else if (reply === "CHANGE_ADDRESS") {
       // Collect new address sequentially
       const fields: Array<{ id: string; label: string; required?: boolean }> = [
-        { id: "address_line1", label: "New street address (line 1)?", required: true },
+        {
+          id: "address_line1",
+          label: "New street address (line 1)?",
+          required: true,
+        },
         { id: "city", label: "City?", required: true },
         { id: "state", label: "State?", required: true },
         { id: "pincode", label: "Pincode?", required: true },

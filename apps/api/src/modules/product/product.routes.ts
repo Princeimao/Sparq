@@ -13,8 +13,6 @@ const createProductSchema = z.object({
   price: z.number().nonnegative(),
   stock: z.number().int().default(0),
   image: z.string().url().optional().or(z.string().length(0)),
-  imageUrl: z.string().url().optional().or(z.string().length(0)),
-  sku: z.string().optional(),
 });
 
 const updateProductSchema = z.object({
@@ -23,13 +21,11 @@ const updateProductSchema = z.object({
   price: z.number().nonnegative().optional(),
   stock: z.number().int().optional(),
   image: z.string().url().optional().or(z.string().length(0)),
-  imageUrl: z.string().url().optional().or(z.string().length(0)),
-  sku: z.string().optional(),
 });
 
 // GET /products
 router.get(
-  "/products",
+  "/",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -52,21 +48,17 @@ router.get(
       res
         .status(200)
         .json(
-          new ApiResponse(
-            { products },
-            "Products fetched successfully",
-            true
-          )
+          new ApiResponse({ products }, "Products fetched successfully", true),
         );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // GET /products/:productId
 router.get(
-  "/products/:productId",
+  "/:productId",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -78,24 +70,24 @@ router.get(
       });
 
       if (!product) {
-        res
-          .status(404)
-          .json(new ApiResponse(null, "Product not found", false));
+        res.status(404).json(new ApiResponse(null, "Product not found", false));
         return;
       }
 
       res
         .status(200)
-        .json(new ApiResponse({ product }, "Product fetched successfully", true));
+        .json(
+          new ApiResponse({ product }, "Product fetched successfully", true),
+        );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // POST /products
 router.post(
-  "/products",
+  "/",
   authenticate,
   validateBody(createProductSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -117,17 +109,17 @@ router.post(
       res
         .status(201)
         .json(
-          new ApiResponse({ product }, "Product created successfully", true)
+          new ApiResponse({ product }, "Product created successfully", true),
         );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // PATCH /products/:productId
 router.patch(
-  "/products/:productId",
+  "/:productId",
   authenticate,
   validateBody(updateProductSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -140,9 +132,7 @@ router.patch(
       });
 
       if (!existing) {
-        res
-          .status(404)
-          .json(new ApiResponse(null, "Product not found", false));
+        res.status(404).json(new ApiResponse(null, "Product not found", false));
         return;
       }
 
@@ -160,17 +150,17 @@ router.patch(
       res
         .status(200)
         .json(
-          new ApiResponse({ product }, "Product updated successfully", true)
+          new ApiResponse({ product }, "Product updated successfully", true),
         );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // DELETE /products/:productId
 router.delete(
-  "/products/:productId",
+  "/:productId",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -182,9 +172,7 @@ router.delete(
       });
 
       if (!existing) {
-        res
-          .status(404)
-          .json(new ApiResponse(null, "Product not found", false));
+        res.status(404).json(new ApiResponse(null, "Product not found", false));
         return;
       }
 
@@ -198,7 +186,7 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

@@ -9,8 +9,6 @@ const envSchema = z.object({
 
   ENCRYPTION_KEY: z.string().min(16),
   WHATSAPP_VERIFY_TOKEN: z.string().min(1),
-  WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
-  WHATSAPP_ACCESS_TOKEN: z.string().optional(),
 
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
