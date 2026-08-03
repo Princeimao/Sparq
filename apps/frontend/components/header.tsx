@@ -64,7 +64,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
   const [sticky, setSticky] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { currentOrganizationId, isAuthenticated } = useAppSelector(
+  const { isAuthenticated } = useAppSelector(
     (state) => state.auth,
   );
 
@@ -138,7 +138,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
           <CollaborateButton
             onClick={() =>
               isAuthenticated
-                ? router.push(`/${currentOrganizationId}/dashboard`)
+                ? router.push(`/dashboard`)
                 : router.push(
                     `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
                   )
@@ -210,7 +210,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
                       <CollaborateButton
                         onClick={() =>
                           isAuthenticated
-                            ? router.push(`/${currentOrganizationId}/dashboard`)
+                            ? router.push(`/dashboard`)
                             : router.push(
                                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
                               )

@@ -105,7 +105,7 @@ export const FAQ_DATA = [
   {
     question: "Can I upgrade or downgrade my plan at any time?",
     answer:
-      "Yes, you can easily change your subscription tier or cancel your plan at any time from your Organization's Billing settings.",
+      "Yes, you can easily change your subscription tier or cancel your plan at any time from Billing settings.",
   },
   {
     question: "Do you provide WhatsApp numbers?",
@@ -117,11 +117,6 @@ export const FAQ_DATA = [
     answer:
       "None. Meta charges for WhatsApp conversation packages, but our platform service has zero hidden processing fees. Stripe transaction fees are standard.",
   },
-  {
-    question: "What happens if I exceed my organization limit?",
-    answer:
-      "If you need more organizations than your current plan permits, you can upgrade your plan or get in touch with us for a custom enterprise setup.",
-  },
 ];
 
 export const PLANS_DATA = [
@@ -130,7 +125,6 @@ export const PLANS_DATA = [
     price: 0,
     yearlyPrice: 0,
     features: [
-      "Create 1 Organization",
       "Standard repeat order tracking",
       "Basic WhatsApp setup",
       "Community support",
@@ -150,7 +144,6 @@ export const PLANS_DATA = [
     yearlyPrice: 359,
     yearlyBilledAmount: 4311,
     features: [
-      "Create up to 10 Organizations",
       "Email automation",
       "Custom automation rules",
       "Employee invitation option",
@@ -168,7 +161,6 @@ export const PLANS_DATA = [
     yearlyPrice: 719,
     yearlyBilledAmount: 8631,
     features: [
-      "Create up to 100 Organizations",
       "Email automation",
       "Custom automation rules",
       "Employee invitation option",
@@ -184,7 +176,6 @@ export const PLANS_DATA = [
 
 export const comparisonData = {
   workspace: [
-    { feature: "Organizations Limit", free: "1", normal: "10", pro: "100" },
     {
       feature: "Team Members Invitation",
       free: false,

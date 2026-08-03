@@ -57,7 +57,7 @@ export function CreateWorkflowDrawer({
         <SheetHeader>
           <SheetTitle>Create New Workflow</SheetTitle>
           <SheetDescription>
-            Set up a new automation flow for your organization.
+            Set up a new automation flow.
           </SheetDescription>
         </SheetHeader>
 

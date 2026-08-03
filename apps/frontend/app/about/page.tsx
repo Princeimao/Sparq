@@ -14,7 +14,7 @@ const values = [
   {
     icon: ShieldCheck,
     title: "Privacy First",
-    description: "Your customers' data is encrypted, scoped per organization, and never shared. We comply with GDPR, DPDP, and Meta's data policies.",
+    description: "Your customers' data is encrypted, and never shared. We comply with GDPR, DPDP, and Meta's data policies.",
   },
   {
     icon: Globe,
