@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import {
   Plus,
-  Workflow,
   MoreVertical,
   Trash2,
   Loader2,
@@ -18,7 +17,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -50,19 +48,25 @@ export default function WorkflowsPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const fetchWorkflows = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/workflows`);
-      setWorkflows(res.data.workflows);
-    } catch {
-      toast.error("Failed to load workflows");
-    } finally {
-      setLoading(false);
-    }
+    const res = await api.get(`/workflows`);
+    return res.data.workflows;
   }, []);
 
   useEffect(() => {
-    fetchWorkflows();
+    const loadWorkflows = async () => {
+      setLoading(true);
+
+      try {
+        const workflows = await fetchWorkflows();
+        setWorkflows(workflows);
+      } catch {
+        toast.error("Failed to load workflows");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWorkflows();
   }, [fetchWorkflows]);
 
   const handleToggleActive = async (workflow: WorkflowItem) => {

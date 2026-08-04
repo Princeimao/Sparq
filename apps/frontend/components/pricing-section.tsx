@@ -32,11 +32,11 @@ export default function PricingSection({
   };
 
   return (
-    <div className="w-full bg-white text-black py-16 px-4 md:px-8 border-y border-zinc-100 selection:bg-purple-100 selection:text-purple-900">
+    <div className="w-full bg-white text-black py-16 px-4 md:px-8 selection:bg-purple-100 selection:text-purple-900">
       {/* Header and Toggle */}
       <div className="max-w-6xl mx-auto flex flex-col items-center justify-center text-center space-y-6 mb-16">
         <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-zinc-900 leading-[1.1]">
-          Design like a Pro.
+          Choose your Sparq.com subscription.
         </h2>
         <p className="text-zinc-500 max-w-2xl text-base md:text-lg">
           Get full access to all apps & features from only{" "}

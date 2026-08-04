@@ -35,20 +35,27 @@ export default function FlowEditorPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchFlow = useCallback(async () => {
-    try {
-      const res = await api.get(`/flows/${id}`);
-      setFlow(res.data.flow);
-    } catch {
-      toast.error("Flow not found");
-      router.push("/flows");
-    } finally {
-      setLoading(false);
-    }
-  }, [id, router]);
+    const res = await api.get(`/flows/${id}`);
+    return res.data.flow;
+  }, [id]);
 
   useEffect(() => {
-    fetchFlow();
-  }, [fetchFlow]);
+    const loadFlow = async () => {
+      setLoading(true);
+
+      try {
+        const flow = await fetchFlow();
+        setFlow(flow);
+      } catch {
+        toast.error("Flow not found");
+        router.push("/flows");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFlow();
+  }, [fetchFlow, router]);
 
   const handleSave = async (blocks: any[]) => {
     try {

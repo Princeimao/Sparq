@@ -12,9 +12,14 @@ import {
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
-const chartData = [
-  { browser: "Website", visitors: 60, fill: "var(--color-blue-500)" },
-  { browser: "Marketplace", visitors: 20, fill: "var(--color-sky-400)" },
+type EarningReportProps = {
+  totalRevenue?: number;
+  orderStatus?: { status: string; count: number; amount: number }[];
+};
+
+const defaultChartData = [
+  { browser: "Website", visitors: 60, fill: "#3b82f6" },
+  { browser: "Marketplace", visitors: 20, fill: "#38bdf8" },
   { browser: "Affiliate", visitors: 20, fill: "rgba(56, 189, 248, 0.5)" },
 ];
 
@@ -24,55 +29,102 @@ const chartConfig = {
   },
   Website: {
     label: "Website",
-    color: "var(--color-blue-500)",
+    color: "#3b82f6",
   },
   Marketplace: {
     label: "Marketplace",
-    color: "var(--color-sky-400)",
+    color: "#38bdf8",
   },
   Affiliate: {
     label: "Affiliate",
-    color: "var(--color-blue-500)",
+    color: "rgba(56, 189, 248, 0.5)",
   },
 } satisfies ChartConfig;
 
-export default function EarningReportChart() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
+const formatCurrency = (val: number = 0) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(val);
+};
 
-  const CustomerSegmentation = [
-    {
-      id: 1,
-      customer: "Website ",
-      tagColor: "muted-foreground",
-      borderColor: "bg-blue-500",
-      badgeColor: "bg-teal-400/10",
-      earning: 18356,
-      growthPercentage: "+4.7%",
-    },
-    {
-      id: 2,
-      customer: "Marketplace",
-      tagColor: "muted-foreground",
-      borderColor: "bg-sky-400",
-      badgeColor: "bg-teal-400/10",
-      earning: 4590,
-      growthPercentage: "+2.1%",
-    },
-    {
-      id: 3,
-      customer: "Affiliate",
-      tagColor: "muted-foreground",
-      borderColor: "bg-sky-400/50",
-      badgeColor: "bg-teal-400/10",
-      earning: 4385,
-      growthPercentage: "-1.7%",
-    },
-  ];
+export default function EarningReportChart({
+  totalRevenue,
+  orderStatus,
+}: EarningReportProps) {
+  const displayTotalRevenue = totalRevenue ?? 27850;
+
+  const CustomerSegmentation = React.useMemo(() => {
+    if (orderStatus && orderStatus.length > 0) {
+      const paid =
+        orderStatus.find((s) => s.status === "PAID")?.amount ||
+        Math.round(displayTotalRevenue * 0.65);
+      const pending =
+        orderStatus.find((s) => s.status === "PENDING")?.amount ||
+        Math.round(displayTotalRevenue * 0.2);
+      const completed =
+        orderStatus.find((s) => s.status === "COMPLETED")?.amount ||
+        Math.round(displayTotalRevenue * 0.15);
+
+      return [
+        {
+          id: 1,
+          customer: "Direct Orders",
+          borderColor: "bg-blue-500",
+          badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
+          earning: paid,
+          growthPercentage: "+4.7%",
+        },
+        {
+          id: 2,
+          customer: "WhatsApp / Chat",
+          borderColor: "bg-sky-400",
+          badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
+          earning: pending,
+          growthPercentage: "+2.1%",
+        },
+        {
+          id: 3,
+          customer: "Automated Workflows",
+          borderColor: "bg-sky-400/50",
+          badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
+          earning: completed,
+          growthPercentage: "+1.5%",
+        },
+      ];
+    }
+
+    return [
+      {
+        id: 1,
+        customer: "Website",
+        borderColor: "bg-blue-500",
+        badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
+        earning: 18356,
+        growthPercentage: "+4.7%",
+      },
+      {
+        id: 2,
+        customer: "Marketplace",
+        borderColor: "bg-sky-400",
+        badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
+        earning: 4590,
+        growthPercentage: "+2.1%",
+      },
+      {
+        id: 3,
+        customer: "Affiliate",
+        borderColor: "bg-sky-400/50",
+        badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
+        earning: 4385,
+        growthPercentage: "-1.7%",
+      },
+    ];
+  }, [orderStatus, displayTotalRevenue]);
 
   return (
-    <Card className="h-full w-full py-6 gap-6">
+    <Card className="h-full w-full py-6 gap-6 flex flex-col justify-between">
       <CardHeader className="px-6">
         <CardTitle>
           <h4 className="text-lg font-semibold">Earning Reports</h4>
@@ -81,7 +133,7 @@ export default function EarningReportChart() {
       <CardContent className="flex flex-col justify-between gap-2 flex-1 px-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-square max-h-[250px]"
+          className="aspect-square max-h-55 mx-auto w-full"
         >
           <PieChart>
             <ChartTooltip
@@ -89,11 +141,11 @@ export default function EarningReportChart() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={defaultChartData}
               dataKey="visitors"
               nameKey="browser"
-              innerRadius={65}
-              strokeWidth={50}
+              innerRadius={60}
+              strokeWidth={40}
             >
               <Label
                 content={({ viewBox }) => {
@@ -108,16 +160,16 @@ export default function EarningReportChart() {
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) - 10}
-                          className="fill-muted-foreground text-sm"
+                          className="fill-muted-foreground text-xs"
                         >
-                          Total
+                          Total Revenue
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 15}
-                          className="fill-foreground text-xl font-medium"
+                          className="fill-foreground text-lg font-semibold"
                         >
-                          $27,850
+                          {formatCurrency(displayTotalRevenue)}
                         </tspan>
                       </text>
                     );
@@ -127,7 +179,7 @@ export default function EarningReportChart() {
             </Pie>
           </PieChart>
         </ChartContainer>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 mt-4">
           {CustomerSegmentation.map((item) => (
             <div key={item.id} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -138,13 +190,14 @@ export default function EarningReportChart() {
                   {item.customer}
                 </h6>
               </div>
-              <div className="flex items-center gap-1">
-                <h6 className="text-sm font-medium">${item.earning}</h6>
+              <div className="flex items-center gap-1.5">
+                <h6 className="text-sm font-medium">
+                  {formatCurrency(item.earning)}
+                </h6>
                 <Badge
                   className={cn(
                     item.badgeColor,
-                    `text-${item.tagColor}`,
-                    "shadow-none",
+                    "shadow-none text-xs px-1.5 py-0.5",
                   )}
                 >
                   {item.growthPercentage}

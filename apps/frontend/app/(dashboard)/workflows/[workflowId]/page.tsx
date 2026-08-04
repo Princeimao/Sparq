@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -14,21 +14,27 @@ export default function WorkflowEditorPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchWorkflow = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/workflows/${workflowId}`);
-      setWorkflow(res.data.workflow);
-    } catch {
-      toast.error("Failed to load workflow");
-      router.push(`/workflows`);
-    } finally {
-      setLoading(false);
-    }
-  }, [workflowId, router]);
+    const res = await api.get(`/workflows/${workflowId}`);
+    return res.data.workflow;
+  }, [workflowId]);
 
   useEffect(() => {
-    fetchWorkflow();
-  }, [fetchWorkflow]);
+    const loadWorkflow = async () => {
+      setLoading(true);
+
+      try {
+        const workflow = await fetchWorkflow();
+        setWorkflow(workflow);
+      } catch {
+        toast.error("Failed to load workflow");
+        router.push(`/workflows`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWorkflow();
+  }, [fetchWorkflow, router]);
 
   const handleSaveFlow = async (steps: any[]) => {
     try {

@@ -6,8 +6,7 @@ import { ApiResponse } from "../../middleware/responseHandler";
 const router = Router();
 
 router.get(
-  "/dashboard/stats",
-  authenticate,
+  ["/stats", "/dashboard/stats"],
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.userId as string;
@@ -17,19 +16,24 @@ router.get(
       startOfWeek.setDate(now.getDate() - 6);
       startOfWeek.setHours(0, 0, 0, 0);
 
-      const [orders, customersCount, messagesCount, productsCount, appointmentsCount, activeWorkflowsCount, integrationsCount,] = await Promise.all([
+      const [
+        orders,
+        customersCount,
+        messagesCount,
+        productsCount,
+        appointmentsCount,
+        activeWorkflowsCount,
+        integrationsCount,
+      ] = await Promise.all([
         prisma.order.findMany({
           where: { userId },
         }),
-
         prisma.customer.count({ where: { userId } }),
-
         prisma.message.count({
           where: {
             customer: { userId },
           },
         }),
-
         prisma.product.count({ where: { userId } }),
         prisma.appointment.count({ where: { userId } }),
         prisma.workflow.count({ where: { userId, isActive: true } }),
@@ -37,20 +41,28 @@ router.get(
       ]);
 
       const totalSales = orders.length;
-      const totalRevenue = orders
-        .filter((o) => o.status === "PAID" || o.status === "COMPLETED")
-        .reduce((sum, o) => sum + (o.amount || 0), 0);
+      const paidOrders = orders.filter(
+        (o) => o.status === "PAID" || o.status === "COMPLETED"
+      );
+      const totalRevenue = paidOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
 
-      const paidOrders = orders.filter((o) => o.status === "PAID" || o.status === "COMPLETED");
       const purchaseOrdersCount = orders.filter((o) => o.status === "PENDING").length;
       const weeklyRevenue = paidOrders
         .filter((o) => o.createdAt >= startOfWeek)
         .reduce((sum, o) => sum + (o.amount || 0), 0);
 
-      // 3. Calculated Expenses (e.g. 28% of revenue + base infrastructure costs)
+      // Calculated Expenses (28% of total revenue + operational overhead)
       const expenseAmount = totalRevenue > 0 ? totalRevenue * 0.28 + 150 : 85;
+      const profitAmount = totalRevenue - expenseAmount;
 
-      // 4. Weekly sales data (Last 7 days)
+      // Conversion Rate: ratio of paid orders to total leads/customers
+      const conversionRate = customersCount > 0
+        ? Number(((paidOrders.length / customersCount) * 100).toFixed(1))
+        : totalSales > 0
+          ? 100
+          : 0;
+
+      // Weekly sales data (Last 7 days)
       const weeklySales = [];
       const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       for (let i = 6; i >= 0; i--) {
@@ -71,6 +83,32 @@ router.get(
           revenue: dayRevenue,
           orders: dayOrders.length,
           date: startOfDay.toISOString().split("T")[0],
+        });
+      }
+
+      // Monthly sales breakdown (Last 12 months)
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthlySales = [];
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
+        const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+
+        const monthOrders = orders.filter(
+          (o) => o.createdAt >= monthStart && o.createdAt <= monthEnd
+        );
+        const monthEarning = monthOrders
+          .filter((o) => o.status === "PAID" || o.status === "COMPLETED")
+          .reduce((sum, o) => sum + (o.amount || 0), 0);
+        const monthExpense = monthEarning > 0 ? monthEarning * 0.28 : 0;
+        const monthProfit = monthEarning - monthExpense;
+
+        monthlySales.push({
+          month: monthNames[d.getMonth()],
+          earning: Math.round(monthEarning),
+          expense: Math.round(monthExpense),
+          profit: Math.round(monthProfit),
+          orders: monthOrders.length,
         });
       }
 
@@ -133,28 +171,37 @@ router.get(
           }),
         ]);
 
-      res.status(200).json(new ApiResponse({
-        metrics: {
-          totalSales,
-          totalRevenue,
-          weeklyRevenue,
-          purchaseOrdersCount,
-          expenseAmount,
-          customersCount,
-          messagesCount,
-          productsCount,
-          appointmentsCount,
-          activeWorkflowsCount,
-          integrationsCount,
-        },
-        weeklySales,
-        orderStatus,
-        topProducts,
-        recentOrders,
-        recentCustomers,
-        upcomingAppointments,
-        workflows,
-      }, "Dashboard data fetched successfully", true))
+      res.status(200).json(
+        new ApiResponse(
+          {
+            metrics: {
+              totalSales,
+              totalRevenue,
+              weeklyRevenue,
+              purchaseOrdersCount,
+              expenseAmount,
+              profitAmount,
+              conversionRate,
+              customersCount,
+              messagesCount,
+              productsCount,
+              appointmentsCount,
+              activeWorkflowsCount,
+              integrationsCount,
+            },
+            weeklySales,
+            monthlySales,
+            orderStatus,
+            topProducts,
+            recentOrders,
+            recentCustomers,
+            upcomingAppointments,
+            workflows,
+          },
+          "Dashboard data fetched successfully",
+          true
+        )
+      );
     } catch (error) {
       next(error);
     }

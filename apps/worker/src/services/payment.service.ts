@@ -18,8 +18,6 @@ export interface CreatePaymentLinkParams {
   currency: string;
   productName: string;
   customerPhone: string;
-  orderId: string;
-  organizationId: string;
   successUrl?: string;
   cancelUrl?: string;
 }
@@ -48,8 +46,6 @@ export async function createPaymentLink(
     ],
     mode: "payment",
     metadata: {
-      orderId: params.orderId,
-      organizationId: params.organizationId,
       customerPhone: params.customerPhone,
     },
     success_url: params.successUrl || `${env.FRONTEND_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,

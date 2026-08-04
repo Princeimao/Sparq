@@ -2,7 +2,6 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { CalendarPlus, Clock, RefreshCw } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { api } from "@/lib/api";
@@ -73,18 +72,28 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const loadAppointments = async () => {
-    setLoading(true);
+  const fetchAppointments = async () => {
     const response = await api.get(`/appointments`, {
       params: { includeExternal: true },
     });
-    setAppointments(response.data.appointments);
-    setIntegrations(response.data.integrations);
-    setLoading(false);
+
+    return response.data;
   };
 
   useEffect(() => {
-    loadAppointments().catch(() => setLoading(false));
+    const load = async () => {
+      setLoading(true);
+
+      try {
+        const data = await fetchAppointments();
+        setAppointments(data.appointments);
+        setIntegrations(data.integrations);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   const calendarDays = useMemo(() => {
@@ -95,8 +104,13 @@ export default function CalendarPage() {
       const key = date.toISOString().slice(0, 10);
       return {
         key,
-        label: new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "2-digit" }).format(date),
-        events: appointments.filter((appointment) => appointment.startTime.slice(0, 10) === key),
+        label: new Intl.DateTimeFormat("en-IN", {
+          weekday: "short",
+          day: "2-digit",
+        }).format(date),
+        events: appointments.filter(
+          (appointment) => appointment.startTime.slice(0, 10) === key,
+        ),
       };
     });
     return days;
@@ -105,6 +119,7 @@ export default function CalendarPage() {
   const createAppointment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSaving(true);
+
     try {
       await api.post(`/appointments`, {
         title: form.title,
@@ -116,9 +131,13 @@ export default function CalendarPage() {
         customerPhone: form.customerPhone || undefined,
         status: form.status,
       });
+
       toast.success("Appointment created");
       setForm(emptyForm);
-      await loadAppointments();
+
+      const data = await fetchAppointments();
+      setAppointments(data.appointments);
+      setIntegrations(data.integrations);
     } catch {
       toast.error("Could not create appointment");
     } finally {
@@ -135,7 +154,10 @@ export default function CalendarPage() {
               <CalendarPlus className="size-4" />
               Create appointment
             </CardTitle>
-            <CardDescription>Book Sparq appointments and view external calendar events together.</CardDescription>
+            <CardDescription>
+              Book Sparq appointments and view external calendar events
+              together.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={createAppointment}>
@@ -145,7 +167,12 @@ export default function CalendarPage() {
                   id="title"
                   required
                   value={form.title}
-                  onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      title: event.target.value,
+                    }))
+                  }
                   placeholder="Product demo"
                 />
               </div>
@@ -157,7 +184,12 @@ export default function CalendarPage() {
                     required
                     type="datetime-local"
                     value={form.startTime}
-                    onChange={(event) => setForm((current) => ({ ...current, startTime: event.target.value }))}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        startTime: event.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -167,7 +199,12 @@ export default function CalendarPage() {
                     required
                     type="datetime-local"
                     value={form.endTime}
-                    onChange={(event) => setForm((current) => ({ ...current, endTime: event.target.value }))}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        endTime: event.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -175,7 +212,12 @@ export default function CalendarPage() {
                 <Label>Status</Label>
                 <Select
                   value={form.status}
-                  onValueChange={(value) => setForm((current) => ({ ...current, status: value as Appointment["status"] }))}
+                  onValueChange={(value) =>
+                    setForm((current) => ({
+                      ...current,
+                      status: value as Appointment["status"],
+                    }))
+                  }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
@@ -193,7 +235,12 @@ export default function CalendarPage() {
                   <Input
                     id="customerName"
                     value={form.customerName}
-                    onChange={(event) => setForm((current) => ({ ...current, customerName: event.target.value }))}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        customerName: event.target.value,
+                      }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -201,7 +248,12 @@ export default function CalendarPage() {
                   <Input
                     id="customerPhone"
                     value={form.customerPhone}
-                    onChange={(event) => setForm((current) => ({ ...current, customerPhone: event.target.value }))}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        customerPhone: event.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -211,7 +263,12 @@ export default function CalendarPage() {
                   id="customerEmail"
                   type="email"
                   value={form.customerEmail}
-                  onChange={(event) => setForm((current) => ({ ...current, customerEmail: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      customerEmail: event.target.value,
+                    }))
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -219,7 +276,12 @@ export default function CalendarPage() {
                 <Textarea
                   id="description"
                   value={form.description}
-                  onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      description: event.target.value,
+                    }))
+                  }
                 />
               </div>
               <Button className="w-full" disabled={saving}>
@@ -233,10 +295,16 @@ export default function CalendarPage() {
         <Card className="rounded-lg">
           <CardHeader>
             <CardTitle>Connected calendars</CardTitle>
-            <CardDescription>Google Calendar and Cal.com events appear here when integrations are active.</CardDescription>
+            <CardDescription>
+              Google Calendar and Cal.com events appear here when integrations
+              are active.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <ConnectionRow label="Google Calendar" connected={integrations.googleCalendar} />
+            <ConnectionRow
+              label="Google Calendar"
+              connected={integrations.googleCalendar}
+            />
             <ConnectionRow label="Cal.com" connected={integrations.calCom} />
             <Button asChild variant="outline" className="w-full">
               <Link href={`/integrations`}>Manage integrations</Link>
@@ -251,16 +319,21 @@ export default function CalendarPage() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <CardTitle>Calendar</CardTitle>
-                <CardDescription>Two-week schedule with Sparq, Google Calendar, and Cal.com events.</CardDescription>
+                <CardDescription>
+                  Two-week schedule with Sparq, Google Calendar, and Cal.com
+                  events.
+                </CardDescription>
               </div>
-              <Button variant="outline" size="icon" onClick={loadAppointments}>
+              <Button variant="outline" size="icon" onClick={fetchAppointments}>
                 <RefreshCw />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <p className="text-sm text-muted-foreground">Loading calendar...</p>
+              <p className="text-sm text-muted-foreground">
+                Loading calendar...
+              </p>
             ) : (
               <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
                 {calendarDays.map((day) => (
@@ -271,9 +344,14 @@ export default function CalendarPage() {
                         <p className="text-xs text-muted-foreground">Open</p>
                       ) : (
                         day.events.map((event) => (
-                          <div key={event.id} className="rounded-md border bg-muted/30 p-2">
+                          <div
+                            key={event.id}
+                            className="rounded-md border bg-muted/30 p-2"
+                          >
                             <div className="flex items-start justify-between gap-2">
-                              <p className="line-clamp-2 text-sm font-medium">{event.title}</p>
+                              <p className="line-clamp-2 text-sm font-medium">
+                                {event.title}
+                              </p>
                               <SourceBadge source={event.source} />
                             </div>
                             <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
@@ -294,21 +372,39 @@ export default function CalendarPage() {
         <Card className="rounded-lg">
           <CardHeader>
             <CardTitle>All appointments</CardTitle>
-            <CardDescription>Upcoming records from every visible calendar source.</CardDescription>
+            <CardDescription>
+              Upcoming records from every visible calendar source.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             {appointments.map((appointment) => (
-              <div key={appointment.id} className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between">
+              <div
+                key={appointment.id}
+                className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
+              >
                 <div>
                   <p className="font-medium">{appointment.title}</p>
-                  <p className="text-sm text-muted-foreground">{formatTime(appointment.startTime)} to {formatTime(appointment.endTime)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatTime(appointment.startTime)} to{" "}
+                    {formatTime(appointment.endTime)}
+                  </p>
                   {(appointment.customerName || appointment.customerPhone) && (
-                    <p className="text-xs text-muted-foreground">{appointment.customerName || appointment.customerPhone}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {appointment.customerName || appointment.customerPhone}
+                    </p>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
                   <SourceBadge source={appointment.source} />
-                  <Badge variant={appointment.status === "CANCELLED" ? "destructive" : "outline"}>{appointment.status}</Badge>
+                  <Badge
+                    variant={
+                      appointment.status === "CANCELLED"
+                        ? "destructive"
+                        : "outline"
+                    }
+                  >
+                    {appointment.status}
+                  </Badge>
                 </div>
               </div>
             ))}
@@ -319,16 +415,29 @@ export default function CalendarPage() {
   );
 }
 
-function ConnectionRow({ label, connected }: { label: string; connected: boolean }) {
+function ConnectionRow({
+  label,
+  connected,
+}: {
+  label: string;
+  connected: boolean;
+}) {
   return (
     <div className="flex items-center justify-between rounded-lg border p-3">
       <span className="text-sm font-medium">{label}</span>
-      <Badge variant={connected ? "outline" : "destructive"}>{connected ? "CONNECTED" : "NOT CONNECTED"}</Badge>
+      <Badge variant={connected ? "outline" : "destructive"}>
+        {connected ? "CONNECTED" : "NOT CONNECTED"}
+      </Badge>
     </div>
   );
 }
 
 function SourceBadge({ source }: { source: Appointment["source"] }) {
-  const label = source === "google-calendar" ? "Google" : source === "cal-com" ? "Cal.com" : "Sparq";
+  const label =
+    source === "google-calendar"
+      ? "Google"
+      : source === "cal-com"
+        ? "Cal.com"
+        : "Sparq";
   return <Badge variant="outline">{label}</Badge>;
 }

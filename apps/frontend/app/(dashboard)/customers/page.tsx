@@ -1,11 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Users, Edit, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Users,
+  Edit,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { CustomerDrawer } from "@/components/customers/CustomerDrawer";
 import {
   Table,
@@ -34,22 +41,30 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
 
   const fetchCustomers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/customers`);
-      setCustomers(res.data.customers);
-    } catch {
-      toast.error("Failed to load customers");
-    } finally {
-      setLoading(false);
-    }
+    const res = await api.get(`/customers`);
+    return res.data.customers;
   }, []);
 
   useEffect(() => {
-    fetchCustomers();
+    const loadCustomers = async () => {
+      setLoading(true);
+
+      try {
+        const customers = await fetchCustomers();
+        setCustomers(customers);
+      } catch {
+        toast.error("Failed to load customers");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCustomers();
   }, [fetchCustomers]);
 
   const handleDelete = async (customerId: string) => {
@@ -66,7 +81,9 @@ export default function CustomersPage() {
   const handleSaveCustomer = (savedCustomer: Customer, isUpdate: boolean) => {
     if (isUpdate) {
       setCustomers((prev) =>
-        prev.map((c) => (c.id === savedCustomer.id ? { ...c, ...savedCustomer } : c))
+        prev.map((c) =>
+          c.id === savedCustomer.id ? { ...c, ...savedCustomer } : c,
+        ),
       );
     } else {
       setCustomers((prev) => [savedCustomer, ...prev]);
@@ -131,7 +148,11 @@ export default function CustomersPage() {
               {customers.map((customer) => (
                 <TableRow key={customer.id}>
                   <TableCell className="font-medium">
-                    {customer.name || <span className="text-muted-foreground italic">Unknown</span>}
+                    {customer.name || (
+                      <span className="text-muted-foreground italic">
+                        Unknown
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>

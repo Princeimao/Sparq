@@ -31,51 +31,79 @@ type StatItem = {
   isPositive?: boolean;
 };
 
+export type DashboardMetricsData = {
+  totalRevenue?: number;
+  expenseAmount?: number;
+  profitAmount?: number;
+  conversionRate?: number;
+  weeklyRevenue?: number;
+  purchaseOrdersCount?: number;
+  totalSales?: number;
+  customersCount?: number;
+};
+
+
 type StatisticsBlockProps = {
+  metrics?: DashboardMetricsData;
   mainDashboard?: MainDashboardData;
   secondaryStats?: StatItem[];
 };
 
-const mainDashboardData: MainDashboardData = {
-  title: "Analytics Dashboard",
-  description: "Check all the statistics",
-  metrics: [
+const formatCurrency = (val: number = 0) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(val);
+};
+
+const StatisticsBlock = ({
+  metrics,
+  mainDashboard,
+  secondaryStats,
+}: StatisticsBlockProps) => {
+  const displayMainDashboard: MainDashboardData = mainDashboard || {
+    title: "Analytics Dashboard",
+    description: "Real-time performance overview & statistics",
+    metrics: [
+      {
+        label: "Earnings",
+        value: formatCurrency(metrics?.totalRevenue ?? 27850),
+        percentage: "+18%",
+        isPositive: true,
+      },
+      {
+        label: "Expense",
+        value: formatCurrency(metrics?.expenseAmount ?? 18453),
+        percentage: "-5%",
+        isPositive: false,
+      },
+      {
+        label: "Conversion Rate",
+        value: `${metrics?.conversionRate ?? 12.4}%`,
+        percentage: "+3.2%",
+        isPositive: true,
+      },
+    ],
+  };
+
+  const displaySecondaryStats: StatItem[] = secondaryStats || [
     {
-      label: "Earnings",
-      value: "$27,850",
+      title: "Weekly Sales",
+      value: formatCurrency(metrics?.weeklyRevenue ?? 4587),
       percentage: "+18%",
+      icon: CalendarDays,
       isPositive: true,
     },
     {
-      label: "Expense",
-      value: "$18,453",
-      percentage: "-5%",
-      isPositive: false,
+      title: "Purchase Orders",
+      value: (metrics?.purchaseOrdersCount ?? 230).toString(),
+      percentage: "+12%",
+      icon: ShoppingBag,
+      isPositive: true,
     },
-  ],
-};
+  ];
 
-const secondaryStatsData: StatItem[] = [
-  {
-    title: "Weekly Sales",
-    value: "$4,587",
-    percentage: "+18%",
-    icon: CalendarDays,
-    isPositive: true,
-  },
-  {
-    title: "Purchase Orders",
-    value: "230",
-    percentage: "+18%",
-    icon: ShoppingBag,
-    isPositive: true,
-  },
-];
-
-const StatisticsBlock = ({
-  mainDashboard = mainDashboardData,
-  secondaryStats = secondaryStatsData,
-}: StatisticsBlockProps) => {
   return (
     <div className="grid grid-cols-12 gap-6 h-full">
       <div className="col-span-12 xl:col-span-6 h-full">
@@ -84,20 +112,20 @@ const StatisticsBlock = ({
             <div className="ps-6 py-4 flex flex-col gap-9 justify-between">
               <div>
                 <p className="text-lg font-medium text-card-foreground">
-                  {mainDashboard.title}
+                  {displayMainDashboard.title}
                 </p>
                 <p className="text-xs font-normal text-muted-foreground">
-                  {mainDashboard.description}
+                  {displayMainDashboard.description}
                 </p>
               </div>
-              <div className="flex items-center gap-6">
-                {mainDashboard.metrics.map((metric, index) => (
+              <div className="flex flex-wrap items-center gap-6">
+                {displayMainDashboard.metrics.map((metric, index) => (
                   <div key={index} className="flex items-center gap-6">
                     <div>
                       <p className="text-xs font-normal text-muted-foreground">
                         {metric.label}
                       </p>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5 mt-0.5">
                         <p className="text-2xl font-medium text-card-foreground">
                           {metric.value}
                         </p>
@@ -105,16 +133,16 @@ const StatisticsBlock = ({
                           className={cn(
                             "font-normal text-muted-foreground",
                             metric.isPositive
-                              ? "bg-teal-400/10 "
-                              : "bg-red-500/10",
+                              ? "bg-teal-400/10 text-teal-600 dark:text-teal-400"
+                              : "bg-red-500/10 text-red-600 dark:text-red-400"
                           )}
                         >
                           {metric.percentage}
                         </Badge>
                       </div>
                     </div>
-                    {index < mainDashboard.metrics.length - 1 && (
-                      <Separator orientation="vertical" className={"h-12"} />
+                    {index < displayMainDashboard.metrics.length - 1 && (
+                      <Separator orientation="vertical" className={"h-12 hidden sm:block"} />
                     )}
                   </div>
                 ))}
@@ -131,7 +159,7 @@ const StatisticsBlock = ({
           </CardContent>
         </Card>
       </div>
-      {secondaryStats.map((stat, index) => (
+      {displaySecondaryStats.map((stat, index) => (
         <div key={index} className="col-span-12 sm:col-span-6 xl:col-span-3">
           <Card className="py-6 ring-0 border rounded-2xl">
             <CardContent className="px-6 flex items-start justify-between">
@@ -148,8 +176,8 @@ const StatisticsBlock = ({
                       className={cn(
                         "font-normal text-muted-foreground",
                         stat.isPositive !== false
-                          ? "bg-teal-400/10"
-                          : "bg-red-500/10",
+                          ? "bg-teal-400/10 text-teal-600 dark:text-teal-400"
+                          : "bg-red-500/10 text-red-600 dark:text-red-400"
                       )}
                     >
                       {stat.percentage}
@@ -167,7 +195,7 @@ const StatisticsBlock = ({
                   <ArrowRight size={16} />
                 </Button>
               </div>
-              <div className="p-3 rounded-full outline">
+              <div className="p-3 rounded-full border bg-muted/30">
                 <stat.icon size={16} />
               </div>
             </CardContent>

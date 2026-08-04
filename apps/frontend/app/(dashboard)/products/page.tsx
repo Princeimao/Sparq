@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { Loader2, Plus, Package, Edit, Trash2 } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ProductDrawer } from "@/components/products/ProductDrawer";
@@ -32,19 +31,25 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const fetchProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/products`);
-      setProducts(res.data.products);
-    } catch {
-      toast.error("Failed to load products");
-    } finally {
-      setLoading(false);
-    }
+    const res = await api.get(`/products`);
+    return res.data.products;
   }, []);
 
   useEffect(() => {
-    fetchProducts();
+    const loadProducts = async () => {
+      setLoading(true);
+
+      try {
+        const products = await fetchProducts();
+        setProducts(products);
+      } catch {
+        toast.error("Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
   }, [fetchProducts]);
 
   const handleDelete = async (productId: string) => {
@@ -142,7 +147,7 @@ export default function ProductsPage() {
                 )}
               </CardHeader>
               <CardContent className="p-4 pt-0 flex-1">
-                <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+                <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
                   {product.description || "No description provided."}
                 </p>
                 <div className="mt-4 flex items-center justify-between">

@@ -4,7 +4,7 @@ import { IntegrationCard } from "@/components/IntegrationCard";
 import { integrations } from "@/constant";
 import { useIntegrationHandlers } from "@/hooks/integration";
 
-const page = () => {
+const Page = () => {
   const handlers = useIntegrationHandlers();
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -34,4 +34,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

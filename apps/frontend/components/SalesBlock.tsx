@@ -10,7 +10,20 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-const chartData = [
+export type MonthlySalesData = {
+  month: string;
+  expense: number;
+  profit: number;
+  earning: number;
+  orders?: number;
+};
+
+type SalesBlockProps = {
+  monthlySales?: MonthlySalesData[];
+  totalRevenue?: number;
+};
+
+const defaultChartData: MonthlySalesData[] = [
   { month: "Jan", expense: 31, profit: 31, earning: 31 },
   { month: "Feb", expense: 83, profit: 83, earning: 83 },
   { month: "Mar", expense: 53, profit: 53, earning: 53 },
@@ -28,11 +41,11 @@ const chartData = [
 const chartConfig = {
   expense: {
     label: "Expense",
-    color: "var(--color-blue-500)",
+    color: "#3b82f6",
   },
   profit: {
     label: "Profit",
-    color: "var(--color-sky-400)",
+    color: "#38bdf8",
   },
   earning: {
     label: "Earning",
@@ -40,8 +53,17 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function SalesBlock() {
-  const Countries = [
+const formatHeaderRevenue = (amount?: number) => {
+  if (amount === undefined || amount === null) return "$386.53K";
+  if (amount >= 1000000) return `$${(amount / 1000000).toFixed(2)}M`;
+  if (amount >= 1000) return `$${(amount / 1000).toFixed(2)}K`;
+  return `$${amount.toLocaleString()}`;
+};
+
+export default function SalesBlock({ monthlySales, totalRevenue }: SalesBlockProps) {
+  const chartData = monthlySales && monthlySales.length > 0 ? monthlySales : defaultChartData;
+
+  const Categories = [
     {
       id: 1,
       title: "Earning",
@@ -66,20 +88,20 @@ export default function SalesBlock() {
           <CardTitle className="text-lg font-medium">Sales Overview</CardTitle>
           <div className="flex items-center gap-2">
             <h3 className="text-3xl font-medium text-card-foreground">
-              $386.53K
+              {formatHeaderRevenue(totalRevenue)}
             </h3>
             <Badge
-              className={cn("bg-teal-400/10 text-muted-foreground shadow-none")}
+              className={cn("bg-teal-400/10 text-teal-600 dark:text-teal-400 shadow-none")}
             >
               +18%
             </Badge>
             <span className="text-xs text-muted-foreground">
-              than last year
+              than last period
             </span>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {Countries.map((item) => (
+          {Categories.map((item) => (
             <div key={item.id} className="flex items-center gap-2">
               <span className={cn("w-2.5 h-2.5 rounded-full", item.color)} />
               <p className="text-sm text-muted-foreground">{item.title}</p>
@@ -88,7 +110,7 @@ export default function SalesBlock() {
         </div>
       </CardHeader>
       <CardContent className="px-6">
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-75 w-full">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid
               vertical={false}
@@ -108,29 +130,27 @@ export default function SalesBlock() {
               axisLine={false}
               tickMargin={10}
               fontSize={12}
-              tickFormatter={(value) => `${value / 10}k`}
-              domain={[0, 100]}
-              ticks={[0, 50, 100, 150, 200, 250, 300]}
+              tickFormatter={(value) => (value >= 1000 ? `${(value / 1000).toFixed(0)}k` : `${value}`)}
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Bar
               dataKey="expense"
               stackId="a"
-              fill="var(--color-expense)"
+              fill="#3b82f6"
               radius={[0, 0, 4, 4]}
               barSize={20}
             />
             <Bar
               dataKey="profit"
               stackId="a"
-              fill="var(--color-profit)"
+              fill="#38bdf8"
               radius={[0, 0, 0, 0]}
               barSize={20}
             />
             <Bar
               dataKey="earning"
               stackId="a"
-              fill="var(--color-earning)"
+              fill="rgba(56, 189, 248, 0.5)"
               radius={[4, 4, 0, 0]}
               barSize={20}
             />

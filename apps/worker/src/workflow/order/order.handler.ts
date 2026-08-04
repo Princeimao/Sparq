@@ -506,8 +506,6 @@ export class OrderHandler implements WorkflowHandler {
         currency: "INR",
         productName: product.name,
         customerPhone: ctx.message.customerWaId,
-        orderId: order.id,
-        organizationId: params.userId,
       });
 
       // Update order with payment link

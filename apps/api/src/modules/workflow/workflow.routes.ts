@@ -23,7 +23,6 @@ const updateWorkflowSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-// ─── GET /api/organizations/:orgId/workflows ─────────────────────────────────
 router.get(
   "/workflows",
   authenticate,
@@ -43,7 +42,6 @@ router.get(
   }
 );
 
-// ─── GET /api/organizations/:orgId/workflows/:workflowId ───────────────────
 router.get(
   "/workflows/:workflowId",
   authenticate,
@@ -68,7 +66,6 @@ router.get(
   }
 );
 
-// ─── POST /api/organizations/:orgId/workflows ────────────────────────────────
 router.post(
   "/workflows",
   authenticate,
@@ -96,7 +93,6 @@ router.post(
   }
 );
 
-// ─── PATCH /api/organizations/:orgId/workflows/:workflowId ───────────────────
 router.patch(
   "/workflows/:workflowId",
   authenticate,
@@ -130,7 +126,6 @@ router.patch(
   }
 );
 
-// ─── DELETE /api/organizations/:orgId/workflows/:workflowId ──────────────────
 router.delete(
   "/workflows/:workflowId",
   authenticate,

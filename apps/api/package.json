@@ -6,7 +6,8 @@
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "lint": "echo 'No lint step'",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {

@@ -20,7 +20,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -47,9 +46,23 @@ interface FlowItem {
 }
 
 const statusConfig = {
-  DRAFT: { label: "Draft", className: "bg-muted text-muted-foreground", icon: Circle },
-  PUBLISHED: { label: "Published", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400", icon: CheckCircle2 },
-  ARCHIVED: { label: "Archived", className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400", icon: FileText },
+  DRAFT: {
+    label: "Draft",
+    className: "bg-muted text-muted-foreground",
+    icon: Circle,
+  },
+  PUBLISHED: {
+    label: "Published",
+    className:
+      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    icon: CheckCircle2,
+  },
+  ARCHIVED: {
+    label: "Archived",
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    icon: FileText,
+  },
 };
 
 export default function FlowsPage() {
@@ -59,19 +72,25 @@ export default function FlowsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const fetchFlows = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/flows");
-      setFlows(res.data.flows ?? []);
-    } catch {
-      toast.error("Failed to load flows");
-    } finally {
-      setLoading(false);
-    }
+    const res = await api.get("/flows");
+    return res.data.flows ?? [];
   }, []);
 
   useEffect(() => {
-    fetchFlows();
+    const loadFlows = async () => {
+      setLoading(true);
+
+      try {
+        const flows = await fetchFlows();
+        setFlows(flows);
+      } catch {
+        toast.error("Failed to load flows");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFlows();
   }, [fetchFlows]);
 
   const handleDelete = async (id: string) => {

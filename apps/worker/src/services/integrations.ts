@@ -9,8 +9,6 @@ export interface CreatePaymentLinkParams {
   currency: string;
   productName: string;
   customerPhone: string;
-  orderId: string;
-  organizationId: string;
   successUrl?: string;
   cancelUrl?: string;
 }
@@ -44,7 +42,7 @@ export class StripePaymentProvider extends BasePaymentProvider {
       credentials?.apiKey || credentials?.secretKey || env.STRIPE_SECRET_KEY;
     if (!apiKey) {
       throw new Error(
-        "Stripe API key is not configured for this organization.",
+        "Stripe API key is not configured.",
       );
     }
 
@@ -72,8 +70,6 @@ export class StripePaymentProvider extends BasePaymentProvider {
       ],
       mode: "payment",
       metadata: {
-        orderId: params.orderId,
-        organizationId: params.organizationId,
         customerPhone: params.customerPhone,
       },
       success_url:
@@ -130,10 +126,6 @@ export class RazorpayPaymentProvider extends BasePaymentProvider {
 }
 
 export class PaymentIntegrationManager {
-  /**
-   * @param userId - Optional SaaS user/organization ID to scope the lookup.
-   *                 If omitted, returns the first globally active integration.
-   */
   static async getActiveProvider(userId?: string): Promise<BasePaymentProvider> {
     const integration = await prisma.integration.findFirst({
       where: {
