@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "worker": "tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/src/index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@sparq/database": "*",
