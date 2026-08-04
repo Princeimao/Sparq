@@ -49,7 +49,7 @@ const Feature = ({ featureData }: { featureData: Features }) => {
                   duration: 0.8,
                   ease: [0.21, 0.47, 0.32, 0.98],
                 }}
-                className="rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-border overflow-hidden"
+                className="rounded-2xl bg-linear-to-br from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-border overflow-hidden"
               >
                 <div className="p-8 sm:p-12 h-full flex flex-col justify-between gap-10">
                   {/* Simulated WhatsApp chat bubbles */}

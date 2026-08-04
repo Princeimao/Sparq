@@ -36,7 +36,7 @@ export default function PricingSection({
       {/* Header and Toggle */}
       <div className="max-w-6xl mx-auto flex flex-col items-center justify-center text-center space-y-6 mb-16">
         <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-zinc-900 leading-[1.1]">
-          Choose your Sparq.com subscription.
+          Choose your Sparq. subscription.
         </h2>
         <p className="text-zinc-500 max-w-2xl text-base md:text-lg">
           Get full access to all apps & features from only{" "}

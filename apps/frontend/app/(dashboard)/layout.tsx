@@ -1,40 +1,38 @@
 "use client";
 
 import { useEffect } from "react";
-import AppSidebar from "@/components/AppSidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/store";
 import { Loader2 } from "lucide-react";
+
+import AppSidebar from "@/components/AppSidebar";
 import FacebookSDK from "@/components/FacebookSDK";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const router = useRouter();
+
   const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      router.push("/");
-      return;
+      router.replace("/");
     }
   }, [isAuthenticated, isLoading, router]);
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A]">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
       </div>
     );
   }
-
-  const path = pathname.split("/")[2] || "Dashboard";
 
   return (
     <TooltipProvider>

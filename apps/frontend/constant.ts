@@ -22,6 +22,7 @@ import {
   Diamond,
   CirclePlay,
   Route,
+  TrendingUp,
 } from "lucide-react";
 import { useWhatsAppConnect } from "./hooks/integration";
 
@@ -30,7 +31,6 @@ export type NavigationSection = {
   href: string;
   isActive?: boolean;
 };
-
 
 export const navigationData: NavigationSection[] = [
   {
@@ -129,6 +129,7 @@ export const FAQ_DATA = [
 
 export const PLANS_DATA = [
   {
+    name: "Free",
     description: "Perfect for testing and small operations starting out.",
     price: 0,
     yearlyPrice: 0,
@@ -145,36 +146,42 @@ export const PLANS_DATA = [
     recommended: false,
     cta: "Start Free",
   },
+
   {
     name: "Normal",
-    description: "Ideal for growing brands scaling repeat customer orders.",
-    price: 499,
-    yearlyPrice: 359,
-    yearlyBilledAmount: 4311,
+    description:
+      "Ideal for growing brands scaling customer engagement and automation.",
+    price: 999,
+    yearlyPrice: 799,
+    yearlyBilledAmount: 9588,
     features: [
       "Email automation",
       "Custom automation rules",
       "Employee invitation option",
       "WhatsApp Business Cloud API connection",
       "Standard support (24h)",
+      "Multiple workflow automation",
     ],
-    notIncluded: [],
+    notIncluded: ["Priority support", "Advanced analytics", "Custom billing"],
     recommended: true,
     cta: "Get Started",
   },
+
   {
     name: "Pro",
-    description: "For high-volume enterprises needing ultimate scalability.",
-    price: 999,
-    yearlyPrice: 719,
-    yearlyBilledAmount: 8631,
+    description:
+      "Built for businesses handling high-volume automation and customer workflows.",
+    price: 2499,
+    yearlyPrice: 1999,
+    yearlyBilledAmount: 23988,
     features: [
-      "Email automation",
-      "Custom automation rules",
-      "Employee invitation option",
-      "WhatsApp Business Cloud API connection",
+      "Everything in Normal",
+      "Unlimited automation workflows",
+      "Advanced analytics dashboard",
       "Priority 24/7 dedicated support",
       "Custom billing & invoicing",
+      "Team collaboration tools",
+      "Advanced integrations",
     ],
     notIncluded: [],
     recommended: false,
@@ -271,7 +278,7 @@ export const integrations = [
   {
     name: "WhatsApp",
     description: "Send messages and automate work",
-    icon: "/whatsap.png",
+    icon: "/whatsapp.png",
     onClick: useWhatsAppConnect,
   },
 
@@ -537,13 +544,15 @@ export const DATA: Item[] = [
 export const headerFeatures = [
   {
     title: "Automated Flow Builder",
-    description: "Design visual drag-and-drop conversational bot flows without coding.",
+    description:
+      "Design visual drag-and-drop conversational bot flows without coding.",
     href: "/flows",
     icon: Workflow,
   },
   {
     title: "WhatsApp Cloud API",
-    description: "Official Meta Cloud API integration with zero messaging latency.",
+    description:
+      "Official Meta Cloud API integration with zero messaging latency.",
     href: "/integrations",
     icon: MessageSquare,
   },
@@ -555,7 +564,8 @@ export const headerFeatures = [
   },
   {
     title: "Order & Catalog Manager",
-    description: "Showcase products, process cart orders, and collect payments.",
+    description:
+      "Showcase products, process cart orders, and collect payments.",
     href: "/products",
     icon: ShoppingBag,
   },
@@ -608,5 +618,83 @@ export const headerResources = [
     title: "Privacy Policy",
     description: "Data security, encryption, and Meta policy compliance.",
     href: "/privacy-policy",
+  },
+];
+
+export const STATS = [
+  { value: "99.9%", label: "Uptime Guaranteed", icon: Zap },
+  { value: "3x", label: "Average Revenue Lift", icon: TrendingUp },
+  { value: "<1s", label: "Message Delivery", icon: MessageSquare },
+];
+
+export const INTEGRATIONS = [
+  {
+    name: "WhatsApp",
+    description: "Official Meta Cloud API",
+    color: "bg-green-500/10 text-green-600 dark:text-green-400",
+    emoji: "💬",
+  },
+  {
+    name: "Google Calendar",
+    description: "2-way appointment sync",
+    color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    emoji: "📅",
+  },
+  {
+    name: "Cal.com",
+    description: "Open-source scheduling",
+    color: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+    emoji: "🗓️",
+  },
+  {
+    name: "Stripe",
+    description: "Global payment links",
+    color: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    emoji: "💳",
+  },
+  {
+    name: "Razorpay",
+    description: "India-first payments",
+    color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+    emoji: "₹",
+  },
+  {
+    name: "WooCommerce",
+    description: "Product & order catalog",
+    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+    emoji: "🛒",
+  },
+];
+
+export const WHATSAPP_FLOW = [
+  {
+    side: "right",
+    msg: "Hi! I want to order the birthday cake 🎂",
+    delay: 0,
+  },
+  {
+    side: "left",
+    msg: "Great choice! 🎉 We have Chocolate, Vanilla, and Red Velvet. Which flavor would you like?",
+    delay: 0.5,
+  },
+  {
+    side: "right",
+    msg: "Chocolate please! And can I get it for Saturday?",
+    delay: 1.0,
+  },
+  {
+    side: "left",
+    msg: "Saturday is available ✅. Here's your payment link to confirm: pay.sparq.app/cake-order",
+    delay: 1.5,
+  },
+  {
+    side: "right",
+    msg: "Done! Payment made 🙌",
+    delay: 2.0,
+  },
+  {
+    side: "left",
+    msg: "Order confirmed! 🎂 You'll receive a reminder the day before. See you Saturday!",
+    delay: 2.5,
   },
 ];

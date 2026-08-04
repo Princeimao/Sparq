@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
-import AnimatedUiBlock from "./AnimatedUiBlock";
 import ReminderAnimation from "./ReminderAnimation";
 import { Zap, Shield, BarChart3, Puzzle } from "lucide-react";
+import Image from "next/image";
 
 const bentoFeatures = [
   {
@@ -43,7 +43,9 @@ const Bentogrid = () => {
               Automate your entire customer journey on WhatsApp
             </h2>
             <p className="text-center text-muted-foreground text-base max-w-xl">
-              Sparq connects your WhatsApp Business account to a powerful automation engine — handling bookings, orders, payments, and follow-ups without lifting a finger.
+              Sparq connects your WhatsApp Business account to a powerful
+              automation engine — handling bookings, orders, payments, and
+              follow-ups without lifting a finger.
             </p>
           </div>
 
@@ -59,7 +61,9 @@ const Bentogrid = () => {
                     Automated Reminders & Notifications
                   </h3>
                   <p className="text-base font-normal text-muted-foreground">
-                    Send order confirmations, appointment reminders, and re-engagement messages automatically to your customers on WhatsApp.
+                    Send order confirmations, appointment reminders, and
+                    re-engagement messages automatically to your customers on
+                    WhatsApp.
                   </p>
                 </div>
               </div>
@@ -68,15 +72,18 @@ const Bentogrid = () => {
             {/* Animated UI / Bot Flow Builder Card */}
             <div className="lg:col-span-8 col-span-12 overflow-hidden">
               <div className="rounded-xl border border-border">
-                <div className="bg-muted rounded-t-xl py-7 lg:px-30 px-6 relative">
-                  <AnimatedUiBlock />
+                <div className="bg-muted rounded-t-xl relative overflow-hidden">
+                  <Image src="/workflow.png" alt="workflow" width={800} height={800}/>
                 </div>
                 <div className="flex flex-col gap-0.5 p-8 border-t border-border">
                   <h3 className="text-xl font-medium text-foreground">
                     Visual Bot Flow Builder
                   </h3>
                   <p className="text-base font-normal text-muted-foreground">
-                    Design complete conversational experiences with our drag-and-drop WhatsApp flow editor. Build lead capture, FAQ bots, appointment booking, and payment flows — no code required.
+                    Design complete conversational experiences with our
+                    drag-and-drop WhatsApp flow editor. Build lead capture, FAQ
+                    bots, appointment booking, and payment flows — no code
+                    required.
                   </p>
                 </div>
               </div>
@@ -84,12 +91,18 @@ const Bentogrid = () => {
 
             {/* Three feature tiles */}
             {bentoFeatures.map((feat, i) => (
-              <div key={i} className="lg:col-span-4 col-span-12 overflow-hidden">
+              <div
+                key={i}
+                className="lg:col-span-4 col-span-12 overflow-hidden"
+              >
                 <div className="rounded-xl border border-border h-full flex flex-col">
                   <div
-                    className={`p-8 bg-gradient-to-br ${feat.gradient} rounded-t-xl flex-1 flex items-center justify-center`}
+                    className={`p-8 bg-linear-to-br ${feat.gradient} rounded-t-xl flex-1 flex items-center justify-center`}
                   >
-                    <feat.icon className="size-12 text-foreground/60" strokeWidth={1.2} />
+                    <feat.icon
+                      className="size-12 text-foreground/60"
+                      strokeWidth={1.2}
+                    />
                   </div>
                   <div className="flex flex-col gap-0.5 p-8 border-t border-border">
                     <h3 className="text-xl font-medium text-foreground">

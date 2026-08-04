@@ -8,114 +8,30 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FAQ_DATA, featureData } from "@/constant";
+import {
+  FAQ_DATA,
+  featureData,
+  INTEGRATIONS,
+  STATS,
+  WHATSAPP_FLOW,
+} from "@/constant";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
-import {
-  ArrowUpRight,
-  PlusIcon,
-  MessageSquare,
-  Workflow,
-  Calendar,
-  ShoppingBag,
-  Tag,
-  CreditCard,
-  CheckCircle2,
-  TrendingUp,
-  Users,
-  Zap,
-} from "lucide-react";
+import { ArrowUpRight, PlusIcon, CheckCircle2 } from "lucide-react";
 import { Instrument_Serif } from "next/font/google";
 import PricingSection from "@/components/pricing-section";
 import Feature from "@/components/Features";
 import Bentogrid from "@/components/bentogrid/Bentogrid";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/lib/store";
-import Image from "next/image";
+import WhatsappDemo from "@/components/WhatsappDemo";
+import { FeaturesSectionDemo } from "@/components/Tools";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: ["400"],
   style: ["italic"],
 });
-
-const STATS = [
-  { value: "99.9%", label: "Uptime Guaranteed", icon: Zap },
-  { value: "3x", label: "Average Revenue Lift", icon: TrendingUp },
-  { value: "<1s", label: "Message Delivery", icon: MessageSquare },
-];
-
-const INTEGRATIONS = [
-  {
-    name: "WhatsApp",
-    description: "Official Meta Cloud API",
-    color: "bg-green-500/10 text-green-600 dark:text-green-400",
-    emoji: "💬",
-  },
-  {
-    name: "Google Calendar",
-    description: "2-way appointment sync",
-    color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-    emoji: "📅",
-  },
-  {
-    name: "Cal.com",
-    description: "Open-source scheduling",
-    color: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-    emoji: "🗓️",
-  },
-  {
-    name: "Stripe",
-    description: "Global payment links",
-    color: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-    emoji: "💳",
-  },
-  {
-    name: "Razorpay",
-    description: "India-first payments",
-    color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-    emoji: "₹",
-  },
-  {
-    name: "WooCommerce",
-    description: "Product & order catalog",
-    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-    emoji: "🛒",
-  },
-];
-
-const WHATSAPP_FLOW = [
-  {
-    side: "right",
-    msg: "Hi! I want to order the birthday cake 🎂",
-    delay: 0,
-  },
-  {
-    side: "left",
-    msg: "Great choice! 🎉 We have Chocolate, Vanilla, and Red Velvet. Which flavor would you like?",
-    delay: 0.5,
-  },
-  {
-    side: "right",
-    msg: "Chocolate please! And can I get it for Saturday?",
-    delay: 1.0,
-  },
-  {
-    side: "left",
-    msg: "Saturday is available ✅. Here's your payment link to confirm: pay.sparq.app/cake-order",
-    delay: 1.5,
-  },
-  {
-    side: "right",
-    msg: "Done! Payment made 🙌",
-    delay: 2.0,
-  },
-  {
-    side: "left",
-    msg: "Order confirmed! 🎂 You'll receive a reminder the day before. See you Saturday!",
-    delay: 2.5,
-  },
-];
 
 export default function LandingPage() {
   const router = useRouter();
@@ -236,7 +152,7 @@ export default function LandingPage() {
       {/* ── SOCIAL PROOF STATS BAR ── */}
       <section className="border-y border-border bg-muted/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-8">
             {STATS.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -320,56 +236,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Right: Chat Simulator */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="flex justify-center"
-            >
-              <div className="w-full max-w-sm rounded-3xl border border-border bg-card shadow-2xl overflow-hidden">
-                {/* Chat header */}
-                <div className="bg-[#075e54] text-white px-4 py-3 flex items-center gap-3">
-                  <div className="size-9 rounded-full bg-green-300 flex items-center justify-center text-green-900 font-bold text-sm">
-                    S
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Sparq Bot</p>
-                    <p className="text-xs text-green-200">
-                      Online · via WhatsApp
-                    </p>
-                  </div>
-                </div>
-
-                {/* Messages */}
-                <div className="bg-[#ece5dd] dark:bg-zinc-900 px-4 py-4 flex flex-col gap-2 min-h-80">
-                  {WHATSAPP_FLOW.map((msg, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 8 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: msg.delay }}
-                      className={cn(
-                        "flex",
-                        msg.side === "right" ? "justify-end" : "justify-start",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "px-3 py-2 rounded-2xl text-xs max-w-[80%] shadow-sm",
-                          msg.side === "right"
-                            ? "bg-[#dcf8c6] dark:bg-green-900/60 text-gray-900 dark:text-green-100 rounded-tr-sm"
-                            : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 rounded-tl-sm",
-                        )}
-                      >
-                        {msg.msg}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+            <WhatsappDemo />
           </div>
         </div>
       </section>
@@ -399,33 +266,7 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {INTEGRATIONS.map((integ, i) => (
-              <motion.div
-                key={integ.name}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.07 }}
-                className="flex flex-col items-center gap-3 p-5 rounded-2xl border border-border bg-card hover:shadow-md transition-shadow group cursor-default"
-              >
-                <div
-                  className={cn(
-                    "size-12 rounded-xl flex items-center justify-center text-2xl",
-                    integ.color,
-                  )}
-                >
-                  {integ.emoji}
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-semibold">{integ.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {integ.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <FeaturesSectionDemo />
         </div>
       </section>
 

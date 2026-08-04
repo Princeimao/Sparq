@@ -11,7 +11,6 @@ import {
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuContent,
@@ -138,12 +137,12 @@ const Header = ({ className }: HeaderProps) => {
                 <NavigationMenuTrigger className="px-4 py-2 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground bg-transparent hover:bg-background/80 transition-all cursor-pointer">
                   Features
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="p-4 w-125 grid grid-cols-2 gap-3 bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl">
+                <NavigationMenuContent className="p-4 w-125 grid grid-cols-2 gap-3 bg-popover/95 backdrop-blur-xl rounded-2xl shadow-2xl">
                   {headerFeatures.map((feat) => (
                     <Link
                       key={feat.title}
                       href={feat.href}
-                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/80 transition-colors group/item w-120"
+                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/80 transition-colors group/item"
                     >
                       <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors mt-0.5">
                         <feat.icon className="size-4" />
@@ -167,7 +166,7 @@ const Header = ({ className }: HeaderProps) => {
                 <NavigationMenuTrigger className="px-4 py-2 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground bg-transparent hover:bg-background/80 transition-all cursor-pointer">
                   Integrations
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="p-4 w-[480px] grid grid-cols-2 gap-3 bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl">
+                <NavigationMenuContent className="p-4 w-120 grid grid-cols-2 gap-3 bg-popover/95 backdrop-blur-xl rounded-2xl shadow-2xl">
                   {headerIntegrations.map((integ) => (
                     <Link
                       key={integ.title}
@@ -196,7 +195,7 @@ const Header = ({ className }: HeaderProps) => {
                 <NavigationMenuTrigger className="px-4 py-2 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground bg-transparent hover:bg-background/80 transition-all cursor-pointer">
                   Company
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="p-3 w-[260px] flex flex-col gap-1 bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl">
+                <NavigationMenuContent className="p-4 w-120 grid grid-cols-2 gap-3 bg-popover/95 backdrop-blur-xl rounded-2xl shadow-2xl">
                   {headerResources.map((res) => (
                     <Link
                       key={res.title}
