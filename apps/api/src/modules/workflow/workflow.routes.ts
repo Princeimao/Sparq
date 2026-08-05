@@ -24,7 +24,7 @@ const updateWorkflowSchema = z.object({
 });
 
 router.get(
-  "/workflows",
+  "/",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -43,7 +43,7 @@ router.get(
 );
 
 router.get(
-  "/workflows/:workflowId",
+  "/:workflowId",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -67,7 +67,7 @@ router.get(
 );
 
 router.post(
-  "/workflows",
+  "/",
   authenticate,
   validateBody(createWorkflowSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -94,7 +94,7 @@ router.post(
 );
 
 router.patch(
-  "/workflows/:workflowId",
+  "/:workflowId",
   authenticate,
   validateBody(updateWorkflowSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -127,7 +127,7 @@ router.patch(
 );
 
 router.delete(
-  "/workflows/:workflowId",
+  "/:workflowId",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
