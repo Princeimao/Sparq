@@ -11,8 +11,9 @@ import {
 import { api } from "@/lib/api";
 import { Loader2, Plus, Package, Edit, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { ProductDrawer } from "@/components/products/ProductDrawer";
+import { ProductCardComp } from "@/components/ProductCardComp";
 
 export interface Product {
   id: string;
@@ -32,7 +33,7 @@ export default function ProductsPage() {
 
   const fetchProducts = useCallback(async () => {
     const res = await api.get(`/products`);
-    return res.data.products;
+    return res.data.data.products;
   }, []);
 
   useEffect(() => {
@@ -93,7 +94,7 @@ export default function ProductsPage() {
             Manage your catalog of products and services.
           </p>
         </div>
-        <Button onClick={openCreateDrawer}>
+        <Button onClick={openCreateDrawer} className="py-5 rounded-2xl">
           <Plus className="size-4 mr-2" />
           Add Product
         </Button>
@@ -123,8 +124,7 @@ export default function ProductsPage() {
               className="overflow-hidden flex flex-col hover:shadow-md transition-all duration-200"
             >
               {product.image ? (
-                <div className="relative w-full h-48 bg-muted">
-                  {/* Note: since image domain isn't configured, we use standard img tag or unoptimized next/image */}
+                <div className="relative w-full h-48">
                   <img
                     src={product.image}
                     alt={product.name}
@@ -163,11 +163,11 @@ export default function ProductsPage() {
                   </span>
                 </div>
               </CardContent>
-              <CardFooter className="p-4 pt-0 border-t flex items-center gap-2 mt-auto bg-muted/20">
+              <CardFooter className="p-4 pt-4 border-t flex items-center gap-2 mt-auto bg-muted/20">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1"
+                  className="flex-1 py-6"
                   onClick={() => openUpdateDrawer(product)}
                 >
                   <Edit className="size-4 mr-2" />
@@ -176,7 +176,7 @@ export default function ProductsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10 py-6"
                   onClick={() => handleDelete(product.id)}
                 >
                   <Trash2 className="size-4 mr-2" />

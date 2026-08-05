@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
   Plus,
   Loader2,
@@ -73,7 +73,7 @@ export default function FlowsPage() {
 
   const fetchFlows = useCallback(async () => {
     const res = await api.get("/flows");
-    return res.data.flows ?? [];
+    return res.data.data.flows ?? [];
   }, []);
 
   useEffect(() => {
@@ -144,7 +144,7 @@ export default function FlowsPage() {
             Build data-collection flows sent to customers via WhatsApp
           </p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} size="lg">
+        <Button onClick={() => setDialogOpen(true)} size="lg" className="py-5 rounded-2xl">
           <Plus className="size-4 mr-1.5" />
           New Flow
         </Button>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
   Plus,
   MoreVertical,
@@ -49,7 +49,7 @@ export default function WorkflowsPage() {
 
   const fetchWorkflows = useCallback(async () => {
     const res = await api.get(`/workflows`);
-    return res.data.workflows;
+    return res.data.data;
   }, []);
 
   useEffect(() => {
@@ -139,8 +139,12 @@ export default function WorkflowsPage() {
             Create and manage your automation flows
           </p>
         </div>
-        <Button onClick={() => setDrawerOpen(true)} size="lg">
-          <Plus className="size-4 mr-1.5" />
+        <Button
+          onClick={() => setDrawerOpen(true)}
+          size="lg"
+          className="py-5 rounded-2xl"
+        >
+          <Plus className="size-4" />
           Create Flow
         </Button>
       </div>

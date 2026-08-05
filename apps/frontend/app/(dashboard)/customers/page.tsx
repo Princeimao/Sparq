@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Loader2,
@@ -44,10 +44,31 @@ export default function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null,
   );
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1,
+  });
 
-  const fetchCustomers = useCallback(async () => {
-    const res = await api.get(`/customers`);
-    return res.data.customers;
+  const changePage = (page: number) => {
+    if (page < 1 || page > pagination.totalPages) return;
+
+    setPagination((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  const fetchCustomers = useCallback(async (page: number, limit: number) => {
+    const res = await api.get(`/customers/customers`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return res.data;
   }, []);
 
   useEffect(() => {
@@ -55,8 +76,10 @@ export default function CustomersPage() {
       setLoading(true);
 
       try {
-        const customers = await fetchCustomers();
-        setCustomers(customers);
+        const res = await fetchCustomers(pagination.page, pagination.limit);
+
+        setCustomers(res.data.customers);
+        setPagination(res.data.pagination);
       } catch {
         toast.error("Failed to load customers");
       } finally {
@@ -65,7 +88,7 @@ export default function CustomersPage() {
     };
 
     loadCustomers();
-  }, [fetchCustomers]);
+  }, [fetchCustomers, pagination.page, pagination.limit]);
 
   const handleDelete = async (customerId: string) => {
     if (!confirm("Are you sure you want to delete this customer?")) return;
@@ -110,7 +133,7 @@ export default function CustomersPage() {
             Manage your customers and their details.
           </p>
         </div>
-        <Button onClick={openCreateDrawer}>
+        <Button onClick={openCreateDrawer} className="py-5 rounded-2xl">
           <Plus className="size-4 mr-2" />
           Add Customer
         </Button>
@@ -198,6 +221,49 @@ export default function CustomersPage() {
               ))}
             </TableBody>
           </Table>
+        </div>
+      )}
+
+      {!loading && customers.length > 0 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-muted-foreground">
+            Showing page {pagination.page} of {pagination.totalPages} (
+            {pagination.total} customers)
+          </p>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page === 1}
+              onClick={() => changePage(pagination.page - 1)}
+            >
+              Previous
+            </Button>
+
+            {Array.from(
+              { length: pagination.totalPages },
+              (_, index) => index + 1,
+            ).map((page) => (
+              <Button
+                key={page}
+                variant={page === pagination.page ? "default" : "outline"}
+                size="sm"
+                onClick={() => changePage(page)}
+              >
+                {page}
+              </Button>
+            ))}
+
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page === pagination.totalPages}
+              onClick={() => changePage(pagination.page + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
 

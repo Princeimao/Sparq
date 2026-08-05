@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { FlowBuilder } from "../../../../components/flows/FlowBuilder";
 
@@ -36,7 +36,7 @@ export default function FlowEditorPage() {
 
   const fetchFlow = useCallback(async () => {
     const res = await api.get(`/flows/${id}`);
-    return res.data.flow;
+    return res.data.data.flow;
   }, [id]);
 
   useEffect(() => {

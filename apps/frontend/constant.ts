@@ -24,8 +24,6 @@ import {
   Route,
   TrendingUp,
 } from "lucide-react";
-import { useWhatsAppConnect } from "./hooks/integration";
-
 export type NavigationSection = {
   title: string;
   href: string;
@@ -265,53 +263,74 @@ export type NavItem = {
 
 export const navData: NavItem[] = [
   { label: "APPS", isSection: true },
-  { title: "Dashboard", icon: Home, href: "dashboard" },
-  { title: "Calendar", icon: Calendar, href: "calendar" },
-  { title: "Integrations", icon: Blocks, href: "integrations" },
-  { title: "WhatsApp Flows", icon: MessageSquareCode, href: "flows" },
-  { title: "Workflows", icon: Workflow, href: "workflows" },
-  { title: "Customers", icon: Contact, href: "customers" },
-  { title: "Products", icon: ShoppingBag, href: "products" },
+  { title: "Dashboard", icon: Home, href: "/dashboard" },
+  { title: "Calendar", icon: Calendar, href: "/calendar" },
+  { title: "Integrations", icon: Blocks, href: "/integrations" },
+  { title: "WhatsApp Flows", icon: MessageSquareCode, href: "/flows" },
+  { title: "Workflows", icon: Workflow, href: "/workflows" },
+  { title: "Customers", icon: Contact, href: "/customers" },
+  { title: "Products", icon: ShoppingBag, href: "/products" },
 ];
 
-export const integrations = [
+export type IntegrationProvider =
+  | "whatsapp"
+  | "stripe"
+  | "razorpay"
+  | "calcom"
+  | "woocommerce";
+
+export type IntegrationCategory =
+  | "messaging"
+  | "payment"
+  | "scheduling"
+  | "ecommerce";
+
+export type IntegrationDefinition = {
+  name: string;
+  provider: IntegrationProvider;
+  description: string;
+  icon: string;
+  category: IntegrationCategory;
+};
+
+export const integrations: IntegrationDefinition[] = [
   {
     name: "WhatsApp",
+    provider: "whatsapp",
     description: "Send messages and automate work",
     icon: "/whatsapp.png",
-    onClick: useWhatsAppConnect,
+    category: "messaging",
   },
-
   {
     name: "Stripe",
-    description: "Accept payments and manage billing",
+    provider: "stripe",
+    description: "Accept payments globally with ease",
     icon: "/stripe.png",
+    category: "payment",
   },
-
   {
     name: "Razorpay",
-    description: "Payment gateway integration",
+    provider: "razorpay",
+    description: "India-first payment gateway integration",
     icon: "/razorpay.png",
+    category: "payment",
   },
-
-  {
-    name: "Google Calendar",
-    description: "Sync events and availability",
-    icon: "/calendar.png",
-  },
-
   {
     name: "Cal.com",
+    provider: "calcom",
     description: "Calendar booking synchronization",
     icon: "/cal.png",
+    category: "scheduling",
   },
-
   {
     name: "WooCommerce",
-    description: "Sync products and orders",
+    provider: "woocommerce",
+    description: "Sync products and orders from your store",
     icon: "/woo.jpg",
+    category: "ecommerce",
   },
 ];
+
 
 export const sections = [
   {

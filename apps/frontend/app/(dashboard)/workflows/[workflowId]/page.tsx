@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { WorkflowFlowEditor } from "@/components/workflow/WorkflowFlowEditor";
 
@@ -15,7 +15,7 @@ export default function WorkflowEditorPage() {
 
   const fetchWorkflow = useCallback(async () => {
     const res = await api.get(`/workflows/${workflowId}`);
-    return res.data.workflow;
+    return res.data.data;
   }, [workflowId]);
 
   useEffect(() => {

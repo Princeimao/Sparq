@@ -15,8 +15,6 @@ import { SiteHeader } from "./SiteHeader";
 import { NavMain } from "./NavMain";
 import Image from "next/image";
 import { navData } from "@/constant";
-import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/lib/store";
 
 const AppSidebar = ({ children }: { children: React.ReactNode }) => {
 

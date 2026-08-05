@@ -44,7 +44,7 @@ function AuthCallbackHandler() {
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#ffffff]" />}>
       <AuthCallbackHandler />
     </Suspense>
   );

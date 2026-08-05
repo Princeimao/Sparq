@@ -4,7 +4,7 @@ import "./globals.css";
 import { Geist, Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Providers from "@/components/Providers";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/sonner";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           {children}
-          <Toaster position="top-right" />
+          <Toaster position={"bottom-right"} />
         </Providers>
       </body>
     </html>

@@ -21,9 +21,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#ffffff] text-black">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-black" />
           <p className="text-zinc-400">Loading your workspace...</p>
         </div>
       </div>
