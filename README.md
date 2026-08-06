@@ -1,159 +1,336 @@
-# Turborepo starter
+# Sparq
 
-This Turborepo starter is maintained by the Turborepo core team.
+> Turn your WhatsApp Business account into a revenue machine.
 
-## Using this example
+Sparq is a WhatsApp automation platform built on the **Meta WhatsApp Cloud API** that helps businesses automate bookings, orders, payments, customer support, and follow-ups. Instead of manually handling every customer conversation, Sparq enables businesses to build intelligent workflows that operate 24/7.
 
-Run the following command:
+Trusted by businesses across India & Southeast Asia, Sparq combines a modern web dashboard with a scalable backend architecture capable of processing millions of WhatsApp events reliably.
 
-```sh
-npx create-turbo@latest
+---
+
+##  Features
+
+-  Official WhatsApp Cloud API integration
+-  Visual workflow automation
+-  Appointment booking with Google Calendar & Cal.com
+-  Stripe & Razorpay payment integration
+-  WooCommerce integration
+-  Analytics dashboard
+-  Automated reminders & follow-ups
+-  Multi-language conversations
+- Secure & scalable architecture
+
+---
+
+# Monorepo Structure
+
+This project uses **Turborepo** to manage multiple applications and shared packages.
+
+```
+sparq/
+│
+├── apps/
+│   ├── api/          # Backend REST API
+│   ├── worker/       # Background workers & queue processors
+│   └── web/          # Next.js frontend
+│
+├── packages/
+│   ├── database/
+│   ├── shared/
+│
+├── turbo.json
+├── package.json
+└── README.md
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+# Applications
 
-### Apps and Packages
+## 🌐 Web
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+The customer dashboard built with **Next.js**.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Features:
 
-### Utilities
+- Authentication
+- Dashboard
+- Workflow Builder
+- Analytics
+- Billing
+- Integrations
 
-This Turborepo has some additional tools already setup for you:
+---
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## 🚀 API
 
-### Build
+Backend responsible for:
 
-To build all apps and packages, run the following command:
+- Authentication
+- User Management
+- Workspace Management
+- Workflow CRUD
+- Webhook Handling
+- WhatsApp Cloud API
+- Calendar Integration
+- Payment Integration
+- Queue Scheduling
+- Analytics
+- Notifications
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+---
 
-```sh
-cd my-turborepo
-turbo build
+## ⚙️ Worker
+
+Background processing service responsible for:
+
+- Sending WhatsApp messages
+- Executing automation workflows
+- Delayed messages
+- Retry handling
+- Payment callbacks
+- Appointment reminders
+
+The worker is completely isolated from the API, allowing horizontal scaling under heavy workloads.
+
+---
+
+# Tech Stack
+
+## Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+
+## Backend
+
+- Node.js
+- Express
+- TypeScript
+
+## Queue System
+
+- BullMQ
+- Redis
+
+## Database
+
+- PostgreSQL
+- Prisma ORM
+
+## Integrations
+
+- Meta WhatsApp Cloud API
+- Google Calendar
+- Cal.com
+- Stripe
+- Razorpay
+- WooCommerce
+
+---
+
+# Architecture
+
+```
+                    Business Owner
+                           │
+                           ▼
+                  Next.js Dashboard
+                           │
+                           ▼
+                        API Server
+                           │
+          Stores Workflows, Settings & Bots
+                           │
+                           ▼
+                      PostgreSQL
+
+
+────────────────────────────────────────────────────────────
+
+
+                      Customer
+                           │
+                           ▼
+                    WhatsApp Message
+                           │
+                           ▼
+                Meta WhatsApp Cloud API
+                           │
+                           ▼
+                 WhatsApp Webhook Server
+                           │
+                           ▼
+                    BullMQ Queue (Redis)
+                           │
+                           ▼
+                   Background Worker
+                           │
+        ┌──────────────────┼──────────────────┐
+        ▼                  ▼                  ▼
+   Intent Detection   User Validation   Workflow Engine
+        │                  │                  │
+        ▼                  ▼                  ▼
+   Greeting?         Existing User?     Booking Flow?
+   Appointment?      New User?          Order Flow?
+   Payment?
+                           │
+                           ▼
+          Missing Required Information?
+                           │
+                 Yes ───────────────► Send WhatsApp Flow
+                           │
+                           ▼
+                Structured Form Response
+                           │
+                           ▼
+                  Save User Information
+                           │
+                           ▼
+                  Generate Payment Link
+                           │
+                           ▼
+                Stripe / Razorpay Payment
+                           │
+                           ▼
+                Payment Webhook Received
+                           │
+                           ▼
+                Generate Booking / Order
+                           │
+                           ▼
+             Send Receipt & Confirmation
+                           │
+                           ▼
+                  WhatsApp Cloud API
+                           │
+                           ▼
+                       Customer
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+# Installation
+
+Clone the repository.
+
+```bash
+git clone https://github.com/princeimao/sparq.git
+
+cd sparq
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Install dependencies.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```bash
+npm install
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+# Running Development
+
+Start everything:
+
+```bash
+npm run dev
 ```
 
-### Develop
+# Building
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+npm run build
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+# Running Production
+
+```bash
+npm run start
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+# Scripts
 
-```sh
-turbo dev --filter=web
+| Command | Description |
+|----------|-------------|
+| `npm run dev` | Start all apps |
+| `npm run build` | Build the monorepo |
+| `npm run lint` | Run ESLint |
+| `npm run check-type` | Type check |
+
+---
+
+# Scalability
+
+Sparq is designed to scale horizontally.
+
+You can independently scale:
+
+- API servers
+- Worker instances
+- Redis
+- PostgreSQL
+- Next.js frontend
+
+Multiple workers can consume the same BullMQ queues simultaneously, enabling high-throughput message processing.
+
+---
+
+# Security
+
+- JWT Authentication
+- Password hashing
+- Webhook verification
+- Meta signature validation
+- Secure payment integrations
+- Environment-based secrets
+
+---
+
+# Contributing
+
+1. Fork the repository
+2. Create a feature branch
+
+```bash
+git checkout -b feature/my-feature
 ```
 
-Without global `turbo`:
+3. Commit your changes
 
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
+```bash
+git commit -m "feat: add awesome feature"
 ```
 
-### Remote Caching
+4. Push
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+```bash
+git push origin feature/my-feature
 ```
 
-Without global `turbo`, use your package manager:
+5. Open a Pull Request
 
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
+---
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+# License
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+This project is licensed under the MIT License.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo link
-```
+## Built with ❤️ using
 
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- Next.js
+- TypeScript
+- Turborepo
+- BullMQ
+- Redis
+- PostgreSQL
+- Prisma
+- WhatsApp Cloud API
