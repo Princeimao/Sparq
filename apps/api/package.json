@@ -2,6 +2,7 @@
   "name": "@sparq/api",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "npm@12.0.2",
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
