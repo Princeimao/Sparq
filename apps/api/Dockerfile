@@ -23,7 +23,7 @@ RUN npm cache clean --force && npm ci
 
 COPY --from=prepare /app/out/full/ .
 
-RUN npx turbo run build --filter=@sparq/api
+RUN npx turbo run build --filter=@sparq/api...
 
 
 # RUNNER STAGE
@@ -35,13 +35,14 @@ ENV NODE_ENV=production
 
 COPY --from=prepare /app/out/json/ .
 
-RUN npm cache clean --force && npm ci --omit=dev
+RUN npm cache clean --force && npm ci
 
 COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/packages ./packages
 
 EXPOSE 4000
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/app.js"]
 
 
 
