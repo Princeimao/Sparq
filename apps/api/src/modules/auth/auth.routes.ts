@@ -186,6 +186,7 @@ router.get("/me", authenticate, async (req, res, next) => {
         email: true,
         name: true,
         avatarUrl: true,
+        createdAt: true,
       },
     });
 
@@ -195,6 +196,30 @@ router.get("/me", authenticate, async (req, res, next) => {
     }
 
     res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/me", authenticate, async (req, res, next) => {
+  try {
+    const { name, avatarUrl } = req.body;
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: {
+        ...(name && { name }),
+        ...(avatarUrl !== undefined && { avatarUrl }),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({ user, message: "Profile updated successfully" });
   } catch (error) {
     next(error);
   }

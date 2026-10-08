@@ -18,7 +18,7 @@ function AuthCallbackHandler() {
     if (accessToken && refreshToken) {
       dispatch(setTokens({ accessToken, refreshToken }));
 
-      // Fetch user profile 
+      // Fetch user profile
       dispatch(fetchCurrentUser())
         .unwrap()
         .then((data) => {

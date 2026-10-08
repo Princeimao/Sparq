@@ -209,6 +209,8 @@ export type UserWhereInput = {
   service?: Prisma.ServiceListRelationFilter
   staff?: Prisma.StaffListRelationFilter
   messages?: Prisma.MessageListRelationFilter
+  reservationSlots?: Prisma.ReservationSlotListRelationFilter
+  reservationBookings?: Prisma.ReservationBookingListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -230,6 +232,8 @@ export type UserOrderByWithRelationInput = {
   service?: Prisma.ServiceOrderByRelationAggregateInput
   staff?: Prisma.StaffOrderByRelationAggregateInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
+  reservationSlots?: Prisma.ReservationSlotOrderByRelationAggregateInput
+  reservationBookings?: Prisma.ReservationBookingOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -254,6 +258,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   service?: Prisma.ServiceListRelationFilter
   staff?: Prisma.StaffListRelationFilter
   messages?: Prisma.MessageListRelationFilter
+  reservationSlots?: Prisma.ReservationSlotListRelationFilter
+  reservationBookings?: Prisma.ReservationBookingListRelationFilter
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -301,6 +307,8 @@ export type UserCreateInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -322,6 +330,8 @@ export type UserUncheckedCreateInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -343,6 +353,8 @@ export type UserUpdateInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -364,6 +376,8 @@ export type UserUncheckedUpdateInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -597,6 +611,34 @@ export type UserUpdateOneRequiredWithoutAppointmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.UserUpdateWithoutAppointmentsInput>, Prisma.UserUncheckedUpdateWithoutAppointmentsInput>
 }
 
+export type UserCreateNestedOneWithoutReservationSlotsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationSlotsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutReservationSlotsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationSlotsInput
+  upsert?: Prisma.UserUpsertWithoutReservationSlotsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReservationSlotsInput, Prisma.UserUpdateWithoutReservationSlotsInput>, Prisma.UserUncheckedUpdateWithoutReservationSlotsInput>
+}
+
+export type UserCreateNestedOneWithoutReservationBookingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutReservationBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationBookingsInput
+  upsert?: Prisma.UserUpsertWithoutReservationBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReservationBookingsInput, Prisma.UserUpdateWithoutReservationBookingsInput>, Prisma.UserUncheckedUpdateWithoutReservationBookingsInput>
+}
+
 export type UserCreateWithoutIntegrationsInput = {
   id?: string
   email: string
@@ -615,6 +657,8 @@ export type UserCreateWithoutIntegrationsInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutIntegrationsInput = {
@@ -635,6 +679,8 @@ export type UserUncheckedCreateWithoutIntegrationsInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutIntegrationsInput = {
@@ -671,6 +717,8 @@ export type UserUpdateWithoutIntegrationsInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIntegrationsInput = {
@@ -691,6 +739,8 @@ export type UserUncheckedUpdateWithoutIntegrationsInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWhatsappIntegrationsInput = {
@@ -711,6 +761,8 @@ export type UserCreateWithoutWhatsappIntegrationsInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWhatsappIntegrationsInput = {
@@ -731,6 +783,8 @@ export type UserUncheckedCreateWithoutWhatsappIntegrationsInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWhatsappIntegrationsInput = {
@@ -767,6 +821,8 @@ export type UserUpdateWithoutWhatsappIntegrationsInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWhatsappIntegrationsInput = {
@@ -787,6 +843,8 @@ export type UserUncheckedUpdateWithoutWhatsappIntegrationsInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCustomersInput = {
@@ -807,6 +865,8 @@ export type UserCreateWithoutCustomersInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCustomersInput = {
@@ -827,6 +887,8 @@ export type UserUncheckedCreateWithoutCustomersInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCustomersInput = {
@@ -863,6 +925,8 @@ export type UserUpdateWithoutCustomersInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomersInput = {
@@ -883,6 +947,8 @@ export type UserUncheckedUpdateWithoutCustomersInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -903,6 +969,8 @@ export type UserCreateWithoutOrdersInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -923,6 +991,8 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -959,6 +1029,8 @@ export type UserUpdateWithoutOrdersInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -979,6 +1051,8 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -999,6 +1073,8 @@ export type UserCreateWithoutMessagesInput = {
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -1019,6 +1095,8 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -1055,6 +1133,8 @@ export type UserUpdateWithoutMessagesInput = {
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -1075,6 +1155,8 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProductsInput = {
@@ -1095,6 +1177,8 @@ export type UserCreateWithoutProductsInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProductsInput = {
@@ -1115,6 +1199,8 @@ export type UserUncheckedCreateWithoutProductsInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProductsInput = {
@@ -1151,6 +1237,8 @@ export type UserUpdateWithoutProductsInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProductsInput = {
@@ -1171,6 +1259,8 @@ export type UserUncheckedUpdateWithoutProductsInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkflowsInput = {
@@ -1191,6 +1281,8 @@ export type UserCreateWithoutWorkflowsInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkflowsInput = {
@@ -1211,6 +1303,8 @@ export type UserUncheckedCreateWithoutWorkflowsInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkflowsInput = {
@@ -1247,6 +1341,8 @@ export type UserUpdateWithoutWorkflowsInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkflowsInput = {
@@ -1267,6 +1363,8 @@ export type UserUncheckedUpdateWithoutWorkflowsInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFlowsInput = {
@@ -1287,6 +1385,8 @@ export type UserCreateWithoutFlowsInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFlowsInput = {
@@ -1307,6 +1407,8 @@ export type UserUncheckedCreateWithoutFlowsInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFlowsInput = {
@@ -1343,6 +1445,8 @@ export type UserUpdateWithoutFlowsInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFlowsInput = {
@@ -1363,6 +1467,8 @@ export type UserUncheckedUpdateWithoutFlowsInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutServiceInput = {
@@ -1383,6 +1489,8 @@ export type UserCreateWithoutServiceInput = {
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutServiceInput = {
@@ -1403,6 +1511,8 @@ export type UserUncheckedCreateWithoutServiceInput = {
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutServiceInput = {
@@ -1439,6 +1549,8 @@ export type UserUpdateWithoutServiceInput = {
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceInput = {
@@ -1459,6 +1571,8 @@ export type UserUncheckedUpdateWithoutServiceInput = {
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStaffInput = {
@@ -1479,6 +1593,8 @@ export type UserCreateWithoutStaffInput = {
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStaffInput = {
@@ -1499,6 +1615,8 @@ export type UserUncheckedCreateWithoutStaffInput = {
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStaffInput = {
@@ -1535,6 +1653,8 @@ export type UserUpdateWithoutStaffInput = {
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffInput = {
@@ -1555,6 +1675,8 @@ export type UserUncheckedUpdateWithoutStaffInput = {
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAppointmentsInput = {
@@ -1575,6 +1697,8 @@ export type UserCreateWithoutAppointmentsInput = {
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAppointmentsInput = {
@@ -1595,6 +1719,8 @@ export type UserUncheckedCreateWithoutAppointmentsInput = {
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAppointmentsInput = {
@@ -1631,6 +1757,8 @@ export type UserUpdateWithoutAppointmentsInput = {
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAppointmentsInput = {
@@ -1651,6 +1779,216 @@ export type UserUncheckedUpdateWithoutAppointmentsInput = {
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutReservationSlotsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
+  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutReservationSlotsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
+  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutReservationSlotsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
+}
+
+export type UserUpsertWithoutReservationSlotsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReservationSlotsInput, Prisma.UserUncheckedUpdateWithoutReservationSlotsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReservationSlotsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReservationSlotsInput, Prisma.UserUncheckedUpdateWithoutReservationSlotsInput>
+}
+
+export type UserUpdateWithoutReservationSlotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
+  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReservationSlotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
+  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutReservationBookingsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
+  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutReservationBookingsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
+  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutReservationBookingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
+}
+
+export type UserUpsertWithoutReservationBookingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReservationBookingsInput, Prisma.UserUncheckedUpdateWithoutReservationBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReservationBookingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReservationBookingsInput, Prisma.UserUncheckedUpdateWithoutReservationBookingsInput>
+}
+
+export type UserUpdateWithoutReservationBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
+  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReservationBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
+  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1669,6 +2007,8 @@ export type UserCountOutputType = {
   service: number
   staff: number
   messages: number
+  reservationSlots: number
+  reservationBookings: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1682,6 +2022,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   service?: boolean | UserCountOutputTypeCountServiceArgs
   staff?: boolean | UserCountOutputTypeCountStaffArgs
   messages?: boolean | UserCountOutputTypeCountMessagesArgs
+  reservationSlots?: boolean | UserCountOutputTypeCountReservationSlotsArgs
+  reservationBookings?: boolean | UserCountOutputTypeCountReservationBookingsArgs
 }
 
 /**
@@ -1764,6 +2106,20 @@ export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.MessageWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReservationSlotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReservationSlotWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReservationBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReservationBookingWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1784,6 +2140,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   service?: boolean | Prisma.User$serviceArgs<ExtArgs>
   staff?: boolean | Prisma.User$staffArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
+  reservationSlots?: boolean | Prisma.User$reservationSlotsArgs<ExtArgs>
+  reservationBookings?: boolean | Prisma.User$reservationBookingsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1830,6 +2188,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   service?: boolean | Prisma.User$serviceArgs<ExtArgs>
   staff?: boolean | Prisma.User$staffArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
+  reservationSlots?: boolean | Prisma.User$reservationSlotsArgs<ExtArgs>
+  reservationBookings?: boolean | Prisma.User$reservationBookingsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1849,6 +2209,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     service: Prisma.$ServicePayload<ExtArgs>[]
     staff: Prisma.$StaffPayload<ExtArgs>[]
     messages: Prisma.$MessagePayload<ExtArgs>[]
+    reservationSlots: Prisma.$ReservationSlotPayload<ExtArgs>[]
+    reservationBookings: Prisma.$ReservationBookingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2263,6 +2625,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   service<T extends Prisma.User$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$serviceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   staff<T extends Prisma.User$staffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$staffArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reservationSlots<T extends Prisma.User$reservationSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reservationSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reservationBookings<T extends Prisma.User$reservationBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reservationBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2948,6 +3312,54 @@ export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.MessageScalarFieldEnum | Prisma.MessageScalarFieldEnum[]
+}
+
+/**
+ * User.reservationSlots
+ */
+export type User$reservationSlotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReservationSlot
+   */
+  select?: Prisma.ReservationSlotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReservationSlot
+   */
+  omit?: Prisma.ReservationSlotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReservationSlotInclude<ExtArgs> | null
+  where?: Prisma.ReservationSlotWhereInput
+  orderBy?: Prisma.ReservationSlotOrderByWithRelationInput | Prisma.ReservationSlotOrderByWithRelationInput[]
+  cursor?: Prisma.ReservationSlotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReservationSlotScalarFieldEnum | Prisma.ReservationSlotScalarFieldEnum[]
+}
+
+/**
+ * User.reservationBookings
+ */
+export type User$reservationBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReservationBooking
+   */
+  select?: Prisma.ReservationBookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReservationBooking
+   */
+  omit?: Prisma.ReservationBookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReservationBookingInclude<ExtArgs> | null
+  where?: Prisma.ReservationBookingWhereInput
+  orderBy?: Prisma.ReservationBookingOrderByWithRelationInput | Prisma.ReservationBookingOrderByWithRelationInput[]
+  cursor?: Prisma.ReservationBookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReservationBookingScalarFieldEnum | Prisma.ReservationBookingScalarFieldEnum[]
 }
 
 /**

@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import { ImageUpload } from "@/components/ui/image-upload";
 import type { Product } from "@/app/(dashboard)/products/page";
 
 interface ProductDrawerProps {
@@ -193,14 +194,11 @@ export function ProductDrawer({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image">Image URL</Label>
-            <Input
-              id="image"
-              name="image"
-              type="url"
-              placeholder="https://example.com/image.png"
+            <Label>Product Image</Label>
+            <ImageUpload
               value={formData.image}
-              onChange={handleChange}
+              onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+              onRemove={() => setFormData((prev) => ({ ...prev, image: "" }))}
             />
           </div>
 

@@ -87,6 +87,28 @@ export const AppointmentStatus = {
 export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus]
 
 
+export const ReservationSlotType = {
+  HOTEL_ROOM: 'HOTEL_ROOM',
+  RESTAURANT_TABLE: 'RESTAURANT_TABLE',
+  MEETING_ROOM: 'MEETING_ROOM',
+  EVENT_SPACE: 'EVENT_SPACE',
+  OTHER: 'OTHER'
+} as const
+
+export type ReservationSlotType = (typeof ReservationSlotType)[keyof typeof ReservationSlotType]
+
+
+export const ReservationStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CHECKED_IN: 'CHECKED_IN',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ReservationStatus = (typeof ReservationStatus)[keyof typeof ReservationStatus]
+
+
 export const AvailabilityMode = {
   MANUAL: 'MANUAL',
   GENERATED: 'GENERATED'

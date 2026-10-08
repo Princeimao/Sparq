@@ -23,6 +23,12 @@ import {
   CirclePlay,
   Route,
   TrendingUp,
+  Briefcase,
+  Hotel,
+  Layers,
+  User,
+  CreditCard,
+  Settings,
 } from "lucide-react";
 export type NavigationSection = {
   title: string;
@@ -269,7 +275,16 @@ export const navData: NavItem[] = [
   { title: "WhatsApp Flows", icon: MessageSquareCode, href: "/flows" },
   { title: "Workflows", icon: Workflow, href: "/workflows" },
   { title: "Customers", icon: Contact, href: "/customers" },
+  { label: "CATALOG", isSection: true },
   { title: "Products", icon: ShoppingBag, href: "/products" },
+  { title: "Services", icon: Briefcase, href: "/services" },
+  { title: "Reservations", icon: Hotel, href: "/reservations" },
+  { label: "TOOLS", isSection: true },
+  { title: "Form Builder", icon: Layers, href: "/forms" },
+  { label: "ACCOUNT", isSection: true },
+  { title: "Profile", icon: User, href: "/profile" },
+  { title: "Subscription", icon: CreditCard, href: "/subscription" },
+  { title: "Settings", icon: Settings, href: "/settings" },
 ];
 
 export type IntegrationProvider =

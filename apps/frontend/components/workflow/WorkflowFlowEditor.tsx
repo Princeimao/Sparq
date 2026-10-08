@@ -11,14 +11,13 @@ import {
   type Connection,
   type Edge,
   type Node,
-  MarkerType,
-  Position,
 } from "@xyflow/react";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Sliders, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TriggerNode } from "./nodes/TriggerNode";
 import { ActionNode } from "./nodes/ActionNode";
 import { AddNodeDrawer, type NodeType } from "./AddNodeDrawer";
+import { NodeInspectorDrawer } from "./NodeInspectorDrawer";
 
 interface WorkflowFlowEditorProps {
   workflow: {
@@ -82,11 +81,11 @@ function buildNodesAndEdges(steps: any[]) {
         target: nodeId,
         type: "smoothstep",
         animated: true,
-        style: { stroke: "#94a3b8", strokeWidth: 2 },
+        style: { stroke: "#6366f1", strokeWidth: 2.5 },
       });
 
       prevId = nodeId;
-      xPos += 300;
+      xPos += 320;
     });
   }
 
@@ -100,29 +99,70 @@ export function WorkflowFlowEditor({
 }: WorkflowFlowEditorProps) {
   const initial = useMemo(
     () => buildNodesAndEdges(workflow.steps || []),
-    [workflow.steps],
+    [workflow.steps]
   );
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initial.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initial.edges);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Prevent duplicate edge connections between identical handles
   const onConnect = useCallback(
     (params: Connection) =>
-      setEdges((eds) =>
-        addEdge(
+      setEdges((eds) => {
+        const isDuplicate = eds.some(
+          (e) =>
+            e.source === params.source &&
+            e.target === params.target &&
+            e.sourceHandle === params.sourceHandle
+        );
+        if (isDuplicate) return eds;
+
+        const isTrueBranch = params.sourceHandle === "true";
+        const isFalseBranch = params.sourceHandle === "false";
+        const strokeColor = isTrueBranch
+          ? "#10b981"
+          : isFalseBranch
+          ? "#f43f5e"
+          : "#6366f1";
+
+        return addEdge(
           {
             ...params,
             type: "smoothstep",
             animated: true,
-            style: { stroke: "#94a3b8", strokeWidth: 2 },
+            style: { stroke: strokeColor, strokeWidth: 2.5 },
           },
-          eds,
-        ),
-      ),
-    [setEdges],
+          eds
+        );
+      }),
+    [setEdges]
   );
+
+  const handleNodeClick = (_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+    setInspectorOpen(true);
+  };
+
+  const handleUpdateNodeData = (nodeId: string, updates: Record<string, any>) => {
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.id === nodeId) {
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              ...updates,
+            },
+          };
+        }
+        return n;
+      })
+    );
+  };
 
   const handleAddNode = useCallback(
     (nodeType: NodeType) => {
@@ -130,44 +170,38 @@ export function WorkflowFlowEditor({
         email: "Send Email",
         sms: "Send SMS",
         whatsapp: "Send WhatsApp",
-        ifelse: "If / Else",
-        payment: "Payment",
+        ifelse: "If / Else Condition",
+        payment: "Stripe/Paytm Payment",
       };
 
       const newNodeId = `step_${Date.now()}`;
-
-      // Calculate a good position for the new node (center of view)
-      // Since we don't have access to react flow instance here easily without useReactFlow,
-      // we'll just place it at a default offset from the last node or center
       const lastNode = nodes.length > 0 ? nodes[nodes.length - 1] : null;
-      const newX = lastNode ? lastNode.position.x + 300 : 400;
+      const newX = lastNode ? lastNode.position.x + 320 : 400;
       const newY = lastNode ? lastNode.position.y : 250;
 
-      setNodes((nds) => {
-        return [
-          ...nds,
-          {
-            id: newNodeId,
-            type: "actionNode",
-            position: { x: newX, y: newY },
-            data: {
-              label: nodeLabels[nodeType] || nodeType,
-              nodeType: nodeType,
-            },
-            draggable: true,
+      setNodes((nds) => [
+        ...nds,
+        {
+          id: newNodeId,
+          type: "actionNode",
+          position: { x: newX, y: newY },
+          data: {
+            label: nodeLabels[nodeType] || nodeType,
+            nodeType: nodeType,
+            config: {},
           },
-        ];
-      });
+          draggable: true,
+        },
+      ]);
 
       setDrawerOpen(false);
     },
-    [nodes, setNodes],
+    [nodes, setNodes]
   );
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Wrap state in an object matching the z.array(z.record()) schema
       const steps = [
         {
           _type: "react_flow_state",
@@ -184,7 +218,7 @@ export function WorkflowFlowEditor({
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] -m-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b bg-background z-10">
+      <div className="flex items-center justify-between px-6 py-3 border-b bg-background/95 backdrop-blur z-10">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="size-4" />
@@ -192,19 +226,19 @@ export function WorkflowFlowEditor({
           <div>
             <h2 className="text-sm font-semibold">{workflow.name}</h2>
             <p className="text-xs text-muted-foreground">
-              {workflow.description || "Edit your workflow"}
+              {workflow.description || "Visual Workflow Automation Engine"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => setDrawerOpen(true)}>
-            Add Node
+          <Button variant="outline" size="sm" onClick={() => setDrawerOpen(true)} className="gap-1.5">
+            <Plus className="size-4" /> Add Action Step
           </Button>
-          <Button onClick={handleSave} disabled={saving} size="lg">
+          <Button onClick={handleSave} disabled={saving} size="sm" className="gap-1.5">
             {saving ? (
-              <span className="size-4 mr-1.5 animate-spin border-2 border-current border-t-transparent rounded-full inline-block" />
+              <span className="size-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
             ) : (
-              <Save className="size-4 mr-1.5" />
+              <Save className="size-4" />
             )}
             Save Flow
           </Button>
@@ -219,13 +253,14 @@ export function WorkflowFlowEditor({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeClick={handleNodeClick}
           nodeTypes={nodeTypes}
           fitView
           fitViewOptions={{ padding: 0.3 }}
           proOptions={{ hideAttribution: true }}
-          className="bg-muted/30"
+          className="bg-muted/20"
         >
-          <Background color="#e2e8f0" gap={20} size={1} />
+          <Background color="#cbd5e1" gap={20} size={1} />
           <Controls className="[&>button]:bg-background [&>button]:border-border [&>button]:text-foreground" />
         </ReactFlow>
       </div>
@@ -235,6 +270,14 @@ export function WorkflowFlowEditor({
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         onSelect={handleAddNode}
+      />
+
+      {/* Node Inspector Drawer */}
+      <NodeInspectorDrawer
+        open={inspectorOpen}
+        onOpenChange={setInspectorOpen}
+        selectedNode={selectedNode}
+        onUpdateNodeData={handleUpdateNodeData}
       />
     </div>
   );

@@ -65,7 +65,9 @@ export const ModelName = {
   Service: 'Service',
   Staff: 'Staff',
   Availability: 'Availability',
-  Appointment: 'Appointment'
+  Appointment: 'Appointment',
+  ReservationSlot: 'ReservationSlot',
+  ReservationBooking: 'ReservationBooking'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -318,6 +320,45 @@ export const AppointmentScalarFieldEnum = {
 } as const
 
 export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
+
+
+export const ReservationSlotScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  description: 'description',
+  capacity: 'capacity',
+  pricePerUnit: 'pricePerUnit',
+  priceUnit: 'priceUnit',
+  image: 'image',
+  amenities: 'amenities',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationSlotScalarFieldEnum = (typeof ReservationSlotScalarFieldEnum)[keyof typeof ReservationSlotScalarFieldEnum]
+
+
+export const ReservationBookingScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  slotId: 'slotId',
+  customerName: 'customerName',
+  customerPhone: 'customerPhone',
+  customerEmail: 'customerEmail',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  guestCount: 'guestCount',
+  specialRequests: 'specialRequests',
+  totalAmount: 'totalAmount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationBookingScalarFieldEnum = (typeof ReservationBookingScalarFieldEnum)[keyof typeof ReservationBookingScalarFieldEnum]
 
 
 export const SortOrder = {

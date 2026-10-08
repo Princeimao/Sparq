@@ -41,7 +41,7 @@ export class AppointmentHandler implements WorkflowHandler {
       intent: Intent.BOOK_APPOINTMENT,
       step: AppointmentStep.WAITING_SERVICE_SELECTION,
       data: {
-        serviceIds: services.map((s) => s.id),
+        serviceIds: services.map((s: any) => s.id),
         userId: ctx.message.userId,
       },
       expiresAt: Date.now() + TTL,
@@ -68,7 +68,7 @@ export class AppointmentHandler implements WorkflowHandler {
         sections: [
           {
             title: "Available Services",
-            rows: services.map((s) => ({
+            rows: services.map((s: any) => ({
               id: s.id,
               title: s.name.slice(0, 24),
               description: `${s.duration} mins${s.price ? ` · ₹${s.price}` : ""}`,

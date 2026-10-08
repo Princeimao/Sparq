@@ -411,7 +411,9 @@ export const ModelName = {
   Service: 'Service',
   Staff: 'Staff',
   Availability: 'Availability',
-  Appointment: 'Appointment'
+  Appointment: 'Appointment',
+  ReservationSlot: 'ReservationSlot',
+  ReservationBooking: 'ReservationBooking'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -427,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "integration" | "whatsappIntegration" | "customer" | "address" | "order" | "conversationState" | "message" | "product" | "workflow" | "flow" | "service" | "staff" | "availability" | "appointment"
+    modelProps: "user" | "integration" | "whatsappIntegration" | "customer" | "address" | "order" | "conversationState" | "message" | "product" | "workflow" | "flow" | "service" | "staff" | "availability" | "appointment" | "reservationSlot" | "reservationBooking"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1541,6 +1543,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ReservationSlot: {
+      payload: Prisma.$ReservationSlotPayload<ExtArgs>
+      fields: Prisma.ReservationSlotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReservationSlotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReservationSlotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>
+        }
+        findFirst: {
+          args: Prisma.ReservationSlotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReservationSlotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>
+        }
+        findMany: {
+          args: Prisma.ReservationSlotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>[]
+        }
+        create: {
+          args: Prisma.ReservationSlotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>
+        }
+        createMany: {
+          args: Prisma.ReservationSlotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReservationSlotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>[]
+        }
+        delete: {
+          args: Prisma.ReservationSlotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>
+        }
+        update: {
+          args: Prisma.ReservationSlotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReservationSlotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReservationSlotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReservationSlotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReservationSlotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationSlotPayload>
+        }
+        aggregate: {
+          args: Prisma.ReservationSlotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReservationSlot>
+        }
+        groupBy: {
+          args: Prisma.ReservationSlotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationSlotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReservationSlotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationSlotCountAggregateOutputType> | number
+        }
+      }
+    }
+    ReservationBooking: {
+      payload: Prisma.$ReservationBookingPayload<ExtArgs>
+      fields: Prisma.ReservationBookingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReservationBookingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReservationBookingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>
+        }
+        findFirst: {
+          args: Prisma.ReservationBookingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReservationBookingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>
+        }
+        findMany: {
+          args: Prisma.ReservationBookingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>[]
+        }
+        create: {
+          args: Prisma.ReservationBookingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>
+        }
+        createMany: {
+          args: Prisma.ReservationBookingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReservationBookingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>[]
+        }
+        delete: {
+          args: Prisma.ReservationBookingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>
+        }
+        update: {
+          args: Prisma.ReservationBookingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReservationBookingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReservationBookingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReservationBookingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReservationBookingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationBookingPayload>
+        }
+        aggregate: {
+          args: Prisma.ReservationBookingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReservationBooking>
+        }
+        groupBy: {
+          args: Prisma.ReservationBookingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationBookingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReservationBookingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationBookingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1814,6 +1964,45 @@ export const AppointmentScalarFieldEnum = {
 } as const
 
 export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
+
+
+export const ReservationSlotScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  type: 'type',
+  description: 'description',
+  capacity: 'capacity',
+  pricePerUnit: 'pricePerUnit',
+  priceUnit: 'priceUnit',
+  image: 'image',
+  amenities: 'amenities',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationSlotScalarFieldEnum = (typeof ReservationSlotScalarFieldEnum)[keyof typeof ReservationSlotScalarFieldEnum]
+
+
+export const ReservationBookingScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  slotId: 'slotId',
+  customerName: 'customerName',
+  customerPhone: 'customerPhone',
+  customerEmail: 'customerEmail',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  guestCount: 'guestCount',
+  specialRequests: 'specialRequests',
+  totalAmount: 'totalAmount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationBookingScalarFieldEnum = (typeof ReservationBookingScalarFieldEnum)[keyof typeof ReservationBookingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2100,6 +2289,34 @@ export type EnumAppointmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 export type ListEnumAppointmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentStatus[]'>
     
 
+
+/**
+ * Reference to a field of type 'ReservationSlotType'
+ */
+export type EnumReservationSlotTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReservationSlotType'>
+    
+
+
+/**
+ * Reference to a field of type 'ReservationSlotType[]'
+ */
+export type ListEnumReservationSlotTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReservationSlotType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ReservationStatus'
+ */
+export type EnumReservationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReservationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReservationStatus[]'
+ */
+export type ListEnumReservationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReservationStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -2266,6 +2483,8 @@ export type GlobalOmitConfig = {
   staff?: Prisma.StaffOmit
   availability?: Prisma.AvailabilityOmit
   appointment?: Prisma.AppointmentOmit
+  reservationSlot?: Prisma.ReservationSlotOmit
+  reservationBooking?: Prisma.ReservationBookingOmit
 }
 
 /* Types for Logging */

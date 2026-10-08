@@ -63,6 +63,22 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
+enum ReservationSlotType {
+  HOTEL_ROOM
+  RESTAURANT_TABLE
+  MEETING_ROOM
+  EVENT_SPACE
+  OTHER
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+}
+
 enum AvailabilityMode {
   MANUAL
   GENERATED
@@ -107,6 +123,8 @@ model User {
   service      Service[]
   staff        Staff[]
   messages Message[]
+  reservationSlots    ReservationSlot[]
+  reservationBookings ReservationBooking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -448,4 +466,55 @@ model Appointment {
   @@index([serviceId])
   @@index([staffId])
   @@index([startTime])
+}
+
+// ─── Reservations ─────────────────────────────────────────────────────────────
+
+model ReservationSlot {
+  id          String              @id @default(cuid())
+  userId      String
+  name        String
+  type        ReservationSlotType @default(OTHER)
+  description String?
+  capacity    Int?
+  pricePerUnit Float?
+  priceUnit   String?             // "per night", "per hour", etc.
+  image       String?
+  amenities   String[]            @default([])
+  isActive    Boolean             @default(true)
+
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings ReservationBooking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("reservation_slots")
+}
+
+model ReservationBooking {
+  id             String            @id @default(cuid())
+  userId         String
+  slotId         String
+  customerName   String
+  customerPhone  String?
+  customerEmail  String?
+  startDate      DateTime
+  endDate        DateTime
+  guestCount     Int?
+  specialRequests String?
+  totalAmount    Float?
+  status         ReservationStatus @default(PENDING)
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slot ReservationSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([slotId])
+  @@index([startDate])
+  @@map("reservation_bookings")
 }

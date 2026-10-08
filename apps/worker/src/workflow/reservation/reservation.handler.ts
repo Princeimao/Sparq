@@ -1,5 +1,8 @@
 import { CustomerRepository } from "../../repository/customer.repository";
+import { ReservationRepository } from "../../repository/reservation.repository";
+import { FlowRepository } from "../../repository/flow.repository";
 import { ConversationStore } from "../../services/store/conversation.store";
+import { FlowFallbackService } from "../../services/flow.fallback.service";
 import { WorkflowHandler } from "../../types/handler";
 import { WorkflowContext } from "../../types/workflowContext";
 import { Intent } from "../../types/intent";
@@ -8,8 +11,12 @@ import { ReservationStep } from "./reservation.state";
 const TTL = 3600000; // 1 hour
 
 export class ReservationHandler implements WorkflowHandler {
+  private fallbackService = new FlowFallbackService();
+
   constructor(
     private customerRepository: CustomerRepository,
+    private reservationRepository: ReservationRepository,
+    private flowRepository: FlowRepository,
     private conversationStore: ConversationStore,
   ) {}
 
@@ -19,19 +26,24 @@ export class ReservationHandler implements WorkflowHandler {
     const partySize = ctx.llm?.entities.partySize;
     const date = ctx.llm?.entities.date;
     const time = ctx.llm?.entities.time;
+    const userId = ctx.message.userId;
 
-    // If LLM extracted enough details, skip asking
+    // Check available slots for this SaaS business (hotel rooms, tables, etc.)
+    const slots = await this.reservationRepository.findAvailableSlots(userId);
+
+    // If LLM extracted partySize, date & time, ask for name directly or present slot choices
     if (partySize && date && time) {
       await this.conversationStore.set(this.key(ctx), {
         flowId: "RESERVATION",
         intent: Intent.RESERVE_TABLE,
         step: ReservationStep.WAITING_CUSTOMER_DETAILS,
         data: {
-          userId: ctx.message.userId,
+          userId,
           metadata: {
             partySize,
             reservationDate: date,
             reservationTime: time,
+            slotId: slots[0]?.id,
           },
           detailFields: [
             { id: "name", label: "What name should the reservation be under?", required: true },
@@ -43,12 +55,12 @@ export class ReservationHandler implements WorkflowHandler {
       });
 
       await ctx.whatsapp.sendTextMessage(
-        `Perfect! A table for *${partySize}* on *${date}* at *${time}*.\n\nWhat name should the reservation be under?`,
+        `Perfect! A reservation request for *${partySize} guest(s)* on *${date}* at *${time}*.\n\nWhat name should the reservation be under?`,
       );
       return;
     }
 
-    // Ask for party size first
+    // Otherwise, collect party size first
     await this.conversationStore.set(this.key(ctx), {
       flowId: "RESERVATION",
       intent: Intent.RESERVE_TABLE,
@@ -58,27 +70,33 @@ export class ReservationHandler implements WorkflowHandler {
           : ReservationStep.WAITING_DATE
         : ReservationStep.WAITING_PARTY_SIZE,
       data: {
-        userId: ctx.message.userId,
+        userId,
         metadata: {
           partySize: partySize ?? null,
           reservationDate: date ?? null,
           reservationTime: time ?? null,
+          availableSlots: slots.map((s: any) => ({ id: s.id, name: s.name, type: s.type })),
         },
       },
       expiresAt: Date.now() + TTL,
     });
 
     if (!partySize) {
+      let slotIntro = "";
+      if (slots.length > 0) {
+        slotIntro = ` (We have ${slots.map((s: any) => s.name).slice(0, 3).join(", ")} available)\n\n`;
+      }
+
       await ctx.whatsapp.sendTextMessage(
-        "🍽️ Let's reserve a table!\n\nHow many people will be dining? (e.g., *2*, *4*, *6*)",
+        `🍽️ Let's make a reservation!${slotIntro}How many people will be attending? (e.g., *2*, *4*, *6*)`,
       );
     } else if (!date) {
       await ctx.whatsapp.sendTextMessage(
-        `Great — table for *${partySize}*! 🎉\n\nWhat date would you like? (e.g., *August 5* or *2026-08-05*)`,
+        `Great — for *${partySize} guest(s)*! 🎉\n\nWhat date would you like? (e.g., *August 15* or *2026-08-15*)`,
       );
     } else {
       await ctx.whatsapp.sendTextMessage(
-        `Perfect — *${partySize}* guests on *${date}*. What time? (e.g., *7:00 PM* or *19:00*)`,
+        `Perfect — *${partySize} guest(s)* on *${date}*. What time? (e.g., *7:00 PM* or *19:00*)`,
       );
     }
   }
@@ -98,7 +116,7 @@ export class ReservationHandler implements WorkflowHandler {
       default:
         await this.conversationStore.delete(this.key(ctx));
         await ctx.whatsapp.sendTextMessage(
-          "Session expired. Please start again to reserve a table.",
+          "Session expired. Please start again to reserve a table or room.",
         );
     }
   }
@@ -109,9 +127,9 @@ export class ReservationHandler implements WorkflowHandler {
     const text = ctx.message.text.trim();
     const partySize = parseInt(text, 10);
 
-    if (isNaN(partySize) || partySize < 1 || partySize > 50) {
+    if (isNaN(partySize) || partySize < 1 || partySize > 500) {
       await ctx.whatsapp.sendTextMessage(
-        "Please enter a valid number of guests (1–50). How many people will be dining?",
+        "Please enter a valid number of guests (1–500). How many people will be attending?",
       );
       return;
     }
@@ -129,7 +147,7 @@ export class ReservationHandler implements WorkflowHandler {
     });
 
     await ctx.whatsapp.sendTextMessage(
-      `Table for *${partySize}*! 🎉\n\nWhat date? (e.g., *August 5* or *2026-08-05*)`,
+      `Table/Space for *${partySize}*! 🎉\n\nWhat date? (e.g., *Tomorrow*, *August 15* or *2026-08-15*)`,
     );
   }
 
@@ -168,8 +186,8 @@ export class ReservationHandler implements WorkflowHandler {
         metadata: { ...meta, reservationTime: timeText },
         detailFields: [
           { id: "name", label: "What name should the reservation be under?", required: true },
-          { id: "phone", label: "A contact number for the reservation? (or type 'skip')" },
-          { id: "notes", label: "Any special requests? (or type 'skip')" },
+          { id: "phone", label: "A contact phone number? (or type 'skip')" },
+          { id: "notes", label: "Any special requests or requirements? (or type 'skip')" },
         ],
         detailIndex: 0,
         collectedDetails: {},
@@ -230,7 +248,7 @@ export class ReservationHandler implements WorkflowHandler {
     }
 
     const answer = ctx.message.text.trim();
-    collected[currentField.id] = answer === "skip" ? "" : answer;
+    collected[currentField.id] = answer.toLowerCase() === "skip" ? "" : answer;
 
     const nextIndex = index + 1;
     const nextField = fields[nextIndex];
@@ -246,7 +264,12 @@ export class ReservationHandler implements WorkflowHandler {
     });
 
     if (nextField) {
-      await ctx.whatsapp.sendTextMessage(nextField.label);
+      const q = this.fallbackService.buildQuestion({
+        id: nextField.id,
+        label: nextField.label,
+        required: nextField.required,
+      });
+      await ctx.whatsapp.sendTextMessage(q);
     } else {
       await this.showConfirmation(ctx, collected);
     }
@@ -293,7 +316,7 @@ export class ReservationHandler implements WorkflowHandler {
     if (reply !== "CONFIRM_RES" && reply !== "yes" && reply !== "confirm") {
       await this.conversationStore.delete(this.key(ctx));
       await ctx.whatsapp.sendTextMessage(
-        "Reservation cancelled. Feel free to book a table again anytime! 🍽️",
+        "Reservation cancelled. Feel free to book again anytime! 🍽️",
       );
       return;
     }
@@ -303,8 +326,24 @@ export class ReservationHandler implements WorkflowHandler {
     const collected = data.collectedDetails ?? {};
     const name = collected["name"] ?? ctx.message.customerName;
 
-    // Note: The schema has no "Reservation" model — sending a confirmation message
-    // and optionally saving to a generic record. SaaS owners see this via messages.
+    // Create reservation in DB
+    const userId = data.userId ?? ctx.message.userId;
+    const slots = await this.reservationRepository.findAvailableSlots(userId);
+    const slotId = meta["slotId"] ?? slots[0]?.id;
+
+    if (slotId) {
+      await this.reservationRepository.createBooking({
+        userId,
+        slotId,
+        customerName: name,
+        customerPhone: collected["phone"] || ctx.message.customerWaId,
+        startDate: new Date(meta["reservationDate"] || Date.now()),
+        endDate: new Date(meta["reservationDate"] || Date.now()),
+        guestCount: parseInt(meta["partySize"] || "1", 10),
+        specialRequests: collected["notes"] || "",
+      });
+    }
+
     await ctx.whatsapp.sendTextMessage(
       `🎉 *Reservation Confirmed!*\n\n` +
         `👤 Name: ${name}\n` +
@@ -312,7 +351,7 @@ export class ReservationHandler implements WorkflowHandler {
         `📅 Date: ${meta["reservationDate"]}\n` +
         `⏰ Time: ${meta["reservationTime"]}\n` +
         (collected["notes"] ? `📝 Notes: ${collected["notes"]}\n` : "") +
-        `\nWe look forward to having you! 😊`,
+        `\nWe look forward to hosting you! 😊`,
     );
 
     await this.conversationStore.delete(this.key(ctx));

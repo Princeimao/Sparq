@@ -12,6 +12,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@google-cloud/storage": "^5.18.3",
     "@langchain/core": "^1.2.3",
     "@langchain/google-genai": "^2.2.0",
     "@sparq/database": "*",
@@ -28,12 +29,15 @@
     "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "node-cron": "^3.0.3",
+    "next": "16.3.1",
+    "node-cron": "^4.6.0",
+    "prisma": "6.12.0",
     "stripe": "^18.1.0",
     "uuid": "^11.1.0",
     "zod": "^3.25.30"
   },
   "devDependencies": {
+    "@sparq/types": "*",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.19",
@@ -44,7 +48,6 @@
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^10.0.0",
     "tsx": "^4.19.4",
-    "typescript": "5.9.2",
-    "@sparq/types": "*"
+    "typescript": "5.9.2"
   }
 }

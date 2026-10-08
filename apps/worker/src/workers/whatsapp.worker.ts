@@ -16,6 +16,7 @@ import { ProductRepository } from "../repository/product.repository";
 import { OrderRepository } from "../repository/order.repository";
 import { ServiceRepository } from "../repository/service.repository";
 import { AppointmentRepository } from "../repository/appointment.repository";
+import { ReservationRepository } from "../repository/reservation.repository";
 import { FlowRepository } from "../repository/flow.repository";
 
 // Handlers
@@ -49,6 +50,8 @@ function buildEngine(): WorkflowEngine {
   const appointmentRepo = new AppointmentRepository();
   const flowRepo = new FlowRepository();
 
+  const reservationRepo = new ReservationRepository();
+
   // Handlers
   const orderHandler = new OrderHandler(
     productRepo,
@@ -68,6 +71,8 @@ function buildEngine(): WorkflowEngine {
 
   const reservationHandler = new ReservationHandler(
     customerRepo,
+    reservationRepo,
+    flowRepo,
     conversationStore,
   );
 

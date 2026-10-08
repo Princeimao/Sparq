@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { Handle, Position, useReactFlow, type NodeProps } from "@xyflow/react";
+import { Handle, Position, type NodeProps } from "@xyflow/react";
 import {
   Mail,
   MessageSquare,
@@ -9,7 +9,11 @@ import {
   GitBranch,
   Smartphone,
   Calendar,
+  Settings2,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const nodeConfig: Record<
   string,
@@ -18,221 +22,157 @@ const nodeConfig: Record<
     color: string;
     borderColor: string;
     bgColor: string;
+    badgeText: string;
   }
 > = {
   email: {
-    icon: <Mail className="size-5" />,
-    color: "text-blue-600",
-    borderColor: "border-blue-500/40",
+    icon: <Mail className="size-4" />,
+    color: "text-blue-500",
+    borderColor: "border-blue-500/30",
     bgColor: "bg-blue-500/10",
+    badgeText: "Email Action",
   },
   send_message: {
-    icon: (
-      <svg viewBox="0 0 24 24" className="size-5" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-      </svg>
-    ),
-    color: "text-green-600",
-    borderColor: "border-green-500/40",
-    bgColor: "bg-green-500/10",
+    icon: <MessageSquare className="size-4" />,
+    color: "text-emerald-500",
+    borderColor: "border-emerald-500/30",
+    bgColor: "bg-emerald-500/10",
+    badgeText: "WhatsApp",
   },
   sms: {
-    icon: <Smartphone className="size-5" />,
-    color: "text-purple-600",
-    borderColor: "border-purple-500/40",
+    icon: <Smartphone className="size-4" />,
+    color: "text-purple-500",
+    borderColor: "border-purple-500/30",
     bgColor: "bg-purple-500/10",
+    badgeText: "SMS Action",
   },
   whatsapp: {
-    icon: (
-      <svg viewBox="0 0 24 24" className="size-5" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-      </svg>
-    ),
-    color: "text-green-600",
-    borderColor: "border-green-500/40",
-    bgColor: "bg-green-500/10",
+    icon: <MessageSquare className="size-4" />,
+    color: "text-emerald-500",
+    borderColor: "border-emerald-500/30",
+    bgColor: "bg-emerald-500/10",
+    badgeText: "WhatsApp",
   },
   ifelse: {
-    icon: <GitBranch className="size-5" />,
-    color: "text-amber-600",
-    borderColor: "border-amber-500/40",
+    icon: <GitBranch className="size-4" />,
+    color: "text-amber-500",
+    borderColor: "border-amber-500/30",
     bgColor: "bg-amber-500/10",
+    badgeText: "If / Else Rule",
   },
   condition: {
-    icon: <GitBranch className="size-5" />,
-    color: "text-amber-600",
-    borderColor: "border-amber-500/40",
+    icon: <GitBranch className="size-4" />,
+    color: "text-amber-500",
+    borderColor: "border-amber-500/30",
     bgColor: "bg-amber-500/10",
+    badgeText: "Condition",
   },
   payment: {
-    icon: <CreditCard className="size-5" />,
-    color: "text-emerald-600",
-    borderColor: "border-emerald-500/40",
+    icon: <CreditCard className="size-4" />,
+    color: "text-emerald-500",
+    borderColor: "border-emerald-500/30",
     bgColor: "bg-emerald-500/10",
-  },
-  generate_payment_link: {
-    icon: <CreditCard className="size-5" />,
-    color: "text-emerald-600",
-    borderColor: "border-emerald-500/40",
-    bgColor: "bg-emerald-500/10",
-  },
-  stripe: {
-    icon: <CreditCard className="size-5" />,
-    color: "text-blue-500",
-    borderColor: "border-blue-500/40",
-    bgColor: "bg-blue-500/10",
-  },
-  razorpay: {
-    icon: <CreditCard className="size-5" />,
-    color: "text-blue-700",
-    borderColor: "border-blue-700/40",
-    bgColor: "bg-blue-700/10",
-  },
-  caldotcom: {
-    icon: <Calendar className="size-5" />,
-    color: "text-zinc-200",
-    borderColor: "border-zinc-500/40",
-    bgColor: "bg-zinc-500/10",
-  },
-  googlecalendar: {
-    icon: <Calendar className="size-5" />,
-    color: "text-blue-500",
-    borderColor: "border-blue-500/40",
-    bgColor: "bg-blue-500/10",
+    badgeText: "Payment Link",
   },
 };
 
 const defaultConfig = {
-  icon: <MessageSquare className="size-5" />,
-  color: "text-zinc-400",
-  borderColor: "border-zinc-600/40",
-  bgColor: "bg-zinc-600/10",
+  icon: <MessageSquare className="size-4" />,
+  color: "text-primary",
+  borderColor: "border-border",
+  bgColor: "bg-primary/10",
+  badgeText: "Action Step",
 };
 
-function ActionNodeComponent({ id, data }: NodeProps) {
-  const config = nodeConfig[data.nodeType as string] || defaultConfig;
-  const { setNodes } = useReactFlow();
-
-  const updateConfig = (key: string, value: string) => {
-    setNodes((nds) =>
-      nds.map((n) => {
-        if (n.id === id) {
-          const prevConfig = (n.data.config as Record<string, any>) || {};
-          return {
-            ...n,
-            data: {
-              ...n.data,
-              config: { ...prevConfig, [key]: value },
-            },
-          };
-        }
-        return n;
-      })
-    );
-  };
-
+function ActionNodeComponent({ id, data, selected }: NodeProps) {
+  const nodeType = (data.nodeType as string) || "action";
+  const config = nodeConfig[nodeType] || defaultConfig;
   const nodeDataConfig = (data.config as Record<string, any>) || {};
 
+  const isIfElse = nodeType === "ifelse" || nodeType === "condition";
+
   return (
-    <div className="relative group">
-      {/* 3 Target Handles on Left */}
+    <div
+      className={`relative group rounded-2xl border bg-background/95 backdrop-blur-md p-3.5 min-w-[240px] shadow-sm transition-all duration-200 ${
+        config.borderColor
+      } ${selected ? "ring-2 ring-primary shadow-md" : "hover:border-primary/40 hover:shadow"}`}
+    >
+      {/* Target input handle (Left) */}
       <Handle
         type="target"
-        id="target-1"
+        id="input"
         position={Position.Left}
-        className="!size-2.5 !bg-zinc-700 !border-[1.5px] !border-zinc-900"
-        style={{ top: '25%' }}
-      />
-      <Handle
-        type="target"
-        id="target-2"
-        position={Position.Left}
-        className="!size-2.5 !bg-zinc-700 !border-[1.5px] !border-zinc-900"
-        style={{ top: '50%' }}
-      />
-      <Handle
-        type="target"
-        id="target-3"
-        position={Position.Left}
-        className="!size-2.5 !bg-zinc-700 !border-[1.5px] !border-zinc-900"
-        style={{ top: '75%' }}
+        className="!size-3.5 !bg-primary !border-2 !border-background shadow-xs hover:scale-125 transition-transform"
       />
 
-      <div
-        className={`flex flex-col gap-2 p-3 rounded-xl bg-zinc-900 border ${config.borderColor} shadow-[0_0_15px_rgba(0,0,0,0.5)] min-w-[200px] transition-all duration-200 hover:shadow-lg hover:border-zinc-600`}
-      >
+      <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div
-            className={`flex items-center justify-center size-10 rounded-xl ${config.bgColor} ${config.color}`}
-          >
+          <div className={`p-2 rounded-xl ${config.bgColor} ${config.color} shrink-0`}>
             {config.icon}
           </div>
-          <div>
-            <p className="text-sm font-semibold text-zinc-100">
-              {data.label as string}
-            </p>
+          <div className="min-w-0">
+            <p className="text-xs font-bold truncate text-foreground">{data.label as string}</p>
+            <p className="text-[10px] text-muted-foreground">{config.badgeText}</p>
           </div>
         </div>
-
-        {/* WhatsApp specific options */}
-        {data.nodeType === "whatsapp" && (
-          <div className="mt-2 text-xs flex flex-col gap-2 text-zinc-300">
-            <select
-              className="w-full bg-zinc-800 border border-zinc-700 rounded p-1"
-              value={nodeDataConfig.actionType || "receipt"}
-              onChange={(e) => updateConfig("actionType", e.target.value)}
-            >
-              <option value="receipt">Send Receipt</option>
-              <option value="custom">Custom Message</option>
-            </select>
-            {nodeDataConfig.actionType === "custom" && (
-              <textarea
-                className="w-full bg-zinc-800 border border-zinc-700 rounded p-1 resize-none"
-                placeholder="Type your message..."
-                rows={2}
-                value={nodeDataConfig.message || ""}
-                onChange={(e) => updateConfig("message", e.target.value)}
-              />
-            )}
-          </div>
-        )}
-
-        {/* If/Else specific options */}
-        {data.nodeType === "ifelse" && (
-          <div className="mt-2 text-xs flex flex-col gap-2 text-zinc-300">
-            <input
-              type="text"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded p-1"
-              placeholder="e.g. status == 'paid'"
-              value={nodeDataConfig.condition || ""}
-              onChange={(e) => updateConfig("condition", e.target.value)}
-            />
-          </div>
-        )}
+        <div className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0 mt-1" />
       </div>
 
-      {/* 3 Source Handles on Right */}
-      <Handle
-        type="source"
-        id="source-1"
-        position={Position.Right}
-        className="!size-2.5 !bg-zinc-700 !border-[1.5px] !border-zinc-900"
-        style={{ top: '25%' }}
-      />
-      <Handle
-        type="source"
-        id="source-2"
-        position={Position.Right}
-        className="!size-2.5 !bg-zinc-700 !border-[1.5px] !border-zinc-900"
-        style={{ top: '50%' }}
-      />
-      <Handle
-        type="source"
-        id="source-3"
-        position={Position.Right}
-        className="!size-2.5 !bg-zinc-700 !border-[1.5px] !border-zinc-900"
-        style={{ top: '75%' }}
-      />
+      {/* Node Config Summary */}
+      {isIfElse ? (
+        <div className="mt-2.5 p-2 rounded-xl bg-amber-500/5 border border-amber-500/20 text-[11px] font-mono text-amber-700 dark:text-amber-300">
+          Rule: {nodeDataConfig.fieldVariable || "intent"}{" "}
+          {nodeDataConfig.operator === "CONTAINS" ? "contains" : "=="}{" "}
+          <span className="font-bold">'{nodeDataConfig.compareValue || "ORDER"}'</span>
+        </div>
+      ) : nodeType === "email" ? (
+        <div className="mt-2 text-[11px] text-muted-foreground truncate">
+          Template: <span className="font-semibold text-foreground">{nodeDataConfig.emailTemplate || "Order Confirmation"}</span>
+        </div>
+      ) : (
+        nodeDataConfig.message && (
+          <div className="mt-2 text-[11px] text-muted-foreground line-clamp-1 bg-muted/30 p-1.5 rounded-lg border">
+            "{nodeDataConfig.message}"
+          </div>
+        )
+      )}
+
+      {/* Handles on Right */}
+      {isIfElse ? (
+        <div className="mt-3 flex flex-col gap-2 pt-2 border-t text-[10px] font-medium">
+          {/* True Branch Handle */}
+          <div className="relative flex items-center justify-end gap-1 text-emerald-600 font-bold">
+            <CheckCircle2 className="size-3" /> True Branch
+            <Handle
+              type="source"
+              id="true"
+              position={Position.Right}
+              className="!size-3.5 !bg-emerald-500 !border-2 !border-background shadow-xs hover:scale-125 transition-transform"
+              style={{ top: "64%" }}
+            />
+          </div>
+
+          {/* False Branch Handle */}
+          <div className="relative flex items-center justify-end gap-1 text-rose-500 font-bold mt-1">
+            <XCircle className="size-3" /> False Branch
+            <Handle
+              type="source"
+              id="false"
+              position={Position.Right}
+              className="!size-3.5 !bg-rose-500 !border-2 !border-background shadow-xs hover:scale-125 transition-transform"
+              style={{ top: "86%" }}
+            />
+          </div>
+        </div>
+      ) : (
+        /* Standard Single Output Source Handle */
+        <Handle
+          type="source"
+          id="output"
+          position={Position.Right}
+          className="!size-3.5 !bg-primary !border-2 !border-background shadow-xs hover:scale-125 transition-transform"
+        />
+      )}
     </div>
   );
 }

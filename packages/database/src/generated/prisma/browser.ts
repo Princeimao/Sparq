@@ -92,3 +92,13 @@ export type Availability = Prisma.AvailabilityModel
  * 
  */
 export type Appointment = Prisma.AppointmentModel
+/**
+ * Model ReservationSlot
+ * 
+ */
+export type ReservationSlot = Prisma.ReservationSlotModel
+/**
+ * Model ReservationBooking
+ * 
+ */
+export type ReservationBooking = Prisma.ReservationBookingModel

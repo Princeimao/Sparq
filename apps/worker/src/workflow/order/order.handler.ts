@@ -4,6 +4,7 @@ import { OrderRepository } from "../../repository/order.repository";
 import { FlowRepository } from "../../repository/flow.repository";
 import { ConversationStore } from "../../services/store/conversation.store";
 import { PaymentIntegrationManager } from "../../services/integrations";
+import { FlowFallbackService } from "../../services/flow.fallback.service";
 import { WorkflowHandler } from "../../types/handler";
 import { WorkflowContext } from "../../types/workflowContext";
 import { Intent } from "../../types/intent";
@@ -98,7 +99,7 @@ export class OrderHandler implements WorkflowHandler {
       intent: Intent.ORDER_PRODUCT,
       step: OrderStep.WAITING_PRODUCT_SELECTION,
       data: {
-        productIds: products.map((p) => p.id),
+        productIds: products.map((p: any) => p.id),
       },
       expiresAt: Date.now() + TTL,
     });
@@ -126,7 +127,7 @@ export class OrderHandler implements WorkflowHandler {
         sections: [
           {
             title: "Available Products",
-            rows: products.map((p) => ({
+            rows: products.map((p: any) => ({
               id: p.id,
               title: p.name.slice(0, 24),
               description: `₹${p.price}${p.description ? ` · ${p.description.slice(0, 60)}` : ""}`,
@@ -227,50 +228,66 @@ export class OrderHandler implements WorkflowHandler {
     selectedProductId: string,
     productName: string,
   ): Promise<void> {
+    const fallbackService = new FlowFallbackService();
+
     // Check if the SaaS user has created a published WhatsApp Flow
     const flow = await this.flowRepository.findPublishedFlowByNumberId(
       ctx.message.phoneNumberId,
     );
 
-    if (flow && flow.whatsappSchema) {
-      // Send the WhatsApp native flow
-      await ctx.whatsapp.sendWhatsAppFlow({
-        flowId: (flow.whatsappSchema as any).flowId,
-        flowToken: `order_${selectedProductId}_${Date.now()}`,
-        headerText: "Complete your order",
-        bodyText: "Please provide your details to continue.",
-        cta: "Fill Details",
-      });
+    let sentFlowSuccessfully = false;
 
-      await this.conversationStore.set(this.key(ctx), {
-        flowId: "ORDER",
-        intent: Intent.ORDER_PRODUCT,
-        step: OrderStep.WAITING_CUSTOMER_DETAILS,
-        data: {
-          selectedProductId,
-          userId: ctx.message.userId,
-          metadata: { usingWhatsAppFlow: true, flowId: flow.id },
-        },
-        expiresAt: Date.now() + TTL,
-      });
-    } else {
-      // Fallback: collect details one by one
-      const fields: Array<{ id: string; label: string; required?: boolean }> = [
-        { id: "name", label: "What is your full name?", required: true },
-        {
-          id: "phone",
-          label: "Your phone number (with country code)?",
-          required: true,
-        },
-        {
-          id: "address_line1",
-          label: "Street address (line 1)?",
-          required: true,
-        },
-        { id: "city", label: "City?", required: true },
-        { id: "state", label: "State?", required: true },
-        { id: "pincode", label: "Pincode / ZIP?", required: true },
-      ];
+    if (flow && flow.whatsappSchema) {
+      try {
+        // Attempt to send native Meta WhatsApp Flow
+        await ctx.whatsapp.sendWhatsAppFlow({
+          flowId: (flow.whatsappSchema as any).flowId,
+          flowToken: `order_${selectedProductId}_${Date.now()}`,
+          headerText: "Complete your order",
+          bodyText: `Please fill details to complete your order of *${productName}*.`,
+          cta: "Fill Details",
+        });
+
+        await this.conversationStore.set(this.key(ctx), {
+          flowId: "ORDER",
+          intent: Intent.ORDER_PRODUCT,
+          step: OrderStep.WAITING_CUSTOMER_DETAILS,
+          data: {
+            selectedProductId,
+            userId: ctx.message.userId,
+            metadata: { usingWhatsAppFlow: true, flowId: flow.id },
+          },
+          expiresAt: Date.now() + TTL,
+        });
+
+        sentFlowSuccessfully = true;
+      } catch (err) {
+        console.warn("[OrderHandler] WhatsApp native flow failed (likely phone restriction). Falling back to sequential text message flow.", err);
+        sentFlowSuccessfully = false;
+      }
+    }
+
+    if (!sentFlowSuccessfully) {
+      // Replicate the form fields sequentially via normal text messages
+      let fields: Array<{ id: string; label: string; required?: boolean }> = [];
+
+      if (flow && flow.flowSchema) {
+        const extracted = fallbackService.extractFields(flow.flowSchema as any);
+        if (extracted.length > 0) {
+          fields = extracted;
+        }
+      }
+
+      if (fields.length === 0) {
+        fields = [
+          { id: "name", label: "What is your full name?", required: true },
+          { id: "phone", label: "Your phone number (with country code)?", required: true },
+          { id: "address_line1", label: "Street address (line 1)?", required: true },
+          { id: "city", label: "City?", required: true },
+          { id: "state", label: "State?", required: true },
+          { id: "pincode", label: "Pincode / ZIP?", required: true },
+        ];
+      }
 
       await this.conversationStore.set(this.key(ctx), {
         flowId: "ORDER",
@@ -286,8 +303,9 @@ export class OrderHandler implements WorkflowHandler {
         expiresAt: Date.now() + TTL,
       });
 
+      const firstQ = fallbackService.buildQuestion(fields[0]!);
       await ctx.whatsapp.sendTextMessage(
-        `Welcome! I just need a few details to complete your order of *${productName}*.\n\n${fields[0]!.label}`,
+        `Welcome! Let's get a few details to complete your order of *${productName}*.\n\n${firstQ}`,
       );
     }
   }

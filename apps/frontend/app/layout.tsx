@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sparq - Reorder Now",
+  title: "Sparq",
   description:
     "Revenue driven conversation automation engine for repeat purchases.",
 };

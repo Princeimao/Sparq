@@ -19,6 +19,9 @@ import productRoutes from "./modules/product/product.routes";
 import workflowRoutes from "./modules/workflow/workflow.routes";
 import flowRoutes from "./modules/flow/flow.routes";
 import queueRoutes from "./queues/queue.routes";
+import serviceRoutes from "./modules/service/service.routes";
+import reservationRoutes from "./modules/reservation/reservation.routes";
+import uploadRoutes from "./modules/upload/upload.routes";
 
 
 const app = express();
@@ -54,6 +57,9 @@ app.use("/api/products", authenticate, productRoutes);
 app.use("/api/workflows", authenticate, workflowRoutes);
 app.use("/api", authenticate, flowRoutes);       // /api/flows
 app.use("/api/queue", authenticate, queueRoutes); // /api/queue/stats, /api/queue/jobs
+app.use("/api/services", authenticate, serviceRoutes);
+app.use("/api/reservations", authenticate, reservationRoutes);
+app.use("/api/upload", authenticate, uploadRoutes);
 
 app.use(errorHandler);
 

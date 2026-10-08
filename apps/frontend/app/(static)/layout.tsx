@@ -11,25 +11,25 @@ import { navigationData } from "@/constant";
 export default function StaticLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const router = useRouter();
+  // const router = useRouter();
 
-  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  // const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (isLoading) return;
+  // useEffect(() => {
+  //   if (isLoading) return;
 
-    if (isAuthenticated) {
-      router.replace("/dashboard");
-    }
-  }, [isAuthenticated, isLoading, router]);
+  //   if (isAuthenticated) {
+  //     router.replace("/dashboard");
+  //   }
+  // }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading || isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-      </div>
-    );
-  }
+  // if (isLoading || isAuthenticated) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-white">
+  //       <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="relative min-h-screen bg-black">
