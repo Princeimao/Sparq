@@ -26,7 +26,9 @@ export class CustomerRepository extends BaseRepository {
   // ─── Find or Create ────────────────────────────────────────────────────────
 
   /**
-   * Finds an existing customer by phone+userId or creates one if not found.
+   * Finds an existing customer by (userId, phone) or creates one.
+   * Uses upsert on the @@unique([userId, phone]) constraint so concurrent
+   * webhook deliveries can't create duplicate customer records.
    */
   async findOrCreate(params: {
     phone: string;
@@ -34,17 +36,12 @@ export class CustomerRepository extends BaseRepository {
     phoneNumberId: string;
     userId: string;
   }) {
-    const existing = await this.prisma.customer.findFirst({
+    return this.prisma.customer.upsert({
       where: {
-        phone: params.phone,
-        userId: params.userId,
+        userId_phone: { userId: params.userId, phone: params.phone },
       },
-    });
-
-    if (existing) return existing;
-
-    return this.prisma.customer.create({
-      data: {
+      update: {},
+      create: {
         phone: params.phone,
         name: params.name,
         userId: params.userId,

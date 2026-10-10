@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../api";
 
 export interface User {
@@ -10,29 +10,18 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   isInitialized: boolean;
 }
 
-const getInitialTokens = () => {
-  if (typeof window !== "undefined") {
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-    return { accessToken, refreshToken };
-  }
-  return { accessToken: null, refreshToken: null };
-};
-
-const initialTokens = getInitialTokens();
+// NOTE: tokens are httpOnly cookies managed by the backend. Nothing
+// auth-related is kept in localStorage — the store only tracks the user
+// profile and whether a session exists.
 
 const initialState: AuthState = {
   user: null,
-  accessToken: initialTokens.accessToken,
-  refreshToken: initialTokens.refreshToken,
-  isAuthenticated: !!initialTokens.accessToken,
+  isAuthenticated: false,
   isLoading: false,
   isInitialized: false,
 };
@@ -68,34 +57,14 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setTokens: (
-      state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>
-    ) => {
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
-      state.isAuthenticated = true;
-      if (typeof window !== "undefined") {
-        localStorage.setItem("accessToken", action.payload.accessToken);
-        localStorage.setItem("refreshToken", action.payload.refreshToken);
-        localStorage.setItem("isLoggedIn", "true");
-      }
-    },
     clearAuth: (state) => {
       state.user = null;
-      state.accessToken = null;
-      state.refreshToken = null;
       state.isAuthenticated = false;
       state.isInitialized = true;
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("isLoggedIn");
-      }
     },
     setInitialized: (state) => {
       state.isInitialized = true;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -113,10 +82,8 @@ const authSlice = createSlice({
             name: user.name,
             avatarUrl: user.avatarUrl,
           };
-
           state.isAuthenticated = true;
         } else {
-          // If no user object is returned, clear authentication
           authSlice.caseReducers.clearAuth(state);
         }
       })
@@ -128,5 +95,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokens, clearAuth, setInitialized } = authSlice.actions;
+export const { clearAuth, setInitialized } = authSlice.actions;
 export default authSlice.reducer;

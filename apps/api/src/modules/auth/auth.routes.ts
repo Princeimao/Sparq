@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Response } from "express";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
@@ -10,6 +10,37 @@ import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.utils
 const codeVerifierStore = new Map<string, string>();
 
 const router = Router();
+
+// ─── Secure cookie helpers ──────────────────────────────────────────────────
+// Tokens live ONLY in httpOnly cookies — they are never returned in response
+// bodies and never placed in redirect URLs. JS (and XSS) cannot read them.
+
+const ACCESS_COOKIE = "access_token";
+const REFRESH_COOKIE = "refresh_token";
+// Scoped so the long-lived refresh token is only sent to auth endpoints.
+const REFRESH_COOKIE_PATH = "/api/auth";
+
+function setAuthCookies(res: Response, accessToken: string, refreshToken: string): void {
+  res.cookie(ACCESS_COOKIE, accessToken, {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+  res.cookie(REFRESH_COOKIE, refreshToken, {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: REFRESH_COOKIE_PATH,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+}
+
+function clearAuthCookies(res: Response): void {
+  res.clearCookie(ACCESS_COOKIE, { path: "/" });
+  res.clearCookie(REFRESH_COOKIE, { path: REFRESH_COOKIE_PATH });
+}
 
 const googleClient = new OAuth2Client(
   env.GOOGLE_CLIENT_ID,
@@ -64,23 +95,11 @@ router.get("/google/callback", async (req, res, next) => {
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
-    res.cookie("access_token", accessToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    res.redirect(
-      `${env.FRONTEND_URL}/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`
-    );
+    // Cookies carry the session — tokens never go in the URL (they would
+    // leak via history, logs and Referer headers).
+    res.redirect(`${env.FRONTEND_URL}/auth/callback`);
   } catch (error) {
     next(error);
   }
@@ -123,9 +142,9 @@ router.post("/google/token", async (req, res, next) => {
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
+    setAuthCookies(res, accessToken, refreshToken);
+
     res.json({
-      accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -140,38 +159,44 @@ router.post("/google/token", async (req, res, next) => {
 
 router.post("/refresh", async (req, res, next) => {
   try {
-    const token = req.body.refreshToken || req.cookies?.refresh_token;
+    // Refresh token comes ONLY from the httpOnly cookie — never from the
+    // request body, so JS cannot touch it.
+    const token = req.cookies?.refresh_token;
     if (!token) {
-      res.status(401).json({ error: "Refresh token is required" });
+      res.status(401).json({ error: "Session expired. Please sign in again." });
       return;
     }
 
-    const payload = jwt.verify(token, env.JWT_REFRESH_SECRET) as AuthPayload;
+    let payload: AuthPayload;
+    try {
+      payload = jwt.verify(token, env.JWT_REFRESH_SECRET) as AuthPayload;
+    } catch {
+      clearAuthCookies(res);
+      res.status(401).json({ error: "Session expired. Please sign in again." });
+      return;
+    }
 
     const user = await prisma.user.findUnique({ where: { id: payload.userId } });
     if (!user) {
+      clearAuthCookies(res);
       res.status(401).json({ error: "User not found" });
       return;
     }
 
+    // Rotate: every refresh issues a fresh pair.
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
-    res.cookie("access_token", accessToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatarUrl,
+      },
     });
-
-    res.json({ accessToken, refreshToken });
   } catch {
     res.status(401).json({ error: "Invalid refresh token" });
   }
@@ -226,60 +251,8 @@ router.patch("/me", authenticate, async (req, res, next) => {
 });
 
 router.post("/logout", (_req, res) => {
-  res.clearCookie("access_token");
-  res.clearCookie("refresh_token");
+  clearAuthCookies(res);
   res.json({ message: "Logged out" });
-});
-
-// Test route
-router.get("/test", async (req, res, next) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      res.status(400).json({ error: "Email and name are required" });
-      return;
-    }
-
-    const user = await prisma.user.findFirst({
-      where: {
-        email,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        avatarUrl: true,
-        createdAt: true,
-      },
-    });
-
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-
-    const accessToken = generateAccessToken(user.id, user.email);
-    const refreshToken = generateRefreshToken(user.id, user.email);
-
-    res.cookie("access_token", accessToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000, // 15 minutes
-    });
-
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    res.json({ accessToken, refreshToken });
-  } catch (error) {
-    next(error);
-  }
 });
 
 export default router;

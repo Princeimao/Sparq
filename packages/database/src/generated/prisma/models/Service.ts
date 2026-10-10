@@ -28,11 +28,17 @@ export type AggregateService = {
 
 export type ServiceAvgAggregateOutputType = {
   duration: number | null
+  bufferMinutes: number | null
+  minLeadMinutes: number | null
+  maxAdvanceDays: number | null
   price: number | null
 }
 
 export type ServiceSumAggregateOutputType = {
   duration: number | null
+  bufferMinutes: number | null
+  minLeadMinutes: number | null
+  maxAdvanceDays: number | null
   price: number | null
 }
 
@@ -44,6 +50,12 @@ export type ServiceMinAggregateOutputType = {
   duration: number | null
   bookingMode: $Enums.BookingMode | null
   availabilityMode: $Enums.AvailabilityMode | null
+  locationMode: $Enums.ServiceLocation | null
+  assignmentMode: $Enums.AssignmentMode | null
+  requiresPartySize: boolean | null
+  bufferMinutes: number | null
+  minLeadMinutes: number | null
+  maxAdvanceDays: number | null
   price: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,6 +69,12 @@ export type ServiceMaxAggregateOutputType = {
   duration: number | null
   bookingMode: $Enums.BookingMode | null
   availabilityMode: $Enums.AvailabilityMode | null
+  locationMode: $Enums.ServiceLocation | null
+  assignmentMode: $Enums.AssignmentMode | null
+  requiresPartySize: boolean | null
+  bufferMinutes: number | null
+  minLeadMinutes: number | null
+  maxAdvanceDays: number | null
   price: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -70,6 +88,12 @@ export type ServiceCountAggregateOutputType = {
   duration: number
   bookingMode: number
   availabilityMode: number
+  locationMode: number
+  assignmentMode: number
+  requiresPartySize: number
+  bufferMinutes: number
+  minLeadMinutes: number
+  maxAdvanceDays: number
   price: number
   createdAt: number
   updatedAt: number
@@ -79,11 +103,17 @@ export type ServiceCountAggregateOutputType = {
 
 export type ServiceAvgAggregateInputType = {
   duration?: true
+  bufferMinutes?: true
+  minLeadMinutes?: true
+  maxAdvanceDays?: true
   price?: true
 }
 
 export type ServiceSumAggregateInputType = {
   duration?: true
+  bufferMinutes?: true
+  minLeadMinutes?: true
+  maxAdvanceDays?: true
   price?: true
 }
 
@@ -95,6 +125,12 @@ export type ServiceMinAggregateInputType = {
   duration?: true
   bookingMode?: true
   availabilityMode?: true
+  locationMode?: true
+  assignmentMode?: true
+  requiresPartySize?: true
+  bufferMinutes?: true
+  minLeadMinutes?: true
+  maxAdvanceDays?: true
   price?: true
   createdAt?: true
   updatedAt?: true
@@ -108,6 +144,12 @@ export type ServiceMaxAggregateInputType = {
   duration?: true
   bookingMode?: true
   availabilityMode?: true
+  locationMode?: true
+  assignmentMode?: true
+  requiresPartySize?: true
+  bufferMinutes?: true
+  minLeadMinutes?: true
+  maxAdvanceDays?: true
   price?: true
   createdAt?: true
   updatedAt?: true
@@ -121,6 +163,12 @@ export type ServiceCountAggregateInputType = {
   duration?: true
   bookingMode?: true
   availabilityMode?: true
+  locationMode?: true
+  assignmentMode?: true
+  requiresPartySize?: true
+  bufferMinutes?: true
+  minLeadMinutes?: true
+  maxAdvanceDays?: true
   price?: true
   createdAt?: true
   updatedAt?: true
@@ -221,6 +269,12 @@ export type ServiceGroupByOutputType = {
   duration: number
   bookingMode: $Enums.BookingMode
   availabilityMode: $Enums.AvailabilityMode
+  locationMode: $Enums.ServiceLocation
+  assignmentMode: $Enums.AssignmentMode
+  requiresPartySize: boolean
+  bufferMinutes: number
+  minLeadMinutes: number
+  maxAdvanceDays: number | null
   price: number | null
   createdAt: Date
   updatedAt: Date
@@ -257,12 +311,19 @@ export type ServiceWhereInput = {
   duration?: Prisma.IntFilter<"Service"> | number
   bookingMode?: Prisma.EnumBookingModeFilter<"Service"> | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFilter<"Service"> | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFilter<"Service"> | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFilter<"Service"> | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFilter<"Service"> | boolean
+  bufferMinutes?: Prisma.IntFilter<"Service"> | number
+  minLeadMinutes?: Prisma.IntFilter<"Service"> | number
+  maxAdvanceDays?: Prisma.IntNullableFilter<"Service"> | number | null
   price?: Prisma.FloatNullableFilter<"Service"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   staff?: Prisma.StaffListRelationFilter
-  appointments?: Prisma.AppointmentListRelationFilter
+  resourceLinks?: Prisma.ServiceResourceListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
 }
 
 export type ServiceOrderByWithRelationInput = {
@@ -273,12 +334,19 @@ export type ServiceOrderByWithRelationInput = {
   duration?: Prisma.SortOrder
   bookingMode?: Prisma.SortOrder
   availabilityMode?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  assignmentMode?: Prisma.SortOrder
+  requiresPartySize?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   staff?: Prisma.StaffOrderByRelationAggregateInput
-  appointments?: Prisma.AppointmentOrderByRelationAggregateInput
+  resourceLinks?: Prisma.ServiceResourceOrderByRelationAggregateInput
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
 }
 
 export type ServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -292,12 +360,19 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   duration?: Prisma.IntFilter<"Service"> | number
   bookingMode?: Prisma.EnumBookingModeFilter<"Service"> | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFilter<"Service"> | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFilter<"Service"> | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFilter<"Service"> | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFilter<"Service"> | boolean
+  bufferMinutes?: Prisma.IntFilter<"Service"> | number
+  minLeadMinutes?: Prisma.IntFilter<"Service"> | number
+  maxAdvanceDays?: Prisma.IntNullableFilter<"Service"> | number | null
   price?: Prisma.FloatNullableFilter<"Service"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   staff?: Prisma.StaffListRelationFilter
-  appointments?: Prisma.AppointmentListRelationFilter
+  resourceLinks?: Prisma.ServiceResourceListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
 }, "id">
 
 export type ServiceOrderByWithAggregationInput = {
@@ -308,6 +383,12 @@ export type ServiceOrderByWithAggregationInput = {
   duration?: Prisma.SortOrder
   bookingMode?: Prisma.SortOrder
   availabilityMode?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  assignmentMode?: Prisma.SortOrder
+  requiresPartySize?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -329,6 +410,12 @@ export type ServiceScalarWhereWithAggregatesInput = {
   duration?: Prisma.IntWithAggregatesFilter<"Service"> | number
   bookingMode?: Prisma.EnumBookingModeWithAggregatesFilter<"Service"> | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeWithAggregatesFilter<"Service"> | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationWithAggregatesFilter<"Service"> | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeWithAggregatesFilter<"Service"> | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolWithAggregatesFilter<"Service"> | boolean
+  bufferMinutes?: Prisma.IntWithAggregatesFilter<"Service"> | number
+  minLeadMinutes?: Prisma.IntWithAggregatesFilter<"Service"> | number
+  maxAdvanceDays?: Prisma.IntNullableWithAggregatesFilter<"Service"> | number | null
   price?: Prisma.FloatNullableWithAggregatesFilter<"Service"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Service"> | Date | string
@@ -341,12 +428,19 @@ export type ServiceCreateInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutServiceInput
   staff?: Prisma.StaffCreateNestedManyWithoutServicesInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutServiceInput
+  resourceLinks?: Prisma.ServiceResourceCreateNestedManyWithoutServiceInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateInput = {
@@ -357,11 +451,18 @@ export type ServiceUncheckedCreateInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutServicesInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutServiceInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedCreateNestedManyWithoutServiceInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUpdateInput = {
@@ -371,12 +472,19 @@ export type ServiceUpdateInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutServiceNestedInput
   staff?: Prisma.StaffUpdateManyWithoutServicesNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutServiceNestedInput
+  resourceLinks?: Prisma.ServiceResourceUpdateManyWithoutServiceNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateInput = {
@@ -387,11 +495,18 @@ export type ServiceUncheckedUpdateInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutServicesNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutServiceNestedInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedUpdateManyWithoutServiceNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateManyInput = {
@@ -402,6 +517,12 @@ export type ServiceCreateManyInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -414,6 +535,12 @@ export type ServiceUpdateManyMutationInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -427,6 +554,12 @@ export type ServiceUncheckedUpdateManyInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -450,6 +583,12 @@ export type ServiceCountOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   bookingMode?: Prisma.SortOrder
   availabilityMode?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  assignmentMode?: Prisma.SortOrder
+  requiresPartySize?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -457,6 +596,9 @@ export type ServiceCountOrderByAggregateInput = {
 
 export type ServiceAvgOrderByAggregateInput = {
   duration?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrder
   price?: Prisma.SortOrder
 }
 
@@ -468,6 +610,12 @@ export type ServiceMaxOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   bookingMode?: Prisma.SortOrder
   availabilityMode?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  assignmentMode?: Prisma.SortOrder
+  requiresPartySize?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -481,6 +629,12 @@ export type ServiceMinOrderByAggregateInput = {
   duration?: Prisma.SortOrder
   bookingMode?: Prisma.SortOrder
   availabilityMode?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  assignmentMode?: Prisma.SortOrder
+  requiresPartySize?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrder
   price?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -488,12 +642,20 @@ export type ServiceMinOrderByAggregateInput = {
 
 export type ServiceSumOrderByAggregateInput = {
   duration?: Prisma.SortOrder
+  bufferMinutes?: Prisma.SortOrder
+  minLeadMinutes?: Prisma.SortOrder
+  maxAdvanceDays?: Prisma.SortOrder
   price?: Prisma.SortOrder
 }
 
 export type ServiceScalarRelationFilter = {
   is?: Prisma.ServiceWhereInput
   isNot?: Prisma.ServiceWhereInput
+}
+
+export type ServiceNullableScalarRelationFilter = {
+  is?: Prisma.ServiceWhereInput | null
+  isNot?: Prisma.ServiceWhereInput | null
 }
 
 export type ServiceCreateNestedManyWithoutUserInput = {
@@ -546,6 +708,22 @@ export type EnumAvailabilityModeFieldUpdateOperationsInput = {
   set?: $Enums.AvailabilityMode
 }
 
+export type EnumServiceLocationFieldUpdateOperationsInput = {
+  set?: $Enums.ServiceLocation
+}
+
+export type EnumAssignmentModeFieldUpdateOperationsInput = {
+  set?: $Enums.AssignmentMode
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type ServiceCreateNestedManyWithoutStaffInput = {
   create?: Prisma.XOR<Prisma.ServiceCreateWithoutStaffInput, Prisma.ServiceUncheckedCreateWithoutStaffInput> | Prisma.ServiceCreateWithoutStaffInput[] | Prisma.ServiceUncheckedCreateWithoutStaffInput[]
   connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutStaffInput | Prisma.ServiceCreateOrConnectWithoutStaffInput[]
@@ -584,18 +762,34 @@ export type ServiceUncheckedUpdateManyWithoutStaffNestedInput = {
   deleteMany?: Prisma.ServiceScalarWhereInput | Prisma.ServiceScalarWhereInput[]
 }
 
-export type ServiceCreateNestedOneWithoutAppointmentsInput = {
-  create?: Prisma.XOR<Prisma.ServiceCreateWithoutAppointmentsInput, Prisma.ServiceUncheckedCreateWithoutAppointmentsInput>
-  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutAppointmentsInput
+export type ServiceCreateNestedOneWithoutResourceLinksInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutResourceLinksInput, Prisma.ServiceUncheckedCreateWithoutResourceLinksInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutResourceLinksInput
   connect?: Prisma.ServiceWhereUniqueInput
 }
 
-export type ServiceUpdateOneRequiredWithoutAppointmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.ServiceCreateWithoutAppointmentsInput, Prisma.ServiceUncheckedCreateWithoutAppointmentsInput>
-  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutAppointmentsInput
-  upsert?: Prisma.ServiceUpsertWithoutAppointmentsInput
+export type ServiceUpdateOneRequiredWithoutResourceLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutResourceLinksInput, Prisma.ServiceUncheckedCreateWithoutResourceLinksInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutResourceLinksInput
+  upsert?: Prisma.ServiceUpsertWithoutResourceLinksInput
   connect?: Prisma.ServiceWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.ServiceUpdateWithoutAppointmentsInput>, Prisma.ServiceUncheckedUpdateWithoutAppointmentsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutResourceLinksInput, Prisma.ServiceUpdateWithoutResourceLinksInput>, Prisma.ServiceUncheckedUpdateWithoutResourceLinksInput>
+}
+
+export type ServiceCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutBookingsInput, Prisma.ServiceUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.ServiceWhereUniqueInput
+}
+
+export type ServiceUpdateOneWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutBookingsInput, Prisma.ServiceUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.ServiceUpsertWithoutBookingsInput
+  disconnect?: Prisma.ServiceWhereInput | boolean
+  delete?: Prisma.ServiceWhereInput | boolean
+  connect?: Prisma.ServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutBookingsInput, Prisma.ServiceUpdateWithoutBookingsInput>, Prisma.ServiceUncheckedUpdateWithoutBookingsInput>
 }
 
 export type ServiceCreateWithoutUserInput = {
@@ -605,11 +799,18 @@ export type ServiceCreateWithoutUserInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffCreateNestedManyWithoutServicesInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutServiceInput
+  resourceLinks?: Prisma.ServiceResourceCreateNestedManyWithoutServiceInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutUserInput = {
@@ -619,11 +820,18 @@ export type ServiceUncheckedCreateWithoutUserInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutServicesInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutServiceInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedCreateNestedManyWithoutServiceInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutUserInput = {
@@ -663,6 +871,12 @@ export type ServiceScalarWhereInput = {
   duration?: Prisma.IntFilter<"Service"> | number
   bookingMode?: Prisma.EnumBookingModeFilter<"Service"> | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFilter<"Service"> | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFilter<"Service"> | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFilter<"Service"> | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFilter<"Service"> | boolean
+  bufferMinutes?: Prisma.IntFilter<"Service"> | number
+  minLeadMinutes?: Prisma.IntFilter<"Service"> | number
+  maxAdvanceDays?: Prisma.IntNullableFilter<"Service"> | number | null
   price?: Prisma.FloatNullableFilter<"Service"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Service"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Service"> | Date | string
@@ -675,11 +889,18 @@ export type ServiceCreateWithoutStaffInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutServiceInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutServiceInput
+  resourceLinks?: Prisma.ServiceResourceCreateNestedManyWithoutServiceInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceUncheckedCreateWithoutStaffInput = {
@@ -690,10 +911,17 @@ export type ServiceUncheckedCreateWithoutStaffInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutServiceInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedCreateNestedManyWithoutServiceInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
 }
 
 export type ServiceCreateOrConnectWithoutStaffInput = {
@@ -717,21 +945,28 @@ export type ServiceUpdateManyWithWhereWithoutStaffInput = {
   data: Prisma.XOR<Prisma.ServiceUpdateManyMutationInput, Prisma.ServiceUncheckedUpdateManyWithoutStaffInput>
 }
 
-export type ServiceCreateWithoutAppointmentsInput = {
+export type ServiceCreateWithoutResourceLinksInput = {
   id?: string
   name: string
   description?: string | null
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutServiceInput
   staff?: Prisma.StaffCreateNestedManyWithoutServicesInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutServiceInput
 }
 
-export type ServiceUncheckedCreateWithoutAppointmentsInput = {
+export type ServiceUncheckedCreateWithoutResourceLinksInput = {
   id?: string
   userId: string
   name: string
@@ -739,43 +974,57 @@ export type ServiceUncheckedCreateWithoutAppointmentsInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutServicesInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutServiceInput
 }
 
-export type ServiceCreateOrConnectWithoutAppointmentsInput = {
+export type ServiceCreateOrConnectWithoutResourceLinksInput = {
   where: Prisma.ServiceWhereUniqueInput
-  create: Prisma.XOR<Prisma.ServiceCreateWithoutAppointmentsInput, Prisma.ServiceUncheckedCreateWithoutAppointmentsInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutResourceLinksInput, Prisma.ServiceUncheckedCreateWithoutResourceLinksInput>
 }
 
-export type ServiceUpsertWithoutAppointmentsInput = {
-  update: Prisma.XOR<Prisma.ServiceUpdateWithoutAppointmentsInput, Prisma.ServiceUncheckedUpdateWithoutAppointmentsInput>
-  create: Prisma.XOR<Prisma.ServiceCreateWithoutAppointmentsInput, Prisma.ServiceUncheckedCreateWithoutAppointmentsInput>
+export type ServiceUpsertWithoutResourceLinksInput = {
+  update: Prisma.XOR<Prisma.ServiceUpdateWithoutResourceLinksInput, Prisma.ServiceUncheckedUpdateWithoutResourceLinksInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutResourceLinksInput, Prisma.ServiceUncheckedCreateWithoutResourceLinksInput>
   where?: Prisma.ServiceWhereInput
 }
 
-export type ServiceUpdateToOneWithWhereWithoutAppointmentsInput = {
+export type ServiceUpdateToOneWithWhereWithoutResourceLinksInput = {
   where?: Prisma.ServiceWhereInput
-  data: Prisma.XOR<Prisma.ServiceUpdateWithoutAppointmentsInput, Prisma.ServiceUncheckedUpdateWithoutAppointmentsInput>
+  data: Prisma.XOR<Prisma.ServiceUpdateWithoutResourceLinksInput, Prisma.ServiceUncheckedUpdateWithoutResourceLinksInput>
 }
 
-export type ServiceUpdateWithoutAppointmentsInput = {
+export type ServiceUpdateWithoutResourceLinksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutServiceNestedInput
   staff?: Prisma.StaffUpdateManyWithoutServicesNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
 }
 
-export type ServiceUncheckedUpdateWithoutAppointmentsInput = {
+export type ServiceUncheckedUpdateWithoutResourceLinksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
@@ -783,10 +1032,117 @@ export type ServiceUncheckedUpdateWithoutAppointmentsInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutServicesNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceCreateWithoutBookingsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  duration: number
+  bookingMode?: $Enums.BookingMode
+  availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
+  price?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutServiceInput
+  staff?: Prisma.StaffCreateNestedManyWithoutServicesInput
+  resourceLinks?: Prisma.ServiceResourceCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceUncheckedCreateWithoutBookingsInput = {
+  id?: string
+  userId: string
+  name: string
+  description?: string | null
+  duration: number
+  bookingMode?: $Enums.BookingMode
+  availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
+  price?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutServicesInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.ServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutBookingsInput, Prisma.ServiceUncheckedCreateWithoutBookingsInput>
+}
+
+export type ServiceUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.ServiceUpdateWithoutBookingsInput, Prisma.ServiceUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutBookingsInput, Prisma.ServiceUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.ServiceWhereInput
+}
+
+export type ServiceUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.ServiceWhereInput
+  data: Prisma.XOR<Prisma.ServiceUpdateWithoutBookingsInput, Prisma.ServiceUncheckedUpdateWithoutBookingsInput>
+}
+
+export type ServiceUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
+  availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutServiceNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutServicesNestedInput
+  resourceLinks?: Prisma.ServiceResourceUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  duration?: Prisma.IntFieldUpdateOperationsInput | number
+  bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
+  availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutServicesNestedInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceCreateManyUserInput = {
@@ -796,6 +1152,12 @@ export type ServiceCreateManyUserInput = {
   duration: number
   bookingMode?: $Enums.BookingMode
   availabilityMode?: $Enums.AvailabilityMode
+  locationMode?: $Enums.ServiceLocation
+  assignmentMode?: $Enums.AssignmentMode
+  requiresPartySize?: boolean
+  bufferMinutes?: number
+  minLeadMinutes?: number
+  maxAdvanceDays?: number | null
   price?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -808,11 +1170,18 @@ export type ServiceUpdateWithoutUserInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUpdateManyWithoutServicesNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutServiceNestedInput
+  resourceLinks?: Prisma.ServiceResourceUpdateManyWithoutServiceNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutUserInput = {
@@ -822,11 +1191,18 @@ export type ServiceUncheckedUpdateWithoutUserInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutServicesNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutServiceNestedInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedUpdateManyWithoutServiceNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateManyWithoutUserInput = {
@@ -836,6 +1212,12 @@ export type ServiceUncheckedUpdateManyWithoutUserInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -848,11 +1230,18 @@ export type ServiceUpdateWithoutStaffInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutServiceNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutServiceNestedInput
+  resourceLinks?: Prisma.ServiceResourceUpdateManyWithoutServiceNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateWithoutStaffInput = {
@@ -863,10 +1252,17 @@ export type ServiceUncheckedUpdateWithoutStaffInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutServiceNestedInput
+  resourceLinks?: Prisma.ServiceResourceUncheckedUpdateManyWithoutServiceNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutServiceNestedInput
 }
 
 export type ServiceUncheckedUpdateManyWithoutStaffInput = {
@@ -877,6 +1273,12 @@ export type ServiceUncheckedUpdateManyWithoutStaffInput = {
   duration?: Prisma.IntFieldUpdateOperationsInput | number
   bookingMode?: Prisma.EnumBookingModeFieldUpdateOperationsInput | $Enums.BookingMode
   availabilityMode?: Prisma.EnumAvailabilityModeFieldUpdateOperationsInput | $Enums.AvailabilityMode
+  locationMode?: Prisma.EnumServiceLocationFieldUpdateOperationsInput | $Enums.ServiceLocation
+  assignmentMode?: Prisma.EnumAssignmentModeFieldUpdateOperationsInput | $Enums.AssignmentMode
+  requiresPartySize?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  minLeadMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  maxAdvanceDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   price?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -889,12 +1291,14 @@ export type ServiceUncheckedUpdateManyWithoutStaffInput = {
 
 export type ServiceCountOutputType = {
   staff: number
-  appointments: number
+  resourceLinks: number
+  bookings: number
 }
 
 export type ServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   staff?: boolean | ServiceCountOutputTypeCountStaffArgs
-  appointments?: boolean | ServiceCountOutputTypeCountAppointmentsArgs
+  resourceLinks?: boolean | ServiceCountOutputTypeCountResourceLinksArgs
+  bookings?: boolean | ServiceCountOutputTypeCountBookingsArgs
 }
 
 /**
@@ -917,8 +1321,15 @@ export type ServiceCountOutputTypeCountStaffArgs<ExtArgs extends runtime.Types.E
 /**
  * ServiceCountOutputType without action
  */
-export type ServiceCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AppointmentWhereInput
+export type ServiceCountOutputTypeCountResourceLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceResourceWhereInput
+}
+
+/**
+ * ServiceCountOutputType without action
+ */
+export type ServiceCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
 }
 
 
@@ -930,12 +1341,19 @@ export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   duration?: boolean
   bookingMode?: boolean
   availabilityMode?: boolean
+  locationMode?: boolean
+  assignmentMode?: boolean
+  requiresPartySize?: boolean
+  bufferMinutes?: boolean
+  minLeadMinutes?: boolean
+  maxAdvanceDays?: boolean
   price?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.Service$staffArgs<ExtArgs>
-  appointments?: boolean | Prisma.Service$appointmentsArgs<ExtArgs>
+  resourceLinks?: boolean | Prisma.Service$resourceLinksArgs<ExtArgs>
+  bookings?: boolean | Prisma.Service$bookingsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["service"]>
 
@@ -947,6 +1365,12 @@ export type ServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   duration?: boolean
   bookingMode?: boolean
   availabilityMode?: boolean
+  locationMode?: boolean
+  assignmentMode?: boolean
+  requiresPartySize?: boolean
+  bufferMinutes?: boolean
+  minLeadMinutes?: boolean
+  maxAdvanceDays?: boolean
   price?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -961,6 +1385,12 @@ export type ServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   duration?: boolean
   bookingMode?: boolean
   availabilityMode?: boolean
+  locationMode?: boolean
+  assignmentMode?: boolean
+  requiresPartySize?: boolean
+  bufferMinutes?: boolean
+  minLeadMinutes?: boolean
+  maxAdvanceDays?: boolean
   price?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -975,16 +1405,23 @@ export type ServiceSelectScalar = {
   duration?: boolean
   bookingMode?: boolean
   availabilityMode?: boolean
+  locationMode?: boolean
+  assignmentMode?: boolean
+  requiresPartySize?: boolean
+  bufferMinutes?: boolean
+  minLeadMinutes?: boolean
+  maxAdvanceDays?: boolean
   price?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "description" | "duration" | "bookingMode" | "availabilityMode" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
+export type ServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "description" | "duration" | "bookingMode" | "availabilityMode" | "locationMode" | "assignmentMode" | "requiresPartySize" | "bufferMinutes" | "minLeadMinutes" | "maxAdvanceDays" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
 export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.Service$staffArgs<ExtArgs>
-  appointments?: boolean | Prisma.Service$appointmentsArgs<ExtArgs>
+  resourceLinks?: boolean | Prisma.Service$resourceLinksArgs<ExtArgs>
+  bookings?: boolean | Prisma.Service$bookingsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -999,7 +1436,8 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     staff: Prisma.$StaffPayload<ExtArgs>[]
-    appointments: Prisma.$AppointmentPayload<ExtArgs>[]
+    resourceLinks: Prisma.$ServiceResourcePayload<ExtArgs>[]
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1009,6 +1447,12 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     duration: number
     bookingMode: $Enums.BookingMode
     availabilityMode: $Enums.AvailabilityMode
+    locationMode: $Enums.ServiceLocation
+    assignmentMode: $Enums.AssignmentMode
+    requiresPartySize: boolean
+    bufferMinutes: number
+    minLeadMinutes: number
+    maxAdvanceDays: number | null
     price: number | null
     createdAt: Date
     updatedAt: Date
@@ -1408,7 +1852,8 @@ export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   staff<T extends Prisma.Service$staffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$staffArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  appointments<T extends Prisma.Service$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  resourceLinks<T extends Prisma.Service$resourceLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$resourceLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookings<T extends Prisma.Service$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1445,6 +1890,12 @@ export interface ServiceFieldRefs {
   readonly duration: Prisma.FieldRef<"Service", 'Int'>
   readonly bookingMode: Prisma.FieldRef<"Service", 'BookingMode'>
   readonly availabilityMode: Prisma.FieldRef<"Service", 'AvailabilityMode'>
+  readonly locationMode: Prisma.FieldRef<"Service", 'ServiceLocation'>
+  readonly assignmentMode: Prisma.FieldRef<"Service", 'AssignmentMode'>
+  readonly requiresPartySize: Prisma.FieldRef<"Service", 'Boolean'>
+  readonly bufferMinutes: Prisma.FieldRef<"Service", 'Int'>
+  readonly minLeadMinutes: Prisma.FieldRef<"Service", 'Int'>
+  readonly maxAdvanceDays: Prisma.FieldRef<"Service", 'Int'>
   readonly price: Prisma.FieldRef<"Service", 'Float'>
   readonly createdAt: Prisma.FieldRef<"Service", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Service", 'DateTime'>
@@ -1873,27 +2324,51 @@ export type Service$staffArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * Service.appointments
+ * Service.resourceLinks
  */
-export type Service$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Service$resourceLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Appointment
+   * Select specific fields to fetch from the ServiceResource
    */
-  select?: Prisma.AppointmentSelect<ExtArgs> | null
+  select?: Prisma.ServiceResourceSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Appointment
+   * Omit specific fields from the ServiceResource
    */
-  omit?: Prisma.AppointmentOmit<ExtArgs> | null
+  omit?: Prisma.ServiceResourceOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AppointmentInclude<ExtArgs> | null
-  where?: Prisma.AppointmentWhereInput
-  orderBy?: Prisma.AppointmentOrderByWithRelationInput | Prisma.AppointmentOrderByWithRelationInput[]
-  cursor?: Prisma.AppointmentWhereUniqueInput
+  include?: Prisma.ServiceResourceInclude<ExtArgs> | null
+  where?: Prisma.ServiceResourceWhereInput
+  orderBy?: Prisma.ServiceResourceOrderByWithRelationInput | Prisma.ServiceResourceOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceResourceWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+  distinct?: Prisma.ServiceResourceScalarFieldEnum | Prisma.ServiceResourceScalarFieldEnum[]
+}
+
+/**
+ * Service.bookings
+ */
+export type Service$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
 }
 
 /**

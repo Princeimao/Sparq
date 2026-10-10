@@ -3,21 +3,18 @@
 import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { store, useAppDispatch, useAppSelector } from "@/lib/store";
-import { fetchCurrentUser, setInitialized } from "@/lib/store/authSlice";
+import { fetchCurrentUser } from "@/lib/store/authSlice";
 import { Loader2 } from "lucide-react";
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
-  const { isInitialized, accessToken } = useAppSelector((state) => state.auth);
+  const { isInitialized } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    // If we have an access token, fetch the user info
-    if (accessToken) {
-      dispatch(fetchCurrentUser());
-    } else {
-      dispatch(setInitialized());
-    }
-  }, [dispatch, accessToken]);
+    // The session lives in httpOnly cookies, so always ask the backend who
+    // we are on boot — no localStorage token check needed.
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
 
   if (!isInitialized) {
     return (

@@ -95,14 +95,14 @@ export class MessageRouter {
       return { intent: Intent.HELP, confidence: 0.95, method: "keyword" };
     }
 
+    // ── Cancel (before status: "cancel my order" contains "my order") ──
+    if (this.matchesAny(text, CANCEL_KEYWORDS)) {
+      return { intent: Intent.CANCEL_ORDER, confidence: 0.85, method: "keyword" };
+    }
+
     // ── Status ──
     if (this.matchesAny(text, STATUS_KEYWORDS)) {
       return { intent: Intent.ORDER_STATUS, confidence: 0.9, method: "keyword" };
-    }
-
-    // ── Cancel ──
-    if (this.matchesAny(text, CANCEL_KEYWORDS)) {
-      return { intent: Intent.CANCEL_ORDER, confidence: 0.85, method: "keyword" };
     }
 
     // ── For multi-keyword intents, score them ──

@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
+import { animate, stagger } from "animejs";
+import { useReducedMotion } from "framer-motion";
 import {
   MessageSquare,
   CreditCard,
@@ -10,6 +12,7 @@ import {
   RefreshCw,
   AlertTriangle,
   Loader2,
+  LayoutGrid,
 } from "lucide-react";
 
 import { IntegrationCard } from "@/components/IntegrationCard";
@@ -23,6 +26,7 @@ import {
   useWhatsAppConnect,
 } from "@/hooks/integration";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 // ─── Category config ─────────────────────────────────────────────────────────
 
@@ -78,6 +82,9 @@ const Page = () => {
   const [openDialog, setOpenDialog] = useState<IntegrationProvider | null>(null);
   // Track if reconfiguring an existing connection
   const [reconigureId, setReconfigureId] = useState<string | null>(null);
+  const [tab, setTab] = useState("all");
+  const reduceMotion = useReducedMotion();
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // ── Derived state ────────────────────────────────────────────────────────
 
@@ -127,10 +134,33 @@ const Page = () => {
 
   // ─────────────────────────────────────────────────────────────────────────
 
+  const visibleCategories =
+    tab === "all" ? CATEGORIES : CATEGORIES.filter((c) => c.key === tab);
+
+  // Anime.js stagger whenever the visible grid changes.
+  useEffect(() => {
+    if (isLoading || reduceMotion) return;
+    const root = gridRef.current;
+    if (!root) return;
+    const cards = root.querySelectorAll("[data-int-card]");
+    if (cards.length === 0) return;
+    const anim = animate(cards, {
+      opacity: [0, 1],
+      translateY: [16, 0],
+      scale: [0.97, 1],
+      duration: 450,
+      delay: stagger(60),
+      ease: "outCubic",
+    });
+    return () => {
+      anim.revert();
+    };
+  }, [isLoading, reduceMotion, tab, connectedIntegrations.length]);
+
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-10">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Page Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
             Integrations
@@ -140,17 +170,88 @@ const Page = () => {
             payments, scheduling, and customer communication.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={refetch}
-          disabled={isLoading}
-          className="gap-2 shrink-0"
-        >
-          <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2 sm:ml-auto">
+          <div className="flex p-1 rounded-full border bg-card">
+            {[{ key: "all", label: "All", icon: <LayoutGrid size={13} /> }, ...CATEGORIES.map((c) => ({ key: c.key, label: c.label, icon: c.icon }))].map(
+              (t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  aria-pressed={tab === t.key}
+                  className={cn(
+                    "flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-colors",
+                    tab === t.key
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {t.icon}
+                  {t.label}
+                </button>
+              ),
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={refetch}
+            disabled={isLoading}
+            aria-label="Refresh integrations"
+            className="rounded-full size-9 shrink-0"
+          >
+            <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
+          </Button>
+        </div>
       </div>
+
+      {/* Connected strip */}
+      {!isLoading && connectedIntegrations.length > 0 && (
+        <div className="px-4 py-3 rounded-2xl bg-card border shadow-sm flex flex-wrap items-center gap-3">
+          <div className="flex -space-x-2">
+            {connectedIntegrations.slice(0, 5).map((i) => (
+              <span
+                key={i.id}
+                title={i.name}
+                className="size-8 rounded-full border-2 border-card bg-muted flex items-center justify-center overflow-hidden"
+              >
+                <Image
+                  src={integrations.find((d) => d.name.toLowerCase() === i.name.toLowerCase())?.icon ?? "/whatsapp.png"}
+                  alt={i.name}
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+              </span>
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">
+              {connectedIntegrations.length}
+            </span>{" "}
+            connected ·{" "}
+            <span className="font-semibold text-foreground">
+              {connectedIntegrations.filter((i) => i.isActive).length}
+            </span>{" "}
+            active
+          </p>
+          <div className="flex items-center gap-1.5 ml-auto flex-wrap">
+            {connectedIntegrations.map((i) => (
+              <span
+                key={i.id}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/60 text-xs"
+              >
+                <span
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-full",
+                    i.isActive ? "bg-green-500" : "bg-zinc-400",
+                  )}
+                />
+                {i.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Payment conflict banner */}
       {activePaymentCount > 1 && (
@@ -186,8 +287,8 @@ const Page = () => {
 
       {/* Integration sections */}
       {!isLoading && (
-        <div className="space-y-10">
-          {CATEGORIES.map((cat) => {
+        <div ref={gridRef} className="space-y-8">
+          {visibleCategories.map((cat) => {
             const catIntegrations = integrations.filter(
               (i) => i.category === cat.key
             );
@@ -196,13 +297,12 @@ const Page = () => {
             return (
               <section key={cat.key}>
                 {/* Section header */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <span className="text-muted-foreground">{cat.icon}</span>
-                    {cat.label}
-                  </div>
-                  <div className="h-px flex-1 bg-border" />
-                  <span className="text-xs text-muted-foreground">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <span className="p-1.5 rounded-lg bg-muted text-muted-foreground">
+                    {cat.icon}
+                  </span>
+                  <span className="text-sm font-semibold">{cat.label}</span>
+                  <span className="text-[11px] text-muted-foreground hidden sm:inline">
                     {cat.description}
                   </span>
                 </div>
@@ -248,38 +348,6 @@ const Page = () => {
               </section>
             );
           })}
-        </div>
-      )}
-
-      {/* Connection summary */}
-      {!isLoading && connectedIntegrations.length > 0 && (
-        <div className="mt-8 px-5 py-4 rounded-xl bg-muted/40 border border-border flex flex-wrap items-center gap-4">
-          <div className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {connectedIntegrations.length}
-            </span>{" "}
-            integration{connectedIntegrations.length !== 1 ? "s" : ""} connected
-            &nbsp;·&nbsp;
-            <span className="font-semibold text-foreground">
-              {connectedIntegrations.filter((i) => i.isActive).length}
-            </span>{" "}
-            active
-          </div>
-          <div className="flex items-center gap-2 ml-auto flex-wrap">
-            {connectedIntegrations.map((i) => (
-              <div
-                key={i.id}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-background border border-border text-xs"
-              >
-                {i.isActive ? (
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                ) : (
-                  <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
-                )}
-                {i.name}
-              </div>
-            ))}
-          </div>
         </div>
       )}
 

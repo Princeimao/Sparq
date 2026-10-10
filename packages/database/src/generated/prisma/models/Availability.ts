@@ -39,6 +39,7 @@ export type AvailabilitySumAggregateOutputType = {
 export type AvailabilityMinAggregateOutputType = {
   id: string | null
   staffId: string | null
+  resourceId: string | null
   dayOfWeek: number | null
   startTime: string | null
   endTime: string | null
@@ -51,6 +52,7 @@ export type AvailabilityMinAggregateOutputType = {
 export type AvailabilityMaxAggregateOutputType = {
   id: string | null
   staffId: string | null
+  resourceId: string | null
   dayOfWeek: number | null
   startTime: string | null
   endTime: string | null
@@ -63,6 +65,7 @@ export type AvailabilityMaxAggregateOutputType = {
 export type AvailabilityCountAggregateOutputType = {
   id: number
   staffId: number
+  resourceId: number
   dayOfWeek: number
   startTime: number
   endTime: number
@@ -87,6 +90,7 @@ export type AvailabilitySumAggregateInputType = {
 export type AvailabilityMinAggregateInputType = {
   id?: true
   staffId?: true
+  resourceId?: true
   dayOfWeek?: true
   startTime?: true
   endTime?: true
@@ -99,6 +103,7 @@ export type AvailabilityMinAggregateInputType = {
 export type AvailabilityMaxAggregateInputType = {
   id?: true
   staffId?: true
+  resourceId?: true
   dayOfWeek?: true
   startTime?: true
   endTime?: true
@@ -111,6 +116,7 @@ export type AvailabilityMaxAggregateInputType = {
 export type AvailabilityCountAggregateInputType = {
   id?: true
   staffId?: true
+  resourceId?: true
   dayOfWeek?: true
   startTime?: true
   endTime?: true
@@ -210,6 +216,7 @@ export type AvailabilityGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type AvailabilityGroupByOutputType = {
   id: string
   staffId: string | null
+  resourceId: string | null
   dayOfWeek: number
   startTime: string
   endTime: string
@@ -245,6 +252,7 @@ export type AvailabilityWhereInput = {
   NOT?: Prisma.AvailabilityWhereInput | Prisma.AvailabilityWhereInput[]
   id?: Prisma.StringFilter<"Availability"> | string
   staffId?: Prisma.StringNullableFilter<"Availability"> | string | null
+  resourceId?: Prisma.StringNullableFilter<"Availability"> | string | null
   dayOfWeek?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
@@ -253,11 +261,13 @@ export type AvailabilityWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   staff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
+  resource?: Prisma.XOR<Prisma.ResourceNullableScalarRelationFilter, Prisma.ResourceWhereInput> | null
 }
 
 export type AvailabilityOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   staffId?: Prisma.SortOrderInput | Prisma.SortOrder
+  resourceId?: Prisma.SortOrderInput | Prisma.SortOrder
   dayOfWeek?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -266,6 +276,7 @@ export type AvailabilityOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   staff?: Prisma.StaffOrderByWithRelationInput
+  resource?: Prisma.ResourceOrderByWithRelationInput
 }
 
 export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
@@ -274,6 +285,7 @@ export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AvailabilityWhereInput[]
   NOT?: Prisma.AvailabilityWhereInput | Prisma.AvailabilityWhereInput[]
   staffId?: Prisma.StringNullableFilter<"Availability"> | string | null
+  resourceId?: Prisma.StringNullableFilter<"Availability"> | string | null
   dayOfWeek?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
@@ -282,11 +294,13 @@ export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   staff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
+  resource?: Prisma.XOR<Prisma.ResourceNullableScalarRelationFilter, Prisma.ResourceWhereInput> | null
 }, "id">
 
 export type AvailabilityOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   staffId?: Prisma.SortOrderInput | Prisma.SortOrder
+  resourceId?: Prisma.SortOrderInput | Prisma.SortOrder
   dayOfWeek?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -307,6 +321,7 @@ export type AvailabilityScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AvailabilityScalarWhereWithAggregatesInput | Prisma.AvailabilityScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Availability"> | string
   staffId?: Prisma.StringNullableWithAggregatesFilter<"Availability"> | string | null
+  resourceId?: Prisma.StringNullableWithAggregatesFilter<"Availability"> | string | null
   dayOfWeek?: Prisma.IntWithAggregatesFilter<"Availability"> | number
   startTime?: Prisma.StringWithAggregatesFilter<"Availability"> | string
   endTime?: Prisma.StringWithAggregatesFilter<"Availability"> | string
@@ -326,11 +341,13 @@ export type AvailabilityCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffCreateNestedOneWithoutAvailabilityInput
+  resource?: Prisma.ResourceCreateNestedOneWithoutAvailabilityInput
 }
 
 export type AvailabilityUncheckedCreateInput = {
   id?: string
   staffId?: string | null
+  resourceId?: string | null
   dayOfWeek: number
   startTime: string
   endTime: string
@@ -350,11 +367,13 @@ export type AvailabilityUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUpdateOneWithoutAvailabilityNestedInput
+  resource?: Prisma.ResourceUpdateOneWithoutAvailabilityNestedInput
 }
 
 export type AvailabilityUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -367,6 +386,7 @@ export type AvailabilityUncheckedUpdateInput = {
 export type AvailabilityCreateManyInput = {
   id?: string
   staffId?: string | null
+  resourceId?: string | null
   dayOfWeek: number
   startTime: string
   endTime: string
@@ -390,6 +410,7 @@ export type AvailabilityUpdateManyMutationInput = {
 export type AvailabilityUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,6 +433,7 @@ export type AvailabilityOrderByRelationAggregateInput = {
 export type AvailabilityCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   staffId?: Prisma.SortOrder
+  resourceId?: Prisma.SortOrder
   dayOfWeek?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -429,6 +451,7 @@ export type AvailabilityAvgOrderByAggregateInput = {
 export type AvailabilityMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   staffId?: Prisma.SortOrder
+  resourceId?: Prisma.SortOrder
   dayOfWeek?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -441,6 +464,7 @@ export type AvailabilityMaxOrderByAggregateInput = {
 export type AvailabilityMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   staffId?: Prisma.SortOrder
+  resourceId?: Prisma.SortOrder
   dayOfWeek?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -497,6 +521,48 @@ export type AvailabilityUncheckedUpdateManyWithoutStaffNestedInput = {
   deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
 }
 
+export type AvailabilityCreateNestedManyWithoutResourceInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutResourceInput, Prisma.AvailabilityUncheckedCreateWithoutResourceInput> | Prisma.AvailabilityCreateWithoutResourceInput[] | Prisma.AvailabilityUncheckedCreateWithoutResourceInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutResourceInput | Prisma.AvailabilityCreateOrConnectWithoutResourceInput[]
+  createMany?: Prisma.AvailabilityCreateManyResourceInputEnvelope
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+}
+
+export type AvailabilityUncheckedCreateNestedManyWithoutResourceInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutResourceInput, Prisma.AvailabilityUncheckedCreateWithoutResourceInput> | Prisma.AvailabilityCreateWithoutResourceInput[] | Prisma.AvailabilityUncheckedCreateWithoutResourceInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutResourceInput | Prisma.AvailabilityCreateOrConnectWithoutResourceInput[]
+  createMany?: Prisma.AvailabilityCreateManyResourceInputEnvelope
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+}
+
+export type AvailabilityUpdateManyWithoutResourceNestedInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutResourceInput, Prisma.AvailabilityUncheckedCreateWithoutResourceInput> | Prisma.AvailabilityCreateWithoutResourceInput[] | Prisma.AvailabilityUncheckedCreateWithoutResourceInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutResourceInput | Prisma.AvailabilityCreateOrConnectWithoutResourceInput[]
+  upsert?: Prisma.AvailabilityUpsertWithWhereUniqueWithoutResourceInput | Prisma.AvailabilityUpsertWithWhereUniqueWithoutResourceInput[]
+  createMany?: Prisma.AvailabilityCreateManyResourceInputEnvelope
+  set?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  disconnect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  delete?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  update?: Prisma.AvailabilityUpdateWithWhereUniqueWithoutResourceInput | Prisma.AvailabilityUpdateWithWhereUniqueWithoutResourceInput[]
+  updateMany?: Prisma.AvailabilityUpdateManyWithWhereWithoutResourceInput | Prisma.AvailabilityUpdateManyWithWhereWithoutResourceInput[]
+  deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
+}
+
+export type AvailabilityUncheckedUpdateManyWithoutResourceNestedInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutResourceInput, Prisma.AvailabilityUncheckedCreateWithoutResourceInput> | Prisma.AvailabilityCreateWithoutResourceInput[] | Prisma.AvailabilityUncheckedCreateWithoutResourceInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutResourceInput | Prisma.AvailabilityCreateOrConnectWithoutResourceInput[]
+  upsert?: Prisma.AvailabilityUpsertWithWhereUniqueWithoutResourceInput | Prisma.AvailabilityUpsertWithWhereUniqueWithoutResourceInput[]
+  createMany?: Prisma.AvailabilityCreateManyResourceInputEnvelope
+  set?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  disconnect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  delete?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  update?: Prisma.AvailabilityUpdateWithWhereUniqueWithoutResourceInput | Prisma.AvailabilityUpdateWithWhereUniqueWithoutResourceInput[]
+  updateMany?: Prisma.AvailabilityUpdateManyWithWhereWithoutResourceInput | Prisma.AvailabilityUpdateManyWithWhereWithoutResourceInput[]
+  deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
+}
+
 export type AvailabilityCreateWithoutStaffInput = {
   id?: string
   dayOfWeek: number
@@ -506,10 +572,12 @@ export type AvailabilityCreateWithoutStaffInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  resource?: Prisma.ResourceCreateNestedOneWithoutAvailabilityInput
 }
 
 export type AvailabilityUncheckedCreateWithoutStaffInput = {
   id?: string
+  resourceId?: string | null
   dayOfWeek: number
   startTime: string
   endTime: string
@@ -551,6 +619,7 @@ export type AvailabilityScalarWhereInput = {
   NOT?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
   id?: Prisma.StringFilter<"Availability"> | string
   staffId?: Prisma.StringNullableFilter<"Availability"> | string | null
+  resourceId?: Prisma.StringNullableFilter<"Availability"> | string | null
   dayOfWeek?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
@@ -560,8 +629,59 @@ export type AvailabilityScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
 }
 
+export type AvailabilityCreateWithoutResourceInput = {
+  id?: string
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+  capacity?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  staff?: Prisma.StaffCreateNestedOneWithoutAvailabilityInput
+}
+
+export type AvailabilityUncheckedCreateWithoutResourceInput = {
+  id?: string
+  staffId?: string | null
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+  capacity?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AvailabilityCreateOrConnectWithoutResourceInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  create: Prisma.XOR<Prisma.AvailabilityCreateWithoutResourceInput, Prisma.AvailabilityUncheckedCreateWithoutResourceInput>
+}
+
+export type AvailabilityCreateManyResourceInputEnvelope = {
+  data: Prisma.AvailabilityCreateManyResourceInput | Prisma.AvailabilityCreateManyResourceInput[]
+  skipDuplicates?: boolean
+}
+
+export type AvailabilityUpsertWithWhereUniqueWithoutResourceInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  update: Prisma.XOR<Prisma.AvailabilityUpdateWithoutResourceInput, Prisma.AvailabilityUncheckedUpdateWithoutResourceInput>
+  create: Prisma.XOR<Prisma.AvailabilityCreateWithoutResourceInput, Prisma.AvailabilityUncheckedCreateWithoutResourceInput>
+}
+
+export type AvailabilityUpdateWithWhereUniqueWithoutResourceInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  data: Prisma.XOR<Prisma.AvailabilityUpdateWithoutResourceInput, Prisma.AvailabilityUncheckedUpdateWithoutResourceInput>
+}
+
+export type AvailabilityUpdateManyWithWhereWithoutResourceInput = {
+  where: Prisma.AvailabilityScalarWhereInput
+  data: Prisma.XOR<Prisma.AvailabilityUpdateManyMutationInput, Prisma.AvailabilityUncheckedUpdateManyWithoutResourceInput>
+}
+
 export type AvailabilityCreateManyStaffInput = {
   id?: string
+  resourceId?: string | null
   dayOfWeek: number
   startTime: string
   endTime: string
@@ -580,10 +700,12 @@ export type AvailabilityUpdateWithoutStaffInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  resource?: Prisma.ResourceUpdateOneWithoutAvailabilityNestedInput
 }
 
 export type AvailabilityUncheckedUpdateWithoutStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -595,6 +717,55 @@ export type AvailabilityUncheckedUpdateWithoutStaffInput = {
 
 export type AvailabilityUncheckedUpdateManyWithoutStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AvailabilityCreateManyResourceInput = {
+  id?: string
+  staffId?: string | null
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+  capacity?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AvailabilityUpdateWithoutResourceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  staff?: Prisma.StaffUpdateOneWithoutAvailabilityNestedInput
+}
+
+export type AvailabilityUncheckedUpdateWithoutResourceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  capacity?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AvailabilityUncheckedUpdateManyWithoutResourceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dayOfWeek?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -609,6 +780,7 @@ export type AvailabilityUncheckedUpdateManyWithoutStaffInput = {
 export type AvailabilitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   staffId?: boolean
+  resourceId?: boolean
   dayOfWeek?: boolean
   startTime?: boolean
   endTime?: boolean
@@ -617,11 +789,13 @@ export type AvailabilitySelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   updatedAt?: boolean
   staff?: boolean | Prisma.Availability$staffArgs<ExtArgs>
+  resource?: boolean | Prisma.Availability$resourceArgs<ExtArgs>
 }, ExtArgs["result"]["availability"]>
 
 export type AvailabilitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   staffId?: boolean
+  resourceId?: boolean
   dayOfWeek?: boolean
   startTime?: boolean
   endTime?: boolean
@@ -630,11 +804,13 @@ export type AvailabilitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   updatedAt?: boolean
   staff?: boolean | Prisma.Availability$staffArgs<ExtArgs>
+  resource?: boolean | Prisma.Availability$resourceArgs<ExtArgs>
 }, ExtArgs["result"]["availability"]>
 
 export type AvailabilitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   staffId?: boolean
+  resourceId?: boolean
   dayOfWeek?: boolean
   startTime?: boolean
   endTime?: boolean
@@ -643,11 +819,13 @@ export type AvailabilitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   updatedAt?: boolean
   staff?: boolean | Prisma.Availability$staffArgs<ExtArgs>
+  resource?: boolean | Prisma.Availability$resourceArgs<ExtArgs>
 }, ExtArgs["result"]["availability"]>
 
 export type AvailabilitySelectScalar = {
   id?: boolean
   staffId?: boolean
+  resourceId?: boolean
   dayOfWeek?: boolean
   startTime?: boolean
   endTime?: boolean
@@ -657,25 +835,30 @@ export type AvailabilitySelectScalar = {
   updatedAt?: boolean
 }
 
-export type AvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "staffId" | "dayOfWeek" | "startTime" | "endTime" | "capacity" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["availability"]>
+export type AvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "staffId" | "resourceId" | "dayOfWeek" | "startTime" | "endTime" | "capacity" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["availability"]>
 export type AvailabilityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   staff?: boolean | Prisma.Availability$staffArgs<ExtArgs>
+  resource?: boolean | Prisma.Availability$resourceArgs<ExtArgs>
 }
 export type AvailabilityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   staff?: boolean | Prisma.Availability$staffArgs<ExtArgs>
+  resource?: boolean | Prisma.Availability$resourceArgs<ExtArgs>
 }
 export type AvailabilityIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   staff?: boolean | Prisma.Availability$staffArgs<ExtArgs>
+  resource?: boolean | Prisma.Availability$resourceArgs<ExtArgs>
 }
 
 export type $AvailabilityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Availability"
   objects: {
     staff: Prisma.$StaffPayload<ExtArgs> | null
+    resource: Prisma.$ResourcePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     staffId: string | null
+    resourceId: string | null
     dayOfWeek: number
     startTime: string
     endTime: string
@@ -1078,6 +1261,7 @@ readonly fields: AvailabilityFieldRefs;
 export interface Prisma__AvailabilityClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   staff<T extends Prisma.Availability$staffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Availability$staffArgs<ExtArgs>>): Prisma.Prisma__StaffClient<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  resource<T extends Prisma.Availability$resourceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Availability$resourceArgs<ExtArgs>>): Prisma.Prisma__ResourceClient<runtime.Types.Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1109,6 +1293,7 @@ export interface Prisma__AvailabilityClient<T, Null = never, ExtArgs extends run
 export interface AvailabilityFieldRefs {
   readonly id: Prisma.FieldRef<"Availability", 'String'>
   readonly staffId: Prisma.FieldRef<"Availability", 'String'>
+  readonly resourceId: Prisma.FieldRef<"Availability", 'String'>
   readonly dayOfWeek: Prisma.FieldRef<"Availability", 'Int'>
   readonly startTime: Prisma.FieldRef<"Availability", 'String'>
   readonly endTime: Prisma.FieldRef<"Availability", 'String'>
@@ -1533,6 +1718,25 @@ export type Availability$staffArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.StaffInclude<ExtArgs> | null
   where?: Prisma.StaffWhereInput
+}
+
+/**
+ * Availability.resource
+ */
+export type Availability$resourceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Resource
+   */
+  select?: Prisma.ResourceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Resource
+   */
+  omit?: Prisma.ResourceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ResourceInclude<ExtArgs> | null
+  where?: Prisma.ResourceWhereInput
 }
 
 /**

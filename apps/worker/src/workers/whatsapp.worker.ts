@@ -15,20 +15,29 @@ import { CustomerRepository } from "../repository/customer.repository";
 import { ProductRepository } from "../repository/product.repository";
 import { OrderRepository } from "../repository/order.repository";
 import { ServiceRepository } from "../repository/service.repository";
-import { AppointmentRepository } from "../repository/appointment.repository";
-import { ReservationRepository } from "../repository/reservation.repository";
+import { BookingRepository } from "../repository/booking.repository";
+import { ResourceRepository } from "../repository/resource.repository";
 import { FlowRepository } from "../repository/flow.repository";
 
 // Handlers
 import { OrderHandler } from "../workflow/order/order.handler";
 import { AppointmentHandler } from "../workflow/appointment/appointment.handler";
 import { ReservationHandler } from "../workflow/reservation/reservation.handler";
+import { GreetingHandler } from "../workflow/greeting/greeting.handler";
+import {
+  GoodbyeHandler,
+  HelpHandler,
+  UnknownHandler,
+} from "../workflow/system/system.handlers";
 
 // Engine & Registry
 import { WorkflowEngine } from "../workflow/workflow.engine";
 import { WorkflowRegistry } from "../workflow/workflow.registry";
 import { Intent } from "../types/intent";
 import { IncomingMessage } from "../types/message";
+
+// Billing gate — independent server-side entitlement check
+import { checkJobEntitlement } from "../guards/subscription.guard";
 
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 
@@ -47,10 +56,9 @@ function buildEngine(): WorkflowEngine {
   const productRepo = new ProductRepository();
   const orderRepo = new OrderRepository();
   const serviceRepo = new ServiceRepository();
-  const appointmentRepo = new AppointmentRepository();
+  const bookingRepo = new BookingRepository();
+  const resourceRepo = new ResourceRepository();
   const flowRepo = new FlowRepository();
-
-  const reservationRepo = new ReservationRepository();
 
   // Handlers
   const orderHandler = new OrderHandler(
@@ -63,7 +71,8 @@ function buildEngine(): WorkflowEngine {
 
   const appointmentHandler = new AppointmentHandler(
     serviceRepo,
-    appointmentRepo,
+    bookingRepo,
+    resourceRepo,
     customerRepo,
     flowRepo,
     conversationStore,
@@ -71,16 +80,33 @@ function buildEngine(): WorkflowEngine {
 
   const reservationHandler = new ReservationHandler(
     customerRepo,
-    reservationRepo,
-    flowRepo,
+    serviceRepo,
+    bookingRepo,
+    resourceRepo,
     conversationStore,
   );
 
-  // Registry
+  // Registry — handlers declare their own intents, modules and menu
+  // entries, so adding a flow is one register() call (plus an optional
+  // registerModule() for gate-only intents with no runnable handler yet).
   const registry = new WorkflowRegistry();
-  registry.register(Intent.ORDER_PRODUCT, orderHandler);
-  registry.register(Intent.BOOK_APPOINTMENT, appointmentHandler);
-  registry.register(Intent.RESERVE_TABLE, reservationHandler);
+  registry
+    .register(new GreetingHandler())
+    .register(new GoodbyeHandler())
+    .register(new HelpHandler())
+    .register(new UnknownHandler())
+    .register(orderHandler)
+    .register(appointmentHandler)
+    .register(reservationHandler)
+    .registerModule(
+      [Intent.CANCEL_ORDER, Intent.ORDER_STATUS],
+      "products",
+    )
+    .registerModule(
+      [Intent.RESCHEDULE_APPOINTMENT, Intent.CANCEL_APPOINTMENT],
+      "bookings",
+    )
+    .registerModule([Intent.CANCEL_RESERVATION], "bookings");
 
   return new WorkflowEngine(conversationStore, llmService, registry);
 }
@@ -113,6 +139,59 @@ export function startWhatsAppWorker() {
       );
 
       try {
+        // Resolve the owning user first — the worker never trusts
+        // subscription state from the job payload.
+        const ownerId = userId ?? (await resolveUserId(phoneNumberId));
+
+        // ── Subscription gate: block billable work without retry ──
+        const gate = await checkJobEntitlement(ownerId, "workflow execution");
+        if (!gate.allowed) {
+          console.warn(
+            `[Worker] Job ${job.id} blocked: ${gate.reason} (plan=${gate.entitlement.plan})`,
+          );
+          return;
+        }
+
+        // ── Customer identity: one record per (business, phone) ──
+        // Scoped to the owning business — never merged across tenants.
+        const customerRepo = new CustomerRepository();
+        const customer = await customerRepo.findOrCreate({
+          phone: customerWaId,
+          name: customerName || undefined,
+          phoneNumberId,
+          userId: ownerId,
+        });
+
+        // ── Inbound history + redelivery dedup ──
+        // waMessageId is unique: a P2002 here means this is a retried
+        // webhook whose effects already happened — complete, don't retry.
+        try {
+          await prisma.message.create({
+            data: {
+              customerId: customer.id,
+              userId: ownerId,
+              waMessageId: messageId,
+              direction: "INBOUND",
+              type: mapInboundType(messageType),
+              body: text.slice(0, 4000),
+              status: "DELIVERED",
+            },
+          });
+        } catch (err: unknown) {
+          if (
+            typeof err === "object" &&
+            err !== null &&
+            "code" in err &&
+            (err as { code: string }).code === "P2002"
+          ) {
+            console.log(
+              `[Worker] Job ${job.id} is a redelivery of ${messageId} — skipping`,
+            );
+            return;
+          }
+          throw err;
+        }
+
         // Build the service for this specific message's WABA
         const whatsapp = new WhatsAppService({
           messageId,
@@ -121,6 +200,23 @@ export function startWhatsAppWorker() {
           customerWaId,
           customerName,
           text,
+          // Best-effort outbound history for the customer timeline.
+          onSend: (info) => {
+            void prisma.message
+              .create({
+                data: {
+                  customerId: customer.id,
+                  userId: ownerId,
+                  direction: "OUTBOUND",
+                  type: mapOutboundType(info.type),
+                  body: info.body?.slice(0, 4000),
+                  status: "SENT",
+                },
+              })
+              .catch((e) =>
+                console.warn("[Worker] outbound log failed:", e),
+              );
+          },
         });
 
         // Build the strongly-typed incoming message object
@@ -130,7 +226,7 @@ export function startWhatsAppWorker() {
           customerName,
           phoneNumberId,
           wabaId,
-          userId: userId ?? await resolveUserId(phoneNumberId),
+          userId: ownerId,
           text,
           interactiveId,
           messageType: (messageType as any) ?? "text",
@@ -167,6 +263,20 @@ export function startWhatsAppWorker() {
   });
 
   return worker;
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────────
+
+function mapInboundType(messageType?: string): "TEXT" | "INTERACTIVE" | "TEMPLATE" {
+  if (messageType === "interactive" || messageType === "button")
+    return "INTERACTIVE";
+  return "TEXT";
+}
+
+function mapOutboundType(type: string): "TEXT" | "INTERACTIVE" | "TEMPLATE" | "FLOW" {
+  if (type === "interactive") return "INTERACTIVE";
+  if (type === "template") return "TEMPLATE";
+  return "TEXT";
 }
 
 // ─── Helper: Resolve userId ────────────────────────────────────────────────────

@@ -1,4 +1,6 @@
-import { prisma } from "../../config/prisma";
+import { Intent } from "../../types/intent";
+import { MenuEntry, WorkflowHandler } from "../../types/handler";
+import { WorkflowContext } from "../../types/workflowContext";
 import { WhatsAppService } from "../../services/whatsapp.service";
 import { IncomingMessage } from "../../types/message";
 
@@ -7,21 +9,41 @@ import { IncomingMessage } from "../../types/message";
  *
  * Responds to "hi / hello / hey" style messages with:
  * 1. A branded welcome text message (plain text + emoji, no template needed)
- * 2. An interactive button menu so the user knows what they can do
- *
- * Business name is fetched from the user profile linked to the WABA.
- * Falls back gracefully if the user profile has no name.
+ * 2. An interactive button menu built from the registry's menu entries
+ *    (already filtered to the business's enabled modules by the engine)
  */
-export class GreetingHandler {
+export class GreetingHandler implements WorkflowHandler {
+  readonly intents = [Intent.GREETING] as const;
+  readonly module = null;
+
+  async start(ctx: WorkflowContext): Promise<void> {
+    return this.handle(
+      ctx.message,
+      ctx.whatsapp,
+      ctx.menu ?? [],
+      ctx.businessName ?? "Our Business",
+    );
+  }
+
+  async resume(ctx: WorkflowContext): Promise<void> {
+    return this.start(ctx);
+  }
+
   /**
    * Send a branded greeting + action menu.
    */
   async handle(
     message: IncomingMessage,
-    whatsapp: WhatsAppService
+    whatsapp: WhatsAppService,
+    menu: MenuEntry[],
+    businessName: string,
   ): Promise<void> {
-    const businessName = await this.resolveBusinessName(message.wabaId);
     const customerFirst = this.firstName(message.customerName);
+
+    const buttons = menu.map((entry) => ({
+      type: "reply" as const,
+      reply: { id: entry.buttonId, title: `${entry.emoji} ${entry.title}` },
+    }));
 
     // Build the welcome text
     const greeting = [
@@ -31,44 +53,27 @@ export class GreetingHandler {
       `How can I help you today?`,
     ].join("\n");
 
+    const textFallback =
+      `${greeting}\n\n` +
+      `Here's what I can help with:\n` +
+      menu
+        .map((entry) => `${entry.emoji} *${entry.title}* — ${entry.hint}`)
+        .join("\n") +
+      `\n❓ *Help* — type "help"`;
+
     try {
+      if (buttons.length === 0) throw new Error("no modules enabled");
       // Send interactive buttons menu (works for all phone numbers)
       await whatsapp.sendInteractiveButtons({
         to: message.customerWaId,
         headerText: businessName,
         bodyText: greeting,
         footerText: "Powered by Sparq ⚡",
-        buttons: [
-          { type: "reply", reply: { id: "MENU_ORDER", title: "🛒 Order Products" } },
-          { type: "reply", reply: { id: "MENU_BOOK", title: "📅 Book Appointment" } },
-          { type: "reply", reply: { id: "MENU_RESERVE", title: "🍽️ Reservations" } },
-        ],
+        buttons,
       });
     } catch {
       // If interactive buttons fail (e.g. pre-24h window), fall back to plain text
-      await whatsapp.sendTextMessage(
-        `${greeting}\n\n` +
-        `Here's what I can help with:\n` +
-        `🛒 *Order Products* — type "order"\n` +
-        `📅 *Book Appointment* — type "book"\n` +
-        `🍽️ *Reserve Table/Room* — type "reserve"\n` +
-        `❓ *Help* — type "help"`
-      );
-    }
-  }
-
-  /**
-   * Resolve the business name from the WhatsApp integration's user record.
-   */
-  private async resolveBusinessName(wabaId: string): Promise<string> {
-    try {
-      const integration = await prisma.whatsappIntegration.findFirst({
-        where: { wabaId },
-        select: { user: { select: { name: true } } },
-      });
-      return integration?.user?.name ?? "Our Business";
-    } catch {
-      return "Our Business";
+      await whatsapp.sendTextMessage(textFallback);
     }
   }
 

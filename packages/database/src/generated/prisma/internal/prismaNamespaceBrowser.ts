@@ -52,6 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Payment: 'Payment',
+  Subscription: 'Subscription',
   Integration: 'Integration',
   WhatsappIntegration: 'WhatsappIntegration',
   Customer: 'Customer',
@@ -60,14 +62,18 @@ export const ModelName = {
   ConversationState: 'ConversationState',
   Message: 'Message',
   Product: 'Product',
-  Workflow: 'Workflow',
   Flow: 'Flow',
   Service: 'Service',
   Staff: 'Staff',
   Availability: 'Availability',
-  Appointment: 'Appointment',
-  ReservationSlot: 'ReservationSlot',
-  ReservationBooking: 'ReservationBooking'
+  Resource: 'Resource',
+  ServiceResource: 'ServiceResource',
+  TimeOff: 'TimeOff',
+  Break: 'Break',
+  Booking: 'Booking',
+  BookingAllocation: 'BookingAllocation',
+  WebhookEvent: 'WebhookEvent',
+  BusinessProfile: 'BusinessProfile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -97,6 +103,51 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  subscriptionId: 'subscriptionId',
+  provider: 'provider',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  providerPaymentId: 'providerPaymentId',
+  providerOrderId: 'providerOrderId',
+  providerInvoiceId: 'providerInvoiceId',
+  method: 'method',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  plan: 'plan',
+  interval: 'interval',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  provider: 'provider',
+  providerSubscriptionId: 'providerSubscriptionId',
+  providerCustomerId: 'providerCustomerId',
+  providerPlanId: 'providerPlanId',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  canceledAt: 'canceledAt',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
 
 
 export const IntegrationScalarFieldEnum = {
@@ -135,6 +186,7 @@ export const CustomerScalarFieldEnum = {
   name: 'name',
   email: 'email',
   customFields: 'customFields',
+  notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -146,6 +198,8 @@ export const AddressScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   type: 'type',
+  label: 'label',
+  isDefault: 'isDefault',
   name: 'name',
   phone: 'phone',
   line1: 'line1',
@@ -228,21 +282,6 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
-export const WorkflowScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  name: 'name',
-  description: 'description',
-  triggerType: 'triggerType',
-  steps: 'steps',
-  isActive: 'isActive',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
-
-
 export const FlowScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -266,6 +305,12 @@ export const ServiceScalarFieldEnum = {
   duration: 'duration',
   bookingMode: 'bookingMode',
   availabilityMode: 'availabilityMode',
+  locationMode: 'locationMode',
+  assignmentMode: 'assignmentMode',
+  requiresPartySize: 'requiresPartySize',
+  bufferMinutes: 'bufferMinutes',
+  minLeadMinutes: 'minLeadMinutes',
+  maxAdvanceDays: 'maxAdvanceDays',
   price: 'price',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -280,6 +325,10 @@ export const StaffScalarFieldEnum = {
   name: 'name',
   email: 'email',
   phone: 'phone',
+  role: 'role',
+  specialty: 'specialty',
+  image: 'image',
+  color: 'color',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -291,6 +340,7 @@ export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof St
 export const AvailabilityScalarFieldEnum = {
   id: 'id',
   staffId: 'staffId',
+  resourceId: 'resourceId',
   dayOfWeek: 'dayOfWeek',
   startTime: 'startTime',
   endTime: 'endTime',
@@ -303,62 +353,146 @@ export const AvailabilityScalarFieldEnum = {
 export type AvailabilityScalarFieldEnum = (typeof AvailabilityScalarFieldEnum)[keyof typeof AvailabilityScalarFieldEnum]
 
 
-export const AppointmentScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  serviceId: 'serviceId',
-  staffId: 'staffId',
-  customerName: 'customerName',
-  customerEmail: 'customerEmail',
-  customerPhone: 'customerPhone',
-  startTime: 'startTime',
-  endTime: 'endTime',
-  status: 'status',
-  notes: 'notes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
-
-
-export const ReservationSlotScalarFieldEnum = {
+export const ResourceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
-  type: 'type',
+  kind: 'kind',
   description: 'description',
-  capacity: 'capacity',
-  pricePerUnit: 'pricePerUnit',
-  priceUnit: 'priceUnit',
   image: 'image',
-  amenities: 'amenities',
+  color: 'color',
+  capacity: 'capacity',
   isActive: 'isActive',
+  locationMode: 'locationMode',
+  metadata: 'metadata',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type ReservationSlotScalarFieldEnum = (typeof ReservationSlotScalarFieldEnum)[keyof typeof ReservationSlotScalarFieldEnum]
+export type ResourceScalarFieldEnum = (typeof ResourceScalarFieldEnum)[keyof typeof ResourceScalarFieldEnum]
 
 
-export const ReservationBookingScalarFieldEnum = {
+export const ServiceResourceScalarFieldEnum = {
+  serviceId: 'serviceId',
+  resourceId: 'resourceId',
+  createdAt: 'createdAt'
+} as const
+
+export type ServiceResourceScalarFieldEnum = (typeof ServiceResourceScalarFieldEnum)[keyof typeof ServiceResourceScalarFieldEnum]
+
+
+export const TimeOffScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  slotId: 'slotId',
-  customerName: 'customerName',
-  customerPhone: 'customerPhone',
-  customerEmail: 'customerEmail',
+  staffId: 'staffId',
+  resourceId: 'resourceId',
   startDate: 'startDate',
   endDate: 'endDate',
-  guestCount: 'guestCount',
-  specialRequests: 'specialRequests',
-  totalAmount: 'totalAmount',
-  status: 'status',
+  reason: 'reason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type ReservationBookingScalarFieldEnum = (typeof ReservationBookingScalarFieldEnum)[keyof typeof ReservationBookingScalarFieldEnum]
+export type TimeOffScalarFieldEnum = (typeof TimeOffScalarFieldEnum)[keyof typeof TimeOffScalarFieldEnum]
+
+
+export const BreakScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  staffId: 'staffId',
+  resourceId: 'resourceId',
+  dayOfWeek: 'dayOfWeek',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  label: 'label',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BreakScalarFieldEnum = (typeof BreakScalarFieldEnum)[keyof typeof BreakScalarFieldEnum]
+
+
+export const BookingScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  serviceId: 'serviceId',
+  customerId: 'customerId',
+  customerName: 'customerName',
+  customerEmail: 'customerEmail',
+  customerPhone: 'customerPhone',
+  locationMode: 'locationMode',
+  visitAddressId: 'visitAddressId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  status: 'status',
+  source: 'source',
+  partySize: 'partySize',
+  notes: 'notes',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const BookingAllocationScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  staffId: 'staffId',
+  resourceId: 'resourceId',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingAllocationScalarFieldEnum = (typeof BookingAllocationScalarFieldEnum)[keyof typeof BookingAllocationScalarFieldEnum]
+
+
+export const WebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  eventId: 'eventId',
+  type: 'type',
+  payload: 'payload',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type WebhookEventScalarFieldEnum = (typeof WebhookEventScalarFieldEnum)[keyof typeof WebhookEventScalarFieldEnum]
+
+
+export const BusinessProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  businessName: 'businessName',
+  businessType: 'businessType',
+  description: 'description',
+  contactEmail: 'contactEmail',
+  contactPhone: 'contactPhone',
+  industry: 'industry',
+  servicesOffered: 'servicesOffered',
+  enabledModules: 'enabledModules',
+  addressLine1: 'addressLine1',
+  city: 'city',
+  state: 'state',
+  pincode: 'pincode',
+  country: 'country',
+  locationMode: 'locationMode',
+  serviceArea: 'serviceArea',
+  timezone: 'timezone',
+  operatingHours: 'operatingHours',
+  staffCount: 'staffCount',
+  communicationPrefs: 'communicationPrefs',
+  settings: 'settings',
+  onboardingStatus: 'onboardingStatus',
+  onboardingStep: 'onboardingStep',
+  onboardingDraft: 'onboardingDraft',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BusinessProfileScalarFieldEnum = (typeof BusinessProfileScalarFieldEnum)[keyof typeof BusinessProfileScalarFieldEnum]
 
 
 export const SortOrder = {

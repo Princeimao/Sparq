@@ -28,6 +28,8 @@ export type AddressMinAggregateOutputType = {
   id: string | null
   customerId: string | null
   type: $Enums.AddressType | null
+  label: string | null
+  isDefault: boolean | null
   name: string | null
   phone: string | null
   line1: string | null
@@ -45,6 +47,8 @@ export type AddressMaxAggregateOutputType = {
   id: string | null
   customerId: string | null
   type: $Enums.AddressType | null
+  label: string | null
+  isDefault: boolean | null
   name: string | null
   phone: string | null
   line1: string | null
@@ -62,6 +66,8 @@ export type AddressCountAggregateOutputType = {
   id: number
   customerId: number
   type: number
+  label: number
+  isDefault: number
   name: number
   phone: number
   line1: number
@@ -81,6 +87,8 @@ export type AddressMinAggregateInputType = {
   id?: true
   customerId?: true
   type?: true
+  label?: true
+  isDefault?: true
   name?: true
   phone?: true
   line1?: true
@@ -98,6 +106,8 @@ export type AddressMaxAggregateInputType = {
   id?: true
   customerId?: true
   type?: true
+  label?: true
+  isDefault?: true
   name?: true
   phone?: true
   line1?: true
@@ -115,6 +125,8 @@ export type AddressCountAggregateInputType = {
   id?: true
   customerId?: true
   type?: true
+  label?: true
+  isDefault?: true
   name?: true
   phone?: true
   line1?: true
@@ -205,6 +217,8 @@ export type AddressGroupByOutputType = {
   id: string
   customerId: string
   type: $Enums.AddressType
+  label: string | null
+  isDefault: boolean
   name: string | null
   phone: string | null
   line1: string
@@ -243,6 +257,8 @@ export type AddressWhereInput = {
   id?: Prisma.StringFilter<"Address"> | string
   customerId?: Prisma.StringFilter<"Address"> | string
   type?: Prisma.EnumAddressTypeFilter<"Address"> | $Enums.AddressType
+  label?: Prisma.StringNullableFilter<"Address"> | string | null
+  isDefault?: Prisma.BoolFilter<"Address"> | boolean
   name?: Prisma.StringNullableFilter<"Address"> | string | null
   phone?: Prisma.StringNullableFilter<"Address"> | string | null
   line1?: Prisma.StringFilter<"Address"> | string
@@ -256,12 +272,15 @@ export type AddressWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Address"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   orders?: Prisma.OrderListRelationFilter
+  visitBookings?: Prisma.BookingListRelationFilter
 }
 
 export type AddressOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  label?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   line1?: Prisma.SortOrder
@@ -275,6 +294,7 @@ export type AddressOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
+  visitBookings?: Prisma.BookingOrderByRelationAggregateInput
 }
 
 export type AddressWhereUniqueInput = Prisma.AtLeast<{
@@ -284,6 +304,8 @@ export type AddressWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AddressWhereInput | Prisma.AddressWhereInput[]
   customerId?: Prisma.StringFilter<"Address"> | string
   type?: Prisma.EnumAddressTypeFilter<"Address"> | $Enums.AddressType
+  label?: Prisma.StringNullableFilter<"Address"> | string | null
+  isDefault?: Prisma.BoolFilter<"Address"> | boolean
   name?: Prisma.StringNullableFilter<"Address"> | string | null
   phone?: Prisma.StringNullableFilter<"Address"> | string | null
   line1?: Prisma.StringFilter<"Address"> | string
@@ -297,12 +319,15 @@ export type AddressWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Address"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   orders?: Prisma.OrderListRelationFilter
+  visitBookings?: Prisma.BookingListRelationFilter
 }, "id">
 
 export type AddressOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  label?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   line1?: Prisma.SortOrder
@@ -326,6 +351,8 @@ export type AddressScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Address"> | string
   customerId?: Prisma.StringWithAggregatesFilter<"Address"> | string
   type?: Prisma.EnumAddressTypeWithAggregatesFilter<"Address"> | $Enums.AddressType
+  label?: Prisma.StringNullableWithAggregatesFilter<"Address"> | string | null
+  isDefault?: Prisma.BoolWithAggregatesFilter<"Address"> | boolean
   name?: Prisma.StringNullableWithAggregatesFilter<"Address"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Address"> | string | null
   line1?: Prisma.StringWithAggregatesFilter<"Address"> | string
@@ -342,6 +369,8 @@ export type AddressScalarWhereWithAggregatesInput = {
 export type AddressCreateInput = {
   id?: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -355,12 +384,15 @@ export type AddressCreateInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutAddressesInput
   orders?: Prisma.OrderCreateNestedManyWithoutShippingAddressInput
+  visitBookings?: Prisma.BookingCreateNestedManyWithoutVisitAddressInput
 }
 
 export type AddressUncheckedCreateInput = {
   id?: string
   customerId: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -373,11 +405,14 @@ export type AddressUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutShippingAddressInput
+  visitBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutVisitAddressInput
 }
 
 export type AddressUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -391,12 +426,15 @@ export type AddressUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutAddressesNestedInput
   orders?: Prisma.OrderUpdateManyWithoutShippingAddressNestedInput
+  visitBookings?: Prisma.BookingUpdateManyWithoutVisitAddressNestedInput
 }
 
 export type AddressUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -409,12 +447,15 @@ export type AddressUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutShippingAddressNestedInput
+  visitBookings?: Prisma.BookingUncheckedUpdateManyWithoutVisitAddressNestedInput
 }
 
 export type AddressCreateManyInput = {
   id?: string
   customerId: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -431,6 +472,8 @@ export type AddressCreateManyInput = {
 export type AddressUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -448,6 +491,8 @@ export type AddressUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -475,6 +520,8 @@ export type AddressCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  label?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   line1?: Prisma.SortOrder
@@ -492,6 +539,8 @@ export type AddressMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  label?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   line1?: Prisma.SortOrder
@@ -509,6 +558,8 @@ export type AddressMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  label?: Prisma.SortOrder
+  isDefault?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   line1?: Prisma.SortOrder
@@ -589,9 +640,27 @@ export type AddressUpdateOneWithoutOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AddressUpdateToOneWithWhereWithoutOrdersInput, Prisma.AddressUpdateWithoutOrdersInput>, Prisma.AddressUncheckedUpdateWithoutOrdersInput>
 }
 
+export type AddressCreateNestedOneWithoutVisitBookingsInput = {
+  create?: Prisma.XOR<Prisma.AddressCreateWithoutVisitBookingsInput, Prisma.AddressUncheckedCreateWithoutVisitBookingsInput>
+  connectOrCreate?: Prisma.AddressCreateOrConnectWithoutVisitBookingsInput
+  connect?: Prisma.AddressWhereUniqueInput
+}
+
+export type AddressUpdateOneWithoutVisitBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.AddressCreateWithoutVisitBookingsInput, Prisma.AddressUncheckedCreateWithoutVisitBookingsInput>
+  connectOrCreate?: Prisma.AddressCreateOrConnectWithoutVisitBookingsInput
+  upsert?: Prisma.AddressUpsertWithoutVisitBookingsInput
+  disconnect?: Prisma.AddressWhereInput | boolean
+  delete?: Prisma.AddressWhereInput | boolean
+  connect?: Prisma.AddressWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AddressUpdateToOneWithWhereWithoutVisitBookingsInput, Prisma.AddressUpdateWithoutVisitBookingsInput>, Prisma.AddressUncheckedUpdateWithoutVisitBookingsInput>
+}
+
 export type AddressCreateWithoutCustomerInput = {
   id?: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -604,11 +673,14 @@ export type AddressCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderCreateNestedManyWithoutShippingAddressInput
+  visitBookings?: Prisma.BookingCreateNestedManyWithoutVisitAddressInput
 }
 
 export type AddressUncheckedCreateWithoutCustomerInput = {
   id?: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -621,6 +693,7 @@ export type AddressUncheckedCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutShippingAddressInput
+  visitBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutVisitAddressInput
 }
 
 export type AddressCreateOrConnectWithoutCustomerInput = {
@@ -656,6 +729,8 @@ export type AddressScalarWhereInput = {
   id?: Prisma.StringFilter<"Address"> | string
   customerId?: Prisma.StringFilter<"Address"> | string
   type?: Prisma.EnumAddressTypeFilter<"Address"> | $Enums.AddressType
+  label?: Prisma.StringNullableFilter<"Address"> | string | null
+  isDefault?: Prisma.BoolFilter<"Address"> | boolean
   name?: Prisma.StringNullableFilter<"Address"> | string | null
   phone?: Prisma.StringNullableFilter<"Address"> | string | null
   line1?: Prisma.StringFilter<"Address"> | string
@@ -672,6 +747,8 @@ export type AddressScalarWhereInput = {
 export type AddressCreateWithoutOrdersInput = {
   id?: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -684,12 +761,15 @@ export type AddressCreateWithoutOrdersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutAddressesInput
+  visitBookings?: Prisma.BookingCreateNestedManyWithoutVisitAddressInput
 }
 
 export type AddressUncheckedCreateWithoutOrdersInput = {
   id?: string
   customerId: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -701,6 +781,7 @@ export type AddressUncheckedCreateWithoutOrdersInput = {
   landmark?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  visitBookings?: Prisma.BookingUncheckedCreateNestedManyWithoutVisitAddressInput
 }
 
 export type AddressCreateOrConnectWithoutOrdersInput = {
@@ -722,6 +803,8 @@ export type AddressUpdateToOneWithWhereWithoutOrdersInput = {
 export type AddressUpdateWithoutOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -734,12 +817,15 @@ export type AddressUpdateWithoutOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutAddressesNestedInput
+  visitBookings?: Prisma.BookingUpdateManyWithoutVisitAddressNestedInput
 }
 
 export type AddressUncheckedUpdateWithoutOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -751,11 +837,110 @@ export type AddressUncheckedUpdateWithoutOrdersInput = {
   landmark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  visitBookings?: Prisma.BookingUncheckedUpdateManyWithoutVisitAddressNestedInput
+}
+
+export type AddressCreateWithoutVisitBookingsInput = {
+  id?: string
+  type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
+  name?: string | null
+  phone?: string | null
+  line1: string
+  line2?: string | null
+  city: string
+  state: string
+  country?: string
+  pincode: string
+  landmark?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerCreateNestedOneWithoutAddressesInput
+  orders?: Prisma.OrderCreateNestedManyWithoutShippingAddressInput
+}
+
+export type AddressUncheckedCreateWithoutVisitBookingsInput = {
+  id?: string
+  customerId: string
+  type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
+  name?: string | null
+  phone?: string | null
+  line1: string
+  line2?: string | null
+  city: string
+  state: string
+  country?: string
+  pincode: string
+  landmark?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutShippingAddressInput
+}
+
+export type AddressCreateOrConnectWithoutVisitBookingsInput = {
+  where: Prisma.AddressWhereUniqueInput
+  create: Prisma.XOR<Prisma.AddressCreateWithoutVisitBookingsInput, Prisma.AddressUncheckedCreateWithoutVisitBookingsInput>
+}
+
+export type AddressUpsertWithoutVisitBookingsInput = {
+  update: Prisma.XOR<Prisma.AddressUpdateWithoutVisitBookingsInput, Prisma.AddressUncheckedUpdateWithoutVisitBookingsInput>
+  create: Prisma.XOR<Prisma.AddressCreateWithoutVisitBookingsInput, Prisma.AddressUncheckedCreateWithoutVisitBookingsInput>
+  where?: Prisma.AddressWhereInput
+}
+
+export type AddressUpdateToOneWithWhereWithoutVisitBookingsInput = {
+  where?: Prisma.AddressWhereInput
+  data: Prisma.XOR<Prisma.AddressUpdateWithoutVisitBookingsInput, Prisma.AddressUncheckedUpdateWithoutVisitBookingsInput>
+}
+
+export type AddressUpdateWithoutVisitBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  line1?: Prisma.StringFieldUpdateOperationsInput | string
+  line2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  pincode?: Prisma.StringFieldUpdateOperationsInput | string
+  landmark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutAddressesNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutShippingAddressNestedInput
+}
+
+export type AddressUncheckedUpdateWithoutVisitBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  line1?: Prisma.StringFieldUpdateOperationsInput | string
+  line2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  pincode?: Prisma.StringFieldUpdateOperationsInput | string
+  landmark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutShippingAddressNestedInput
 }
 
 export type AddressCreateManyCustomerInput = {
   id?: string
   type?: $Enums.AddressType
+  label?: string | null
+  isDefault?: boolean
   name?: string | null
   phone?: string | null
   line1: string
@@ -772,6 +957,8 @@ export type AddressCreateManyCustomerInput = {
 export type AddressUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -784,11 +971,14 @@ export type AddressUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUpdateManyWithoutShippingAddressNestedInput
+  visitBookings?: Prisma.BookingUpdateManyWithoutVisitAddressNestedInput
 }
 
 export type AddressUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -801,11 +991,14 @@ export type AddressUncheckedUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutShippingAddressNestedInput
+  visitBookings?: Prisma.BookingUncheckedUpdateManyWithoutVisitAddressNestedInput
 }
 
 export type AddressUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumAddressTypeFieldUpdateOperationsInput | $Enums.AddressType
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   line1?: Prisma.StringFieldUpdateOperationsInput | string
@@ -826,10 +1019,12 @@ export type AddressUncheckedUpdateManyWithoutCustomerInput = {
 
 export type AddressCountOutputType = {
   orders: number
+  visitBookings: number
 }
 
 export type AddressCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | AddressCountOutputTypeCountOrdersArgs
+  visitBookings?: boolean | AddressCountOutputTypeCountVisitBookingsArgs
 }
 
 /**
@@ -849,11 +1044,20 @@ export type AddressCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.
   where?: Prisma.OrderWhereInput
 }
 
+/**
+ * AddressCountOutputType without action
+ */
+export type AddressCountOutputTypeCountVisitBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
 
 export type AddressSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   customerId?: boolean
   type?: boolean
+  label?: boolean
+  isDefault?: boolean
   name?: boolean
   phone?: boolean
   line1?: boolean
@@ -867,6 +1071,7 @@ export type AddressSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   orders?: boolean | Prisma.Address$ordersArgs<ExtArgs>
+  visitBookings?: boolean | Prisma.Address$visitBookingsArgs<ExtArgs>
   _count?: boolean | Prisma.AddressCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["address"]>
 
@@ -874,6 +1079,8 @@ export type AddressSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   customerId?: boolean
   type?: boolean
+  label?: boolean
+  isDefault?: boolean
   name?: boolean
   phone?: boolean
   line1?: boolean
@@ -892,6 +1099,8 @@ export type AddressSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   customerId?: boolean
   type?: boolean
+  label?: boolean
+  isDefault?: boolean
   name?: boolean
   phone?: boolean
   line1?: boolean
@@ -910,6 +1119,8 @@ export type AddressSelectScalar = {
   id?: boolean
   customerId?: boolean
   type?: boolean
+  label?: boolean
+  isDefault?: boolean
   name?: boolean
   phone?: boolean
   line1?: boolean
@@ -923,10 +1134,11 @@ export type AddressSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AddressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "type" | "name" | "phone" | "line1" | "line2" | "city" | "state" | "country" | "pincode" | "landmark" | "createdAt" | "updatedAt", ExtArgs["result"]["address"]>
+export type AddressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "type" | "label" | "isDefault" | "name" | "phone" | "line1" | "line2" | "city" | "state" | "country" | "pincode" | "landmark" | "createdAt" | "updatedAt", ExtArgs["result"]["address"]>
 export type AddressInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   orders?: boolean | Prisma.Address$ordersArgs<ExtArgs>
+  visitBookings?: boolean | Prisma.Address$visitBookingsArgs<ExtArgs>
   _count?: boolean | Prisma.AddressCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AddressIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -941,11 +1153,14 @@ export type $AddressPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     customer: Prisma.$CustomerPayload<ExtArgs>
     orders: Prisma.$OrderPayload<ExtArgs>[]
+    visitBookings: Prisma.$BookingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     customerId: string
     type: $Enums.AddressType
+    label: string | null
+    isDefault: boolean
     name: string | null
     phone: string | null
     line1: string
@@ -1353,6 +1568,7 @@ export interface Prisma__AddressClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.CustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   orders<T extends Prisma.Address$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Address$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  visitBookings<T extends Prisma.Address$visitBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Address$visitBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1385,6 +1601,8 @@ export interface AddressFieldRefs {
   readonly id: Prisma.FieldRef<"Address", 'String'>
   readonly customerId: Prisma.FieldRef<"Address", 'String'>
   readonly type: Prisma.FieldRef<"Address", 'AddressType'>
+  readonly label: Prisma.FieldRef<"Address", 'String'>
+  readonly isDefault: Prisma.FieldRef<"Address", 'Boolean'>
   readonly name: Prisma.FieldRef<"Address", 'String'>
   readonly phone: Prisma.FieldRef<"Address", 'String'>
   readonly line1: Prisma.FieldRef<"Address", 'String'>
@@ -1818,6 +2036,30 @@ export type Address$ordersArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
+}
+
+/**
+ * Address.visitBookings
+ */
+export type Address$visitBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
 }
 
 /**

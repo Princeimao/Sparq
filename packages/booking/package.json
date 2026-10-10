@@ -1,0 +1,20 @@
+{
+  "name": "@sparq/booking",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "echo 'No lint step for booking package'",
+    "check-types": "tsc --noEmit",
+    "test": "tsx --test \"src/**/*.test.ts\""
+  },
+  "dependencies": {
+    "zod": "^3.25.30"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "typescript": "5.9.2"
+  }
+}

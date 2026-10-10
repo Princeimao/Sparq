@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -40,7 +40,7 @@ export default function PricingSection({
         </h2>
         <p className="text-zinc-500 max-w-2xl text-base md:text-lg">
           Get full access to all apps & features from only{" "}
-          <span className="font-semibold text-zinc-950">₹359 per month</span>{" "}
+          <span className="font-semibold text-zinc-950">₹799 per month</span>{" "}
           (billed annually) — Cancel any time.
         </p>
 
@@ -201,166 +201,70 @@ export default function PricingSection({
                   <th className="px-8 py-5 font-bold text-zinc-800 w-1/3">
                     Feature
                   </th>
+
                   <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center">
                     Free
                   </th>
-                  <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center bg-zinc-50/20">
-                    Normal
+
+                  <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center bg-zinc-50/30">
+                    Growth
                   </th>
+
                   <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center">
                     Pro
                   </th>
                 </tr>
               </thead>
+
               <tbody>
-                {/* Workspace Category */}
-                <tr className="bg-zinc-50/80 font-bold text-[11px] text-zinc-400 tracking-wider uppercase border-b border-zinc-200">
-                  <td colSpan={4} className="px-8 py-3">
-                    Workspace
-                  </td>
-                </tr>
-                {comparisonData.workspace.map((row) => (
-                  <tr
-                    key={row.feature}
-                    className="border-b border-zinc-100 hover:bg-zinc-50/30 transition-all"
-                  >
-                    <td className="px-8 py-4 font-semibold text-zinc-700">
-                      {row.feature}
-                    </td>
-                    <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                      {typeof row.free === "boolean" ? (
-                        row.free ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.free
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center font-bold text-zinc-950 bg-zinc-50/10">
-                      {typeof row.normal === "boolean" ? (
-                        row.normal ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.normal
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                      {typeof row.pro === "boolean" ? (
-                        row.pro ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.pro
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {Object.entries(comparisonData).map(([category, rows]) => (
+                  <React.Fragment key={category}>
+                    {/* Category */}
+                    <tr className="bg-zinc-50/80 border-b border-zinc-200">
+                      <td
+                        colSpan={4}
+                        className="px-8 py-3 font-bold text-[11px] text-zinc-400 tracking-wider uppercase"
+                      >
+                        {category === "storefront" && "Storefront"}
 
-                {/* Automation Category */}
-                <tr className="bg-zinc-50/80 font-bold text-[11px] text-zinc-400 tracking-wider uppercase border-b border-zinc-200">
-                  <td colSpan={4} className="px-8 py-3">
-                    Automation
-                  </td>
-                </tr>
-                {comparisonData.automation.map((row) => (
-                  <tr
-                    key={row.feature}
-                    className="border-b border-zinc-100 hover:bg-zinc-50/30 transition-all"
-                  >
-                    <td className="px-8 py-4 font-semibold text-zinc-700">
-                      {row.feature}
-                    </td>
-                    <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                      {typeof row.free === "boolean" ? (
-                        row.free ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.free
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center font-bold text-zinc-950 bg-zinc-50/10">
-                      {typeof row.normal === "boolean" ? (
-                        row.normal ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.normal
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                      {typeof row.pro === "boolean" ? (
-                        row.pro ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.pro
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                        {category === "conversations" && "Conversations"}
 
-                {/* Integration Category */}
-                <tr className="bg-zinc-50/80 font-bold text-[11px] text-zinc-400 tracking-wider uppercase border-b border-zinc-200">
-                  <td colSpan={4} className="px-8 py-3">
-                    Integrations & Scaling
-                  </td>
-                </tr>
-                {comparisonData.integration.map((row) => (
-                  <tr
-                    key={row.feature}
-                    className="border-b border-zinc-100 hover:bg-zinc-50/30 transition-all"
-                  >
-                    <td className="px-8 py-4 font-semibold text-zinc-700">
-                      {row.feature}
-                    </td>
-                    <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                      {typeof row.free === "boolean" ? (
-                        row.free ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.free
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center font-bold text-zinc-950 bg-zinc-50/10">
-                      {typeof row.normal === "boolean" ? (
-                        row.normal ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.normal
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                      {typeof row.pro === "boolean" ? (
-                        row.pro ? (
-                          <Check className="mx-auto size-4 text-emerald-600" />
-                        ) : (
-                          <X className="mx-auto size-4 text-zinc-300" />
-                        )
-                      ) : (
-                        row.pro
-                      )}
-                    </td>
-                  </tr>
+                        {category === "commerce" && "Commerce"}
+
+                        {category === "analytics" && "Analytics"}
+
+                        {category === "advanced" && "Advanced Features"}
+                      </td>
+                    </tr>
+
+                    {/* Features */}
+                    {rows.map((row) => (
+                      <tr
+                        key={row.feature}
+                        className="border-b border-zinc-100 hover:bg-zinc-50/30 transition-colors"
+                      >
+                        {/* Feature name */}
+                        <td className="px-8 py-4 font-semibold text-zinc-700">
+                          {row.feature}
+                        </td>
+
+                        {/* Free */}
+                        <td className="px-6 py-4 text-center font-medium text-zinc-500">
+                          {renderComparisonValue(row.free)}
+                        </td>
+
+                        {/* Growth */}
+                        <td className="px-6 py-4 text-center font-bold text-zinc-950 bg-zinc-50/10">
+                          {renderComparisonValue(row.growth)}
+                        </td>
+
+                        {/* Pro */}
+                        <td className="px-6 py-4 text-center font-medium text-zinc-500">
+                          {renderComparisonValue(row.pro)}
+                        </td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -370,3 +274,17 @@ export default function PricingSection({
     </div>
   );
 }
+
+const renderComparisonValue = (
+  value: boolean | string | number | undefined,
+) => {
+  if (typeof value === "boolean") {
+    return value ? (
+      <Check className="mx-auto size-4 text-emerald-600" strokeWidth={2.5} />
+    ) : (
+      <X className="mx-auto size-4 text-zinc-300" strokeWidth={2} />
+    );
+  }
+
+  return value ?? "—";
+};

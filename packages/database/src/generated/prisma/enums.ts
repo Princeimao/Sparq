@@ -76,37 +76,46 @@ export const BookingMode = {
 export type BookingMode = (typeof BookingMode)[keyof typeof BookingMode]
 
 
-export const AppointmentStatus = {
+export const ResourceKind = {
+  STAFF: 'STAFF',
+  TABLE: 'TABLE',
+  ROOM: 'ROOM',
+  EQUIPMENT: 'EQUIPMENT',
+  OTHER: 'OTHER'
+} as const
+
+export type ResourceKind = (typeof ResourceKind)[keyof typeof ResourceKind]
+
+
+export const AssignmentMode = {
+  CUSTOMER_CHOICE: 'CUSTOMER_CHOICE',
+  BUSINESS_ASSIGN: 'BUSINESS_ASSIGN',
+  AUTO: 'AUTO',
+  SINGLE: 'SINGLE'
+} as const
+
+export type AssignmentMode = (typeof AssignmentMode)[keyof typeof AssignmentMode]
+
+
+export const BookingStatus = {
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED',
   COMPLETED: 'COMPLETED',
-  NO_SHOW: 'NO_SHOW'
+  NO_SHOW: 'NO_SHOW',
+  CHECKED_IN: 'CHECKED_IN'
 } as const
 
-export type AppointmentStatus = (typeof AppointmentStatus)[keyof typeof AppointmentStatus]
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
 
 
-export const ReservationSlotType = {
-  HOTEL_ROOM: 'HOTEL_ROOM',
-  RESTAURANT_TABLE: 'RESTAURANT_TABLE',
-  MEETING_ROOM: 'MEETING_ROOM',
-  EVENT_SPACE: 'EVENT_SPACE',
-  OTHER: 'OTHER'
+export const BookingSource = {
+  WHATSAPP: 'WHATSAPP',
+  DASHBOARD: 'DASHBOARD',
+  API: 'API'
 } as const
 
-export type ReservationSlotType = (typeof ReservationSlotType)[keyof typeof ReservationSlotType]
-
-
-export const ReservationStatus = {
-  PENDING: 'PENDING',
-  CONFIRMED: 'CONFIRMED',
-  CHECKED_IN: 'CHECKED_IN',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
-} as const
-
-export type ReservationStatus = (typeof ReservationStatus)[keyof typeof ReservationStatus]
+export type BookingSource = (typeof BookingSource)[keyof typeof BookingSource]
 
 
 export const AvailabilityMode = {
@@ -139,6 +148,86 @@ export const MessageStatus = {
 } as const
 
 export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus]
+
+
+export const SubscriptionPlan = {
+  FREE: 'FREE',
+  GROWTH: 'GROWTH',
+  PRO: 'PRO'
+} as const
+
+export type SubscriptionPlan = (typeof SubscriptionPlan)[keyof typeof SubscriptionPlan]
+
+
+export const BillingInterval = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY'
+} as const
+
+export type BillingInterval = (typeof BillingInterval)[keyof typeof BillingInterval]
+
+
+export const SubscriptionStatus = {
+  ACTIVE: 'ACTIVE',
+  PENDING: 'PENDING',
+  PAUSED: 'PAUSED',
+  CANCELED: 'CANCELED',
+  EXPIRED: 'EXPIRED',
+  PAST_DUE: 'PAST_DUE'
+} as const
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
+
+
+export const PaymentStatus = {
+  CREATED: 'CREATED',
+  AUTHORIZED: 'AUTHORIZED',
+  CAPTURED: 'CAPTURED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const PaymentProvider = {
+  RAZORPAY: 'RAZORPAY'
+} as const
+
+export type PaymentProvider = (typeof PaymentProvider)[keyof typeof PaymentProvider]
+
+
+export const BusinessType = {
+  SALON: 'SALON',
+  CLINIC: 'CLINIC',
+  RESTAURANT: 'RESTAURANT',
+  HOTEL: 'HOTEL',
+  RETAIL: 'RETAIL',
+  HOME_SERVICES: 'HOME_SERVICES',
+  FITNESS: 'FITNESS',
+  OTHER: 'OTHER'
+} as const
+
+export type BusinessType = (typeof BusinessType)[keyof typeof BusinessType]
+
+
+export const OnboardingStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type OnboardingStatus = (typeof OnboardingStatus)[keyof typeof OnboardingStatus]
+
+
+export const ServiceLocation = {
+  AT_BUSINESS: 'AT_BUSINESS',
+  AT_CUSTOMER: 'AT_CUSTOMER',
+  BOTH: 'BOTH'
+} as const
+
+export type ServiceLocation = (typeof ServiceLocation)[keyof typeof ServiceLocation]
 
 
 export const AddressType = {

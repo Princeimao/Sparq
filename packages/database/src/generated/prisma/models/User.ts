@@ -203,14 +203,17 @@ export type UserWhereInput = {
   customers?: Prisma.CustomerListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   products?: Prisma.ProductListRelationFilter
-  appointments?: Prisma.AppointmentListRelationFilter
-  workflows?: Prisma.WorkflowListRelationFilter
   flows?: Prisma.FlowListRelationFilter
   service?: Prisma.ServiceListRelationFilter
   staff?: Prisma.StaffListRelationFilter
   messages?: Prisma.MessageListRelationFilter
-  reservationSlots?: Prisma.ReservationSlotListRelationFilter
-  reservationBookings?: Prisma.ReservationBookingListRelationFilter
+  resources?: Prisma.ResourceListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
+  timeOffs?: Prisma.TimeOffListRelationFilter
+  breaks?: Prisma.BreakListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
+  subscriptions?: Prisma.SubscriptionListRelationFilter
+  businessProfile?: Prisma.XOR<Prisma.BusinessProfileNullableScalarRelationFilter, Prisma.BusinessProfileWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -226,14 +229,17 @@ export type UserOrderByWithRelationInput = {
   customers?: Prisma.CustomerOrderByRelationAggregateInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
   products?: Prisma.ProductOrderByRelationAggregateInput
-  appointments?: Prisma.AppointmentOrderByRelationAggregateInput
-  workflows?: Prisma.WorkflowOrderByRelationAggregateInput
   flows?: Prisma.FlowOrderByRelationAggregateInput
   service?: Prisma.ServiceOrderByRelationAggregateInput
   staff?: Prisma.StaffOrderByRelationAggregateInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
-  reservationSlots?: Prisma.ReservationSlotOrderByRelationAggregateInput
-  reservationBookings?: Prisma.ReservationBookingOrderByRelationAggregateInput
+  resources?: Prisma.ResourceOrderByRelationAggregateInput
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
+  timeOffs?: Prisma.TimeOffOrderByRelationAggregateInput
+  breaks?: Prisma.BreakOrderByRelationAggregateInput
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
+  subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
+  businessProfile?: Prisma.BusinessProfileOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -252,14 +258,17 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   customers?: Prisma.CustomerListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   products?: Prisma.ProductListRelationFilter
-  appointments?: Prisma.AppointmentListRelationFilter
-  workflows?: Prisma.WorkflowListRelationFilter
   flows?: Prisma.FlowListRelationFilter
   service?: Prisma.ServiceListRelationFilter
   staff?: Prisma.StaffListRelationFilter
   messages?: Prisma.MessageListRelationFilter
-  reservationSlots?: Prisma.ReservationSlotListRelationFilter
-  reservationBookings?: Prisma.ReservationBookingListRelationFilter
+  resources?: Prisma.ResourceListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
+  timeOffs?: Prisma.TimeOffListRelationFilter
+  breaks?: Prisma.BreakListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
+  subscriptions?: Prisma.SubscriptionListRelationFilter
+  businessProfile?: Prisma.XOR<Prisma.BusinessProfileNullableScalarRelationFilter, Prisma.BusinessProfileWhereInput> | null
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -301,14 +310,17 @@ export type UserCreateInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -324,14 +336,17 @@ export type UserUncheckedCreateInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -347,14 +362,17 @@ export type UserUpdateInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -370,14 +388,17 @@ export type UserUncheckedUpdateInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -455,6 +476,34 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.UserUpsertWithoutPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPaymentsInput, Prisma.UserUpdateWithoutPaymentsInput>, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type UserCreateNestedOneWithoutSubscriptionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSubscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionsInput
+  upsert?: Prisma.UserUpsertWithoutSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubscriptionsInput, Prisma.UserUpdateWithoutSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutSubscriptionsInput>
 }
 
 export type UserCreateNestedOneWithoutIntegrationsInput = {
@@ -541,20 +590,6 @@ export type UserUpdateOneRequiredWithoutProductsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProductsInput, Prisma.UserUpdateWithoutProductsInput>, Prisma.UserUncheckedUpdateWithoutProductsInput>
 }
 
-export type UserCreateNestedOneWithoutWorkflowsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkflowsInput, Prisma.UserUncheckedCreateWithoutWorkflowsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkflowsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutWorkflowsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkflowsInput, Prisma.UserUncheckedCreateWithoutWorkflowsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkflowsInput
-  upsert?: Prisma.UserUpsertWithoutWorkflowsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkflowsInput, Prisma.UserUpdateWithoutWorkflowsInput>, Prisma.UserUncheckedUpdateWithoutWorkflowsInput>
-}
-
 export type UserCreateNestedOneWithoutFlowsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutFlowsInput, Prisma.UserUncheckedCreateWithoutFlowsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutFlowsInput
@@ -597,46 +632,306 @@ export type UserUpdateOneRequiredWithoutStaffNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStaffInput, Prisma.UserUpdateWithoutStaffInput>, Prisma.UserUncheckedUpdateWithoutStaffInput>
 }
 
-export type UserCreateNestedOneWithoutAppointmentsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAppointmentsInput, Prisma.UserUncheckedCreateWithoutAppointmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAppointmentsInput
+export type UserCreateNestedOneWithoutResourcesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutResourcesInput, Prisma.UserUncheckedCreateWithoutResourcesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutResourcesInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutAppointmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAppointmentsInput, Prisma.UserUncheckedCreateWithoutAppointmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAppointmentsInput
-  upsert?: Prisma.UserUpsertWithoutAppointmentsInput
+export type UserUpdateOneRequiredWithoutResourcesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutResourcesInput, Prisma.UserUncheckedCreateWithoutResourcesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutResourcesInput
+  upsert?: Prisma.UserUpsertWithoutResourcesInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.UserUpdateWithoutAppointmentsInput>, Prisma.UserUncheckedUpdateWithoutAppointmentsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutResourcesInput, Prisma.UserUpdateWithoutResourcesInput>, Prisma.UserUncheckedUpdateWithoutResourcesInput>
 }
 
-export type UserCreateNestedOneWithoutReservationSlotsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationSlotsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutReservationSlotsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationSlotsInput
-  upsert?: Prisma.UserUpsertWithoutReservationSlotsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReservationSlotsInput, Prisma.UserUpdateWithoutReservationSlotsInput>, Prisma.UserUncheckedUpdateWithoutReservationSlotsInput>
-}
-
-export type UserCreateNestedOneWithoutReservationBookingsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationBookingsInput
+export type UserCreateNestedOneWithoutTimeOffsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTimeOffsInput, Prisma.UserUncheckedCreateWithoutTimeOffsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTimeOffsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutReservationBookingsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReservationBookingsInput
-  upsert?: Prisma.UserUpsertWithoutReservationBookingsInput
+export type UserUpdateOneRequiredWithoutTimeOffsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTimeOffsInput, Prisma.UserUncheckedCreateWithoutTimeOffsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTimeOffsInput
+  upsert?: Prisma.UserUpsertWithoutTimeOffsInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReservationBookingsInput, Prisma.UserUpdateWithoutReservationBookingsInput>, Prisma.UserUncheckedUpdateWithoutReservationBookingsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTimeOffsInput, Prisma.UserUpdateWithoutTimeOffsInput>, Prisma.UserUncheckedUpdateWithoutTimeOffsInput>
+}
+
+export type UserCreateNestedOneWithoutBreaksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBreaksInput, Prisma.UserUncheckedCreateWithoutBreaksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBreaksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBreaksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBreaksInput, Prisma.UserUncheckedCreateWithoutBreaksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBreaksInput
+  upsert?: Prisma.UserUpsertWithoutBreaksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBreaksInput, Prisma.UserUpdateWithoutBreaksInput>, Prisma.UserUncheckedUpdateWithoutBreaksInput>
+}
+
+export type UserCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.UserUpsertWithoutBookingsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBookingsInput, Prisma.UserUpdateWithoutBookingsInput>, Prisma.UserUncheckedUpdateWithoutBookingsInput>
+}
+
+export type UserCreateNestedOneWithoutBusinessProfileInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBusinessProfileInput, Prisma.UserUncheckedCreateWithoutBusinessProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBusinessProfileInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBusinessProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBusinessProfileInput, Prisma.UserUncheckedCreateWithoutBusinessProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBusinessProfileInput
+  upsert?: Prisma.UserUpsertWithoutBusinessProfileInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBusinessProfileInput, Prisma.UserUpdateWithoutBusinessProfileInput>, Prisma.UserUncheckedUpdateWithoutBusinessProfileInput>
+}
+
+export type UserCreateWithoutPaymentsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+}
+
+export type UserUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPaymentsInput, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPaymentsInput, Prisma.UserUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPaymentsInput, Prisma.UserUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type UserUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSubscriptionsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSubscriptionsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSubscriptionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
+}
+
+export type UserUpsertWithoutSubscriptionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutSubscriptionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionsInput, Prisma.UserUncheckedCreateWithoutSubscriptionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSubscriptionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutSubscriptionsInput>
+}
+
+export type UserUpdateWithoutSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutIntegrationsInput = {
@@ -651,14 +946,17 @@ export type UserCreateWithoutIntegrationsInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutIntegrationsInput = {
@@ -673,14 +971,17 @@ export type UserUncheckedCreateWithoutIntegrationsInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutIntegrationsInput = {
@@ -711,14 +1012,17 @@ export type UserUpdateWithoutIntegrationsInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutIntegrationsInput = {
@@ -733,14 +1037,17 @@ export type UserUncheckedUpdateWithoutIntegrationsInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWhatsappIntegrationsInput = {
@@ -755,14 +1062,17 @@ export type UserCreateWithoutWhatsappIntegrationsInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWhatsappIntegrationsInput = {
@@ -777,14 +1087,17 @@ export type UserUncheckedCreateWithoutWhatsappIntegrationsInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWhatsappIntegrationsInput = {
@@ -815,14 +1128,17 @@ export type UserUpdateWithoutWhatsappIntegrationsInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWhatsappIntegrationsInput = {
@@ -837,14 +1153,17 @@ export type UserUncheckedUpdateWithoutWhatsappIntegrationsInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCustomersInput = {
@@ -859,14 +1178,17 @@ export type UserCreateWithoutCustomersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCustomersInput = {
@@ -881,14 +1203,17 @@ export type UserUncheckedCreateWithoutCustomersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCustomersInput = {
@@ -919,14 +1244,17 @@ export type UserUpdateWithoutCustomersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCustomersInput = {
@@ -941,14 +1269,17 @@ export type UserUncheckedUpdateWithoutCustomersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOrdersInput = {
@@ -963,14 +1294,17 @@ export type UserCreateWithoutOrdersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrdersInput = {
@@ -985,14 +1319,17 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrdersInput = {
@@ -1023,14 +1360,17 @@ export type UserUpdateWithoutOrdersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -1045,14 +1385,17 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -1068,13 +1411,16 @@ export type UserCreateWithoutMessagesInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -1090,13 +1436,16 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -1128,13 +1477,16 @@ export type UserUpdateWithoutMessagesInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -1150,13 +1502,16 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutProductsInput = {
@@ -1171,14 +1526,17 @@ export type UserCreateWithoutProductsInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProductsInput = {
@@ -1193,14 +1551,17 @@ export type UserUncheckedCreateWithoutProductsInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProductsInput = {
@@ -1231,14 +1592,17 @@ export type UserUpdateWithoutProductsInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProductsInput = {
@@ -1253,118 +1617,17 @@ export type UserUncheckedUpdateWithoutProductsInput = {
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutWorkflowsInput = {
-  id?: string
-  email: string
-  name?: string | null
-  avatarUrl?: string | null
-  googleId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
-  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
-  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
-  products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
-  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
-  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
-  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutWorkflowsInput = {
-  id?: string
-  email: string
-  name?: string | null
-  avatarUrl?: string | null
-  googleId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
-  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
-  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
-  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
-  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
-  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
-  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutWorkflowsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutWorkflowsInput, Prisma.UserUncheckedCreateWithoutWorkflowsInput>
-}
-
-export type UserUpsertWithoutWorkflowsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutWorkflowsInput, Prisma.UserUncheckedUpdateWithoutWorkflowsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutWorkflowsInput, Prisma.UserUncheckedCreateWithoutWorkflowsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutWorkflowsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutWorkflowsInput, Prisma.UserUncheckedUpdateWithoutWorkflowsInput>
-}
-
-export type UserUpdateWithoutWorkflowsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
-  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
-  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
-  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
-  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
-  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
-  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutWorkflowsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
-  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
-  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
-  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
-  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
-  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
-  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFlowsInput = {
@@ -1380,13 +1643,16 @@ export type UserCreateWithoutFlowsInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFlowsInput = {
@@ -1402,13 +1668,16 @@ export type UserUncheckedCreateWithoutFlowsInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFlowsInput = {
@@ -1440,13 +1709,16 @@ export type UserUpdateWithoutFlowsInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFlowsInput = {
@@ -1462,13 +1734,16 @@ export type UserUncheckedUpdateWithoutFlowsInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutServiceInput = {
@@ -1484,13 +1759,16 @@ export type UserCreateWithoutServiceInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutServiceInput = {
@@ -1506,13 +1784,16 @@ export type UserUncheckedCreateWithoutServiceInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutServiceInput = {
@@ -1544,13 +1825,16 @@ export type UserUpdateWithoutServiceInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceInput = {
@@ -1566,13 +1850,16 @@ export type UserUncheckedUpdateWithoutServiceInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStaffInput = {
@@ -1588,13 +1875,16 @@ export type UserCreateWithoutStaffInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutStaffInput = {
@@ -1610,13 +1900,16 @@ export type UserUncheckedCreateWithoutStaffInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutStaffInput = {
@@ -1648,13 +1941,16 @@ export type UserUpdateWithoutStaffInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffInput = {
@@ -1670,16 +1966,19 @@ export type UserUncheckedUpdateWithoutStaffInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
-export type UserCreateWithoutAppointmentsInput = {
+export type UserCreateWithoutResourcesInput = {
   id?: string
   email: string
   name?: string | null
@@ -1692,16 +1991,19 @@ export type UserCreateWithoutAppointmentsInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutAppointmentsInput = {
+export type UserUncheckedCreateWithoutResourcesInput = {
   id?: string
   email: string
   name?: string | null
@@ -1714,32 +2016,35 @@ export type UserUncheckedCreateWithoutAppointmentsInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutAppointmentsInput = {
+export type UserCreateOrConnectWithoutResourcesInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAppointmentsInput, Prisma.UserUncheckedCreateWithoutAppointmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutResourcesInput, Prisma.UserUncheckedCreateWithoutResourcesInput>
 }
 
-export type UserUpsertWithoutAppointmentsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAppointmentsInput, Prisma.UserUncheckedUpdateWithoutAppointmentsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAppointmentsInput, Prisma.UserUncheckedCreateWithoutAppointmentsInput>
+export type UserUpsertWithoutResourcesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutResourcesInput, Prisma.UserUncheckedUpdateWithoutResourcesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutResourcesInput, Prisma.UserUncheckedCreateWithoutResourcesInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutAppointmentsInput = {
+export type UserUpdateToOneWithWhereWithoutResourcesInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAppointmentsInput, Prisma.UserUncheckedUpdateWithoutAppointmentsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutResourcesInput, Prisma.UserUncheckedUpdateWithoutResourcesInput>
 }
 
-export type UserUpdateWithoutAppointmentsInput = {
+export type UserUpdateWithoutResourcesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1752,16 +2057,19 @@ export type UserUpdateWithoutAppointmentsInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutAppointmentsInput = {
+export type UserUncheckedUpdateWithoutResourcesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1774,16 +2082,19 @@ export type UserUncheckedUpdateWithoutAppointmentsInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
-export type UserCreateWithoutReservationSlotsInput = {
+export type UserCreateWithoutTimeOffsInput = {
   id?: string
   email: string
   name?: string | null
@@ -1796,16 +2107,19 @@ export type UserCreateWithoutReservationSlotsInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutReservationSlotsInput = {
+export type UserUncheckedCreateWithoutTimeOffsInput = {
   id?: string
   email: string
   name?: string | null
@@ -1818,32 +2132,35 @@ export type UserUncheckedCreateWithoutReservationSlotsInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutReservationSlotsInput = {
+export type UserCreateOrConnectWithoutTimeOffsInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTimeOffsInput, Prisma.UserUncheckedCreateWithoutTimeOffsInput>
 }
 
-export type UserUpsertWithoutReservationSlotsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutReservationSlotsInput, Prisma.UserUncheckedUpdateWithoutReservationSlotsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutReservationSlotsInput, Prisma.UserUncheckedCreateWithoutReservationSlotsInput>
+export type UserUpsertWithoutTimeOffsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTimeOffsInput, Prisma.UserUncheckedUpdateWithoutTimeOffsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTimeOffsInput, Prisma.UserUncheckedCreateWithoutTimeOffsInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutReservationSlotsInput = {
+export type UserUpdateToOneWithWhereWithoutTimeOffsInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutReservationSlotsInput, Prisma.UserUncheckedUpdateWithoutReservationSlotsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTimeOffsInput, Prisma.UserUncheckedUpdateWithoutTimeOffsInput>
 }
 
-export type UserUpdateWithoutReservationSlotsInput = {
+export type UserUpdateWithoutTimeOffsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1856,16 +2173,19 @@ export type UserUpdateWithoutReservationSlotsInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutReservationSlotsInput = {
+export type UserUncheckedUpdateWithoutTimeOffsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1878,16 +2198,19 @@ export type UserUncheckedUpdateWithoutReservationSlotsInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationBookings?: Prisma.ReservationBookingUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
-export type UserCreateWithoutReservationBookingsInput = {
+export type UserCreateWithoutBreaksInput = {
   id?: string
   email: string
   name?: string | null
@@ -1900,16 +2223,19 @@ export type UserCreateWithoutReservationBookingsInput = {
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutReservationBookingsInput = {
+export type UserUncheckedCreateWithoutBreaksInput = {
   id?: string
   email: string
   name?: string | null
@@ -1922,32 +2248,35 @@ export type UserUncheckedCreateWithoutReservationBookingsInput = {
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserInput
-  workflows?: Prisma.WorkflowUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
   service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutReservationBookingsInput = {
+export type UserCreateOrConnectWithoutBreaksInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBreaksInput, Prisma.UserUncheckedCreateWithoutBreaksInput>
 }
 
-export type UserUpsertWithoutReservationBookingsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutReservationBookingsInput, Prisma.UserUncheckedUpdateWithoutReservationBookingsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutReservationBookingsInput, Prisma.UserUncheckedCreateWithoutReservationBookingsInput>
+export type UserUpsertWithoutBreaksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBreaksInput, Prisma.UserUncheckedUpdateWithoutBreaksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBreaksInput, Prisma.UserUncheckedCreateWithoutBreaksInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutReservationBookingsInput = {
+export type UserUpdateToOneWithWhereWithoutBreaksInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutReservationBookingsInput, Prisma.UserUncheckedUpdateWithoutReservationBookingsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBreaksInput, Prisma.UserUncheckedUpdateWithoutBreaksInput>
 }
 
-export type UserUpdateWithoutReservationBookingsInput = {
+export type UserUpdateWithoutBreaksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1960,16 +2289,19 @@ export type UserUpdateWithoutReservationBookingsInput = {
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutReservationBookingsInput = {
+export type UserUncheckedUpdateWithoutBreaksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1982,13 +2314,248 @@ export type UserUncheckedUpdateWithoutReservationBookingsInput = {
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserNestedInput
-  workflows?: Prisma.WorkflowUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
   service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
   staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
-  reservationSlots?: Prisma.ReservationSlotUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutBookingsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutBookingsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+}
+
+export type UserUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBookingsInput, Prisma.UserUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBookingsInput, Prisma.UserUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBookingsInput, Prisma.UserUncheckedUpdateWithoutBookingsInput>
+}
+
+export type UserUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutBusinessProfileInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutBusinessProfileInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutBusinessProfileInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBusinessProfileInput, Prisma.UserUncheckedCreateWithoutBusinessProfileInput>
+}
+
+export type UserUpsertWithoutBusinessProfileInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBusinessProfileInput, Prisma.UserUncheckedUpdateWithoutBusinessProfileInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBusinessProfileInput, Prisma.UserUncheckedCreateWithoutBusinessProfileInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBusinessProfileInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBusinessProfileInput, Prisma.UserUncheckedUpdateWithoutBusinessProfileInput>
+}
+
+export type UserUpdateWithoutBusinessProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBusinessProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2001,14 +2568,16 @@ export type UserCountOutputType = {
   customers: number
   orders: number
   products: number
-  appointments: number
-  workflows: number
   flows: number
   service: number
   staff: number
   messages: number
-  reservationSlots: number
-  reservationBookings: number
+  resources: number
+  bookings: number
+  timeOffs: number
+  breaks: number
+  payments: number
+  subscriptions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2016,14 +2585,16 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   customers?: boolean | UserCountOutputTypeCountCustomersArgs
   orders?: boolean | UserCountOutputTypeCountOrdersArgs
   products?: boolean | UserCountOutputTypeCountProductsArgs
-  appointments?: boolean | UserCountOutputTypeCountAppointmentsArgs
-  workflows?: boolean | UserCountOutputTypeCountWorkflowsArgs
   flows?: boolean | UserCountOutputTypeCountFlowsArgs
   service?: boolean | UserCountOutputTypeCountServiceArgs
   staff?: boolean | UserCountOutputTypeCountStaffArgs
   messages?: boolean | UserCountOutputTypeCountMessagesArgs
-  reservationSlots?: boolean | UserCountOutputTypeCountReservationSlotsArgs
-  reservationBookings?: boolean | UserCountOutputTypeCountReservationBookingsArgs
+  resources?: boolean | UserCountOutputTypeCountResourcesArgs
+  bookings?: boolean | UserCountOutputTypeCountBookingsArgs
+  timeOffs?: boolean | UserCountOutputTypeCountTimeOffsArgs
+  breaks?: boolean | UserCountOutputTypeCountBreaksArgs
+  payments?: boolean | UserCountOutputTypeCountPaymentsArgs
+  subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
 }
 
 /**
@@ -2067,20 +2638,6 @@ export type UserCountOutputTypeCountProductsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AppointmentWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountWorkflowsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.WorkflowWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountFlowsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FlowWhereInput
 }
@@ -2109,15 +2666,43 @@ export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountReservationSlotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ReservationSlotWhereInput
+export type UserCountOutputTypeCountResourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ResourceWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountReservationBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ReservationBookingWhereInput
+export type UserCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountTimeOffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimeOffWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBreaksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BreakWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SubscriptionWhereInput
 }
 
 
@@ -2134,14 +2719,17 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   customers?: boolean | Prisma.User$customersArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   products?: boolean | Prisma.User$productsArgs<ExtArgs>
-  appointments?: boolean | Prisma.User$appointmentsArgs<ExtArgs>
-  workflows?: boolean | Prisma.User$workflowsArgs<ExtArgs>
   flows?: boolean | Prisma.User$flowsArgs<ExtArgs>
   service?: boolean | Prisma.User$serviceArgs<ExtArgs>
   staff?: boolean | Prisma.User$staffArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
-  reservationSlots?: boolean | Prisma.User$reservationSlotsArgs<ExtArgs>
-  reservationBookings?: boolean | Prisma.User$reservationBookingsArgs<ExtArgs>
+  resources?: boolean | Prisma.User$resourcesArgs<ExtArgs>
+  bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
+  timeOffs?: boolean | Prisma.User$timeOffsArgs<ExtArgs>
+  breaks?: boolean | Prisma.User$breaksArgs<ExtArgs>
+  payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  subscriptions?: boolean | Prisma.User$subscriptionsArgs<ExtArgs>
+  businessProfile?: boolean | Prisma.User$businessProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2182,14 +2770,17 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   customers?: boolean | Prisma.User$customersArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   products?: boolean | Prisma.User$productsArgs<ExtArgs>
-  appointments?: boolean | Prisma.User$appointmentsArgs<ExtArgs>
-  workflows?: boolean | Prisma.User$workflowsArgs<ExtArgs>
   flows?: boolean | Prisma.User$flowsArgs<ExtArgs>
   service?: boolean | Prisma.User$serviceArgs<ExtArgs>
   staff?: boolean | Prisma.User$staffArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
-  reservationSlots?: boolean | Prisma.User$reservationSlotsArgs<ExtArgs>
-  reservationBookings?: boolean | Prisma.User$reservationBookingsArgs<ExtArgs>
+  resources?: boolean | Prisma.User$resourcesArgs<ExtArgs>
+  bookings?: boolean | Prisma.User$bookingsArgs<ExtArgs>
+  timeOffs?: boolean | Prisma.User$timeOffsArgs<ExtArgs>
+  breaks?: boolean | Prisma.User$breaksArgs<ExtArgs>
+  payments?: boolean | Prisma.User$paymentsArgs<ExtArgs>
+  subscriptions?: boolean | Prisma.User$subscriptionsArgs<ExtArgs>
+  businessProfile?: boolean | Prisma.User$businessProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2203,14 +2794,17 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     customers: Prisma.$CustomerPayload<ExtArgs>[]
     orders: Prisma.$OrderPayload<ExtArgs>[]
     products: Prisma.$ProductPayload<ExtArgs>[]
-    appointments: Prisma.$AppointmentPayload<ExtArgs>[]
-    workflows: Prisma.$WorkflowPayload<ExtArgs>[]
     flows: Prisma.$FlowPayload<ExtArgs>[]
     service: Prisma.$ServicePayload<ExtArgs>[]
     staff: Prisma.$StaffPayload<ExtArgs>[]
     messages: Prisma.$MessagePayload<ExtArgs>[]
-    reservationSlots: Prisma.$ReservationSlotPayload<ExtArgs>[]
-    reservationBookings: Prisma.$ReservationBookingPayload<ExtArgs>[]
+    resources: Prisma.$ResourcePayload<ExtArgs>[]
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
+    timeOffs: Prisma.$TimeOffPayload<ExtArgs>[]
+    breaks: Prisma.$BreakPayload<ExtArgs>[]
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
+    subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
+    businessProfile: Prisma.$BusinessProfilePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2619,14 +3213,17 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   customers<T extends Prisma.User$customersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   orders<T extends Prisma.User$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   products<T extends Prisma.User$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  appointments<T extends Prisma.User$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  workflows<T extends Prisma.User$workflowsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workflowsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkflowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   flows<T extends Prisma.User$flowsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$flowsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FlowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   service<T extends Prisma.User$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$serviceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   staff<T extends Prisma.User$staffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$staffArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  reservationSlots<T extends Prisma.User$reservationSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reservationSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  reservationBookings<T extends Prisma.User$reservationBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reservationBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  resources<T extends Prisma.User$resourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookings<T extends Prisma.User$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timeOffs<T extends Prisma.User$timeOffsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$timeOffsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimeOffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  breaks<T extends Prisma.User$breaksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$breaksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BreakPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.User$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subscriptions<T extends Prisma.User$subscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  businessProfile<T extends Prisma.User$businessProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$businessProfileArgs<ExtArgs>>): Prisma.Prisma__BusinessProfileClient<runtime.Types.Result.GetResult<Prisma.$BusinessProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3171,54 +3768,6 @@ export type User$productsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.appointments
- */
-export type User$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Appointment
-   */
-  select?: Prisma.AppointmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Appointment
-   */
-  omit?: Prisma.AppointmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AppointmentInclude<ExtArgs> | null
-  where?: Prisma.AppointmentWhereInput
-  orderBy?: Prisma.AppointmentOrderByWithRelationInput | Prisma.AppointmentOrderByWithRelationInput[]
-  cursor?: Prisma.AppointmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
-}
-
-/**
- * User.workflows
- */
-export type User$workflowsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Workflow
-   */
-  select?: Prisma.WorkflowSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Workflow
-   */
-  omit?: Prisma.WorkflowOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.WorkflowInclude<ExtArgs> | null
-  where?: Prisma.WorkflowWhereInput
-  orderBy?: Prisma.WorkflowOrderByWithRelationInput | Prisma.WorkflowOrderByWithRelationInput[]
-  cursor?: Prisma.WorkflowWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.WorkflowScalarFieldEnum | Prisma.WorkflowScalarFieldEnum[]
-}
-
-/**
  * User.flows
  */
 export type User$flowsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3315,51 +3864,166 @@ export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.reservationSlots
+ * User.resources
  */
-export type User$reservationSlotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$resourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ReservationSlot
+   * Select specific fields to fetch from the Resource
    */
-  select?: Prisma.ReservationSlotSelect<ExtArgs> | null
+  select?: Prisma.ResourceSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ReservationSlot
+   * Omit specific fields from the Resource
    */
-  omit?: Prisma.ReservationSlotOmit<ExtArgs> | null
+  omit?: Prisma.ResourceOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReservationSlotInclude<ExtArgs> | null
-  where?: Prisma.ReservationSlotWhereInput
-  orderBy?: Prisma.ReservationSlotOrderByWithRelationInput | Prisma.ReservationSlotOrderByWithRelationInput[]
-  cursor?: Prisma.ReservationSlotWhereUniqueInput
+  include?: Prisma.ResourceInclude<ExtArgs> | null
+  where?: Prisma.ResourceWhereInput
+  orderBy?: Prisma.ResourceOrderByWithRelationInput | Prisma.ResourceOrderByWithRelationInput[]
+  cursor?: Prisma.ResourceWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ReservationSlotScalarFieldEnum | Prisma.ReservationSlotScalarFieldEnum[]
+  distinct?: Prisma.ResourceScalarFieldEnum | Prisma.ResourceScalarFieldEnum[]
 }
 
 /**
- * User.reservationBookings
+ * User.bookings
  */
-export type User$reservationBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ReservationBooking
+   * Select specific fields to fetch from the Booking
    */
-  select?: Prisma.ReservationBookingSelect<ExtArgs> | null
+  select?: Prisma.BookingSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ReservationBooking
+   * Omit specific fields from the Booking
    */
-  omit?: Prisma.ReservationBookingOmit<ExtArgs> | null
+  omit?: Prisma.BookingOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReservationBookingInclude<ExtArgs> | null
-  where?: Prisma.ReservationBookingWhereInput
-  orderBy?: Prisma.ReservationBookingOrderByWithRelationInput | Prisma.ReservationBookingOrderByWithRelationInput[]
-  cursor?: Prisma.ReservationBookingWhereUniqueInput
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ReservationBookingScalarFieldEnum | Prisma.ReservationBookingScalarFieldEnum[]
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * User.timeOffs
+ */
+export type User$timeOffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TimeOff
+   */
+  select?: Prisma.TimeOffSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TimeOff
+   */
+  omit?: Prisma.TimeOffOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TimeOffInclude<ExtArgs> | null
+  where?: Prisma.TimeOffWhereInput
+  orderBy?: Prisma.TimeOffOrderByWithRelationInput | Prisma.TimeOffOrderByWithRelationInput[]
+  cursor?: Prisma.TimeOffWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TimeOffScalarFieldEnum | Prisma.TimeOffScalarFieldEnum[]
+}
+
+/**
+ * User.breaks
+ */
+export type User$breaksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Break
+   */
+  select?: Prisma.BreakSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Break
+   */
+  omit?: Prisma.BreakOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BreakInclude<ExtArgs> | null
+  where?: Prisma.BreakWhereInput
+  orderBy?: Prisma.BreakOrderByWithRelationInput | Prisma.BreakOrderByWithRelationInput[]
+  cursor?: Prisma.BreakWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BreakScalarFieldEnum | Prisma.BreakScalarFieldEnum[]
+}
+
+/**
+ * User.payments
+ */
+export type User$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * User.subscriptions
+ */
+export type User$subscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Subscription
+   */
+  select?: Prisma.SubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Subscription
+   */
+  omit?: Prisma.SubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubscriptionInclude<ExtArgs> | null
+  where?: Prisma.SubscriptionWhereInput
+  orderBy?: Prisma.SubscriptionOrderByWithRelationInput | Prisma.SubscriptionOrderByWithRelationInput[]
+  cursor?: Prisma.SubscriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SubscriptionScalarFieldEnum | Prisma.SubscriptionScalarFieldEnum[]
+}
+
+/**
+ * User.businessProfile
+ */
+export type User$businessProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BusinessProfile
+   */
+  select?: Prisma.BusinessProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BusinessProfile
+   */
+  omit?: Prisma.BusinessProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BusinessProfileInclude<ExtArgs> | null
+  where?: Prisma.BusinessProfileWhereInput
 }
 
 /**

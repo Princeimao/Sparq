@@ -10,8 +10,9 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+
+import { FuseButton } from "@/components/bits/FuseButton";
 
 export type IntegrationCardProps = {
   name: string;
@@ -32,23 +33,15 @@ export type IntegrationCardProps = {
   onConfigure?: (id: string) => void;
 };
 
-const CATEGORY_BADGE: Record<string, { label: string; class: string }> = {
-  messaging: {
-    label: "Messaging",
-    class: "bg-green-500/10 text-green-500 border-green-500/20",
-  },
-  payment: {
-    label: "Payment",
-    class: "bg-violet-500/10 text-violet-500 border-violet-500/20",
-  },
-  scheduling: {
-    label: "Scheduling",
-    class: "bg-sky-500/10 text-sky-500 border-sky-500/20",
-  },
-  ecommerce: {
-    label: "E-commerce",
-    class: "bg-orange-500/10 text-orange-500 border-orange-500/20",
-  },
+const CATEGORY_TILE: Record<string, string> = {
+  messaging:
+    "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
+  payment:
+    "bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400",
+  scheduling:
+    "bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400",
+  ecommerce:
+    "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
 };
 
 export function IntegrationCard({
@@ -67,25 +60,26 @@ export function IntegrationCard({
   onConfigure,
 }: IntegrationCardProps) {
   const isToggling = isTogglingId === integrationId;
-  const catBadge = CATEGORY_BADGE[category];
+  const tileClass = CATEGORY_TILE[category] ?? "bg-zinc-500/10 text-zinc-500";
 
   return (
     <Card
+      data-int-card
       className={cn(
-        "relative overflow-hidden transition-all duration-200 hover:shadow-md",
+        "rounded-3xl border shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
         isConnected && isActive && "ring-1 ring-primary/30",
       )}
     >
       {/* Active glow top bar */}
       {isConnected && isActive && (
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-primary/60 via-primary to-primary/60" />
+        <div className="h-1 bg-linear-to-r from-emerald-400 via-emerald-500 to-emerald-400" />
       )}
 
-      <CardContent className="flex flex-col justify-between gap-4 pt-6">
+      <CardContent className="flex flex-col justify-between gap-4 p-5">
         {/* Header Row */}
         <div className="flex items-start justify-between">
           {/* Icon */}
-          <div className="h-12 w-12 rounded-xl bg-zinc-500/10 flex items-center justify-center shrink-0">
+          <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shrink-0", tileClass)}>
             <Image
               src={icon}
               alt={name}
@@ -97,15 +91,6 @@ export function IntegrationCard({
 
           {/* Status badge */}
           <div className="flex flex-col items-end gap-1.5">
-            <Badge
-              variant="outline"
-              className={cn(
-                "text-[10px] font-medium px-2 py-0.5 border",
-                catBadge.class,
-              )}
-            >
-              {catBadge.label}
-            </Badge>
             {isConnected ? (
               <div className="flex items-center gap-1 text-[10px]">
                 {isActive ? (
@@ -134,14 +119,14 @@ export function IntegrationCard({
 
         {/* Content */}
         <div>
-          <CardTitle className="text-sm font-semibold">{name}</CardTitle>
+          <CardTitle className="text-[15px] font-semibold">{name}</CardTitle>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
             {description}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-white/10 pt-3">
+        <div className="flex items-center justify-between border-t pt-3.5">
           {isConnected ? (
             <>
               {/* Toggle */}
@@ -199,14 +184,14 @@ export function IntegrationCard({
                 <CheckCircle2 size={12} className="text-zinc-500" />
                 <span>Ready to connect</span>
               </div>
-              <button
+              <FuseButton
                 onClick={onConnect}
-                id={`connect-${name.toLowerCase().replace(/\s/g, "-")}`}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-all duration-150"
+                ariaLabel={`Connect ${name}`}
+                className="[&>span:last-child]:px-3 [&>span:last-child]:py-1.5 [&>span:last-child]:text-xs"
               >
                 <Settings2 size={13} />
                 Connect
-              </button>
+              </FuseButton>
             </>
           )}
         </div>

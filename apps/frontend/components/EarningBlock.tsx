@@ -84,14 +84,6 @@ export default function EarningReportChart({
           earning: pending,
           growthPercentage: "+2.1%",
         },
-        {
-          id: 3,
-          customer: "Automated Workflows",
-          borderColor: "bg-sky-400/50",
-          badgeColor: "bg-teal-400/10 text-teal-600 dark:text-teal-400",
-          earning: completed,
-          growthPercentage: "+1.5%",
-        },
       ];
     }
 

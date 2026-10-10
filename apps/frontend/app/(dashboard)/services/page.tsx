@@ -33,9 +33,19 @@ export interface Service {
   price?: number;
   duration: number;
   bookingMode: "ANY_STAFF" | "SELECT_STAFF";
+  assignmentMode?: "CUSTOMER_CHOICE" | "BUSINESS_ASSIGN" | "AUTO" | "SINGLE";
+  requiresPartySize?: boolean;
   staff?: { id: string; name: string; email?: string }[];
-  _count?: { appointments: number };
+  resourceLinks?: { resource: { id: string; name: string; kind: string } }[];
+  _count?: { bookings: number };
 }
+
+const ASSIGNMENT_LABELS: Record<string, string> = {
+  CUSTOMER_CHOICE: "Customer picks",
+  BUSINESS_ASSIGN: "We assign",
+  AUTO: "Auto-assign",
+  SINGLE: "Solo",
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -161,8 +171,15 @@ export default function ServicesPage() {
                       <Briefcase className="size-8 text-primary" />
                     </div>
                     <Badge className="absolute top-3 right-3 text-[10px]" variant="secondary">
-                      {service.bookingMode === "SELECT_STAFF" ? "By Staff" : "Any Staff"}
+                      {service.assignmentMode
+                        ? (ASSIGNMENT_LABELS[service.assignmentMode] ?? service.assignmentMode)
+                        : service.bookingMode === "SELECT_STAFF" ? "By Staff" : "Any Staff"}
                     </Badge>
+                    {service.requiresPartySize && (
+                      <Badge className="absolute top-3 left-3 text-[10px]" variant="outline">
+                        Party size
+                      </Badge>
+                    )}
                   </div>
 
                   <CardHeader className="p-4 pb-2">
@@ -186,13 +203,27 @@ export default function ServicesPage() {
                           {service.price.toFixed(2)}
                         </span>
                       )}
-                      {(service._count?.appointments ?? 0) > 0 && (
+                      {(service._count?.bookings ?? 0) > 0 && (
                         <span className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Users className="size-3" />
-                          {service._count?.appointments} appts
+                          {service._count?.bookings} bookings
                         </span>
                       )}
                     </div>
+                    {service.resourceLinks && service.resourceLinks.length > 0 && (
+                      <div className="flex items-center gap-1 flex-wrap pt-1">
+                        {service.resourceLinks.slice(0, 3).map((l) => (
+                          <Badge key={l.resource.id} variant="outline" className="text-[10px] gap-1">
+                            {l.resource.name}
+                          </Badge>
+                        ))}
+                        {service.resourceLinks.length > 3 && (
+                          <Badge variant="outline" className="text-[10px]">
+                            +{service.resourceLinks.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                     {service.staff && service.staff.length > 0 && (
                       <div className="flex items-center gap-1 flex-wrap pt-1">
                         {service.staff.slice(0, 3).map((s) => (

@@ -12,6 +12,11 @@ export interface WhatsAppConfig {
   customerWaId: string;
   customerName: string;
   text: string;
+  /**
+   * Best-effort hook invoked after a message is accepted by the Meta API.
+   * Used to persist outbound history — failures here must never fail sends.
+   */
+  onSend?: (info: { to: string; type: string; body?: string }) => void;
 }
 
 export interface WhatsAppTemplateMessage {
@@ -48,11 +53,13 @@ export class WhatsAppService {
   private phoneNumberId: string;
   private wabaId: string;
   private customerWaId: string;
+  private onSend?: WhatsAppConfig["onSend"];
 
   constructor(config: WhatsAppConfig) {
     this.phoneNumberId = config.phoneNumberId;
     this.wabaId = config.wabaId;
     this.customerWaId = config.customerWaId;
+    this.onSend = config.onSend;
 
     this.client = axios.create({
       baseURL: WHATSAPP_API_BASE,
@@ -94,7 +101,25 @@ export class WhatsAppService {
         },
       },
     );
+    this.notifySend(payload);
     return data;
+  }
+
+  /** Best-effort outbound logging — never throws. */
+  private notifySend(payload: unknown) {
+    if (!this.onSend) return;
+    try {
+      const p = (payload ?? {}) as Record<string, unknown>;
+      const text = p["text"] as { body?: string } | undefined;
+      const interactive = p["interactive"] as { body?: { text?: string } } | undefined;
+      this.onSend({
+        to: (p["to"] as string) ?? this.customerWaId,
+        type: (p["type"] as string) ?? "text",
+        body: text?.body ?? interactive?.body?.text,
+      });
+    } catch (err) {
+      console.warn("[WhatsAppService] onSend hook failed:", err);
+    }
   }
 
   async sendTextMessage(

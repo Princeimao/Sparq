@@ -13,6 +13,14 @@ const createServiceSchema = z.object({
   price: z.number().min(0).optional(),
   duration: z.number().int().positive().default(60),
   bookingMode: z.enum(["ANY_STAFF", "SELECT_STAFF"]).default("ANY_STAFF"),
+  locationMode: z.enum(["AT_BUSINESS", "AT_CUSTOMER", "BOTH"]).default("AT_BUSINESS"),
+  assignmentMode: z.enum(["CUSTOMER_CHOICE", "BUSINESS_ASSIGN", "AUTO", "SINGLE"]).optional(),
+  requiresPartySize: z.boolean().optional(),
+  bufferMinutes: z.number().int().min(0).max(480).optional(),
+  minLeadMinutes: z.number().int().min(0).max(10080).optional(),
+  maxAdvanceDays: z.number().int().min(1).max(730).nullable().optional(),
+  staffIds: z.array(z.string().cuid()).max(100).optional(),
+  resourceIds: z.array(z.string().cuid()).max(100).optional(),
 });
 
 const updateServiceSchema = z.object({
@@ -21,7 +29,29 @@ const updateServiceSchema = z.object({
   price: z.number().min(0).optional(),
   duration: z.number().int().positive().optional(),
   bookingMode: z.enum(["ANY_STAFF", "SELECT_STAFF"]).optional(),
+  locationMode: z.enum(["AT_BUSINESS", "AT_CUSTOMER", "BOTH"]).optional(),
+  assignmentMode: z.enum(["CUSTOMER_CHOICE", "BUSINESS_ASSIGN", "AUTO", "SINGLE"]).optional(),
+  requiresPartySize: z.boolean().optional(),
+  bufferMinutes: z.number().int().min(0).max(480).optional(),
+  minLeadMinutes: z.number().int().min(0).max(10080).optional(),
+  maxAdvanceDays: z.number().int().min(1).max(730).nullable().optional(),
+  staffIds: z.array(z.string().cuid()).max(100).optional(),
+  resourceIds: z.array(z.string().cuid()).max(100).optional(),
 });
+
+const serviceInclude = {
+  staff: {
+    select: { id: true, name: true, email: true, phone: true, isActive: true, role: true, specialty: true },
+  },
+  resourceLinks: {
+    include: {
+      resource: {
+        select: { id: true, name: true, kind: true, capacity: true, isActive: true },
+      },
+    },
+  },
+  _count: { select: { bookings: true } },
+};
 
 // GET /services
 router.get(
@@ -34,12 +64,7 @@ router.get(
       const services = await prisma.service.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
-        include: {
-          staff: {
-            select: { id: true, name: true, email: true, phone: true, isActive: true },
-          },
-          _count: { select: { appointments: true } },
-        },
+        include: serviceInclude,
       });
 
       res
@@ -66,7 +91,8 @@ router.get(
         where: { id: serviceId, userId },
         include: {
           staff: true,
-          appointments: {
+          resourceLinks: { include: { resource: true } },
+          bookings: {
             take: 5,
             orderBy: { startTime: "desc" },
           },
@@ -97,7 +123,27 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.userId as string;
-      const { name, description, price, duration, bookingMode } = req.body;
+      const {
+        name, description, price, duration, bookingMode, locationMode,
+        assignmentMode, requiresPartySize, bufferMinutes, minLeadMinutes,
+        maxAdvanceDays, staffIds, resourceIds,
+      } = req.body;
+
+      // Verify linked staff/resources belong to this tenant.
+      if (staffIds?.length) {
+        const n = await prisma.staff.count({ where: { id: { in: staffIds }, userId } });
+        if (n !== staffIds.length) {
+          res.status(422).json(new ApiResponse(null, "One or more staff members are invalid", false));
+          return;
+        }
+      }
+      if (resourceIds?.length) {
+        const n = await prisma.resource.count({ where: { id: { in: resourceIds }, userId } });
+        if (n !== resourceIds.length) {
+          res.status(422).json(new ApiResponse(null, "One or more resources are invalid", false));
+          return;
+        }
+      }
 
       const service = await prisma.service.create({
         data: {
@@ -107,10 +153,18 @@ router.post(
           price,
           duration: duration ?? 60,
           bookingMode: bookingMode ?? "ANY_STAFF",
+          locationMode: locationMode ?? "AT_BUSINESS",
+          assignmentMode: assignmentMode ?? (bookingMode === "SELECT_STAFF" ? "CUSTOMER_CHOICE" : "BUSINESS_ASSIGN"),
+          requiresPartySize: requiresPartySize ?? false,
+          bufferMinutes: bufferMinutes ?? 0,
+          minLeadMinutes: minLeadMinutes ?? 0,
+          maxAdvanceDays: maxAdvanceDays ?? null,
+          ...(staffIds?.length && { staff: { connect: staffIds.map((id: string) => ({ id })) } }),
+          ...(resourceIds?.length && {
+            resourceLinks: { create: resourceIds.map((resourceId: string) => ({ resourceId })) },
+          }),
         },
-        include: {
-          staff: { select: { id: true, name: true, email: true } },
-        },
+        include: serviceInclude,
       });
 
       res
@@ -143,12 +197,39 @@ router.patch(
         return;
       }
 
+      const { staffIds, resourceIds, ...scalar } = req.body as Record<string, unknown>;
+
+      if (Array.isArray(staffIds)) {
+        const ids = staffIds as string[];
+        const n = await prisma.staff.count({ where: { id: { in: ids }, userId } });
+        if (n !== ids.length) {
+          res.status(422).json(new ApiResponse(null, "One or more staff members are invalid", false));
+          return;
+        }
+        await prisma.service.update({
+          where: { id: serviceId },
+          data: { staff: { set: ids.map((id) => ({ id })) } },
+        });
+      }
+      if (Array.isArray(resourceIds)) {
+        const ids = resourceIds as string[];
+        const n = await prisma.resource.count({ where: { id: { in: ids }, userId } });
+        if (n !== ids.length) {
+          res.status(422).json(new ApiResponse(null, "One or more resources are invalid", false));
+          return;
+        }
+        await prisma.$transaction([
+          prisma.serviceResource.deleteMany({ where: { serviceId } }),
+          prisma.serviceResource.createMany({
+            data: ids.map((resourceId) => ({ serviceId, resourceId })),
+          }),
+        ]);
+      }
+
       const service = await prisma.service.update({
         where: { id: serviceId },
-        data: { ...req.body },
-        include: {
-          staff: { select: { id: true, name: true, email: true } },
-        },
+        data: { ...scalar },
+        include: serviceInclude,
       });
 
       res

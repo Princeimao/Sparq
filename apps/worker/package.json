@@ -9,18 +9,21 @@
     "build": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
+    "@langchain/core": "^1.2.3",
+    "@langchain/google-genai": "^2.2.0",
+    "@sparq/booking": "^0.0.1",
     "@sparq/database": "*",
+    "@sparq/subscription": "*",
     "axios": "^1.9.0",
     "bullmq": "^5.80.8",
     "dotenv": "^16.5.0",
     "ioredis": "^5.11.1",
     "stripe": "^18.1.0",
-    "zod": "^3.25.30",
-    "@langchain/core": "^1.2.3",
-    "@langchain/google-genai": "^2.2.0"
+    "zod": "^3.25.30"
   },
   "devDependencies": {
     "@sparq/types": "*"

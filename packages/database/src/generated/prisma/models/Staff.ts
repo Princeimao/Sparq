@@ -30,6 +30,10 @@ export type StaffMinAggregateOutputType = {
   name: string | null
   email: string | null
   phone: string | null
+  role: string | null
+  specialty: string | null
+  image: string | null
+  color: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -41,6 +45,10 @@ export type StaffMaxAggregateOutputType = {
   name: string | null
   email: string | null
   phone: string | null
+  role: string | null
+  specialty: string | null
+  image: string | null
+  color: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -52,6 +60,10 @@ export type StaffCountAggregateOutputType = {
   name: number
   email: number
   phone: number
+  role: number
+  specialty: number
+  image: number
+  color: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -65,6 +77,10 @@ export type StaffMinAggregateInputType = {
   name?: true
   email?: true
   phone?: true
+  role?: true
+  specialty?: true
+  image?: true
+  color?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -76,6 +92,10 @@ export type StaffMaxAggregateInputType = {
   name?: true
   email?: true
   phone?: true
+  role?: true
+  specialty?: true
+  image?: true
+  color?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -87,6 +107,10 @@ export type StaffCountAggregateInputType = {
   name?: true
   email?: true
   phone?: true
+  role?: true
+  specialty?: true
+  image?: true
+  color?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -171,6 +195,10 @@ export type StaffGroupByOutputType = {
   name: string
   email: string | null
   phone: string | null
+  role: string | null
+  specialty: string | null
+  image: string | null
+  color: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -203,13 +231,19 @@ export type StaffWhereInput = {
   name?: Prisma.StringFilter<"Staff"> | string
   email?: Prisma.StringNullableFilter<"Staff"> | string | null
   phone?: Prisma.StringNullableFilter<"Staff"> | string | null
+  role?: Prisma.StringNullableFilter<"Staff"> | string | null
+  specialty?: Prisma.StringNullableFilter<"Staff"> | string | null
+  image?: Prisma.StringNullableFilter<"Staff"> | string | null
+  color?: Prisma.StringNullableFilter<"Staff"> | string | null
   isActive?: Prisma.BoolFilter<"Staff"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   services?: Prisma.ServiceListRelationFilter
   availability?: Prisma.AvailabilityListRelationFilter
-  appointments?: Prisma.AppointmentListRelationFilter
+  timeOffs?: Prisma.TimeOffListRelationFilter
+  breaks?: Prisma.BreakListRelationFilter
+  allocations?: Prisma.BookingAllocationListRelationFilter
 }
 
 export type StaffOrderByWithRelationInput = {
@@ -218,13 +252,19 @@ export type StaffOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrderInput | Prisma.SortOrder
+  specialty?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
+  color?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   services?: Prisma.ServiceOrderByRelationAggregateInput
   availability?: Prisma.AvailabilityOrderByRelationAggregateInput
-  appointments?: Prisma.AppointmentOrderByRelationAggregateInput
+  timeOffs?: Prisma.TimeOffOrderByRelationAggregateInput
+  breaks?: Prisma.BreakOrderByRelationAggregateInput
+  allocations?: Prisma.BookingAllocationOrderByRelationAggregateInput
 }
 
 export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -236,13 +276,19 @@ export type StaffWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Staff"> | string
   email?: Prisma.StringNullableFilter<"Staff"> | string | null
   phone?: Prisma.StringNullableFilter<"Staff"> | string | null
+  role?: Prisma.StringNullableFilter<"Staff"> | string | null
+  specialty?: Prisma.StringNullableFilter<"Staff"> | string | null
+  image?: Prisma.StringNullableFilter<"Staff"> | string | null
+  color?: Prisma.StringNullableFilter<"Staff"> | string | null
   isActive?: Prisma.BoolFilter<"Staff"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   services?: Prisma.ServiceListRelationFilter
   availability?: Prisma.AvailabilityListRelationFilter
-  appointments?: Prisma.AppointmentListRelationFilter
+  timeOffs?: Prisma.TimeOffListRelationFilter
+  breaks?: Prisma.BreakListRelationFilter
+  allocations?: Prisma.BookingAllocationListRelationFilter
 }, "id">
 
 export type StaffOrderByWithAggregationInput = {
@@ -251,6 +297,10 @@ export type StaffOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrderInput | Prisma.SortOrder
+  specialty?: Prisma.SortOrderInput | Prisma.SortOrder
+  image?: Prisma.SortOrderInput | Prisma.SortOrder
+  color?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -268,6 +318,10 @@ export type StaffScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Staff"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
+  role?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
+  specialty?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
+  image?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
+  color?: Prisma.StringNullableWithAggregatesFilter<"Staff"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Staff"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Staff"> | Date | string
@@ -278,13 +332,19 @@ export type StaffCreateInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutStaffInput
   services?: Prisma.ServiceCreateNestedManyWithoutStaffInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateInput = {
@@ -293,12 +353,18 @@ export type StaffUncheckedCreateInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutStaffInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUpdateInput = {
@@ -306,13 +372,19 @@ export type StaffUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutStaffNestedInput
   services?: Prisma.ServiceUpdateManyWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateInput = {
@@ -321,12 +393,18 @@ export type StaffUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffCreateManyInput = {
@@ -335,6 +413,10 @@ export type StaffCreateManyInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -345,6 +427,10 @@ export type StaffUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -356,6 +442,10 @@ export type StaffUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -377,6 +467,10 @@ export type StaffCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  specialty?: Prisma.SortOrder
+  image?: Prisma.SortOrder
+  color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -388,6 +482,10 @@ export type StaffMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  specialty?: Prisma.SortOrder
+  image?: Prisma.SortOrder
+  color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -399,6 +497,10 @@ export type StaffMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  specialty?: Prisma.SortOrder
+  image?: Prisma.SortOrder
+  color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -505,20 +607,52 @@ export type StaffUpdateOneWithoutAvailabilityNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutAvailabilityInput, Prisma.StaffUpdateWithoutAvailabilityInput>, Prisma.StaffUncheckedUpdateWithoutAvailabilityInput>
 }
 
-export type StaffCreateNestedOneWithoutAppointmentsInput = {
-  create?: Prisma.XOR<Prisma.StaffCreateWithoutAppointmentsInput, Prisma.StaffUncheckedCreateWithoutAppointmentsInput>
-  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutAppointmentsInput
+export type StaffCreateNestedOneWithoutTimeOffsInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutTimeOffsInput, Prisma.StaffUncheckedCreateWithoutTimeOffsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutTimeOffsInput
   connect?: Prisma.StaffWhereUniqueInput
 }
 
-export type StaffUpdateOneWithoutAppointmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.StaffCreateWithoutAppointmentsInput, Prisma.StaffUncheckedCreateWithoutAppointmentsInput>
-  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutAppointmentsInput
-  upsert?: Prisma.StaffUpsertWithoutAppointmentsInput
+export type StaffUpdateOneWithoutTimeOffsNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutTimeOffsInput, Prisma.StaffUncheckedCreateWithoutTimeOffsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutTimeOffsInput
+  upsert?: Prisma.StaffUpsertWithoutTimeOffsInput
   disconnect?: Prisma.StaffWhereInput | boolean
   delete?: Prisma.StaffWhereInput | boolean
   connect?: Prisma.StaffWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.StaffUpdateWithoutAppointmentsInput>, Prisma.StaffUncheckedUpdateWithoutAppointmentsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutTimeOffsInput, Prisma.StaffUpdateWithoutTimeOffsInput>, Prisma.StaffUncheckedUpdateWithoutTimeOffsInput>
+}
+
+export type StaffCreateNestedOneWithoutBreaksInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutBreaksInput, Prisma.StaffUncheckedCreateWithoutBreaksInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutBreaksInput
+  connect?: Prisma.StaffWhereUniqueInput
+}
+
+export type StaffUpdateOneWithoutBreaksNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutBreaksInput, Prisma.StaffUncheckedCreateWithoutBreaksInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutBreaksInput
+  upsert?: Prisma.StaffUpsertWithoutBreaksInput
+  disconnect?: Prisma.StaffWhereInput | boolean
+  delete?: Prisma.StaffWhereInput | boolean
+  connect?: Prisma.StaffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutBreaksInput, Prisma.StaffUpdateWithoutBreaksInput>, Prisma.StaffUncheckedUpdateWithoutBreaksInput>
+}
+
+export type StaffCreateNestedOneWithoutAllocationsInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutAllocationsInput, Prisma.StaffUncheckedCreateWithoutAllocationsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutAllocationsInput
+  connect?: Prisma.StaffWhereUniqueInput
+}
+
+export type StaffUpdateOneWithoutAllocationsNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutAllocationsInput, Prisma.StaffUncheckedCreateWithoutAllocationsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutAllocationsInput
+  upsert?: Prisma.StaffUpsertWithoutAllocationsInput
+  disconnect?: Prisma.StaffWhereInput | boolean
+  delete?: Prisma.StaffWhereInput | boolean
+  connect?: Prisma.StaffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutAllocationsInput, Prisma.StaffUpdateWithoutAllocationsInput>, Prisma.StaffUncheckedUpdateWithoutAllocationsInput>
 }
 
 export type StaffCreateWithoutUserInput = {
@@ -526,12 +660,18 @@ export type StaffCreateWithoutUserInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   services?: Prisma.ServiceCreateNestedManyWithoutStaffInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateWithoutUserInput = {
@@ -539,12 +679,18 @@ export type StaffUncheckedCreateWithoutUserInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutStaffInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffCreateOrConnectWithoutUserInput = {
@@ -582,6 +728,10 @@ export type StaffScalarWhereInput = {
   name?: Prisma.StringFilter<"Staff"> | string
   email?: Prisma.StringNullableFilter<"Staff"> | string | null
   phone?: Prisma.StringNullableFilter<"Staff"> | string | null
+  role?: Prisma.StringNullableFilter<"Staff"> | string | null
+  specialty?: Prisma.StringNullableFilter<"Staff"> | string | null
+  image?: Prisma.StringNullableFilter<"Staff"> | string | null
+  color?: Prisma.StringNullableFilter<"Staff"> | string | null
   isActive?: Prisma.BoolFilter<"Staff"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Staff"> | Date | string
@@ -592,12 +742,18 @@ export type StaffCreateWithoutServicesInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutStaffInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateWithoutServicesInput = {
@@ -606,11 +762,17 @@ export type StaffUncheckedCreateWithoutServicesInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffCreateOrConnectWithoutServicesInput = {
@@ -639,12 +801,18 @@ export type StaffCreateWithoutAvailabilityInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutStaffInput
   services?: Prisma.ServiceCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationCreateNestedManyWithoutStaffInput
 }
 
 export type StaffUncheckedCreateWithoutAvailabilityInput = {
@@ -653,11 +821,17 @@ export type StaffUncheckedCreateWithoutAvailabilityInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutStaffInput
-  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationUncheckedCreateNestedManyWithoutStaffInput
 }
 
 export type StaffCreateOrConnectWithoutAvailabilityInput = {
@@ -681,12 +855,18 @@ export type StaffUpdateWithoutAvailabilityInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutStaffNestedInput
   services?: Prisma.ServiceUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutAvailabilityInput = {
@@ -695,79 +875,293 @@ export type StaffUncheckedUpdateWithoutAvailabilityInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUncheckedUpdateManyWithoutStaffNestedInput
 }
 
-export type StaffCreateWithoutAppointmentsInput = {
+export type StaffCreateWithoutTimeOffsInput = {
   id?: string
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutStaffInput
   services?: Prisma.ServiceCreateNestedManyWithoutStaffInput
   availability?: Prisma.AvailabilityCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationCreateNestedManyWithoutStaffInput
 }
 
-export type StaffUncheckedCreateWithoutAppointmentsInput = {
+export type StaffUncheckedCreateWithoutTimeOffsInput = {
   id?: string
   userId: string
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   services?: Prisma.ServiceUncheckedCreateNestedManyWithoutStaffInput
   availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationUncheckedCreateNestedManyWithoutStaffInput
 }
 
-export type StaffCreateOrConnectWithoutAppointmentsInput = {
+export type StaffCreateOrConnectWithoutTimeOffsInput = {
   where: Prisma.StaffWhereUniqueInput
-  create: Prisma.XOR<Prisma.StaffCreateWithoutAppointmentsInput, Prisma.StaffUncheckedCreateWithoutAppointmentsInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutTimeOffsInput, Prisma.StaffUncheckedCreateWithoutTimeOffsInput>
 }
 
-export type StaffUpsertWithoutAppointmentsInput = {
-  update: Prisma.XOR<Prisma.StaffUpdateWithoutAppointmentsInput, Prisma.StaffUncheckedUpdateWithoutAppointmentsInput>
-  create: Prisma.XOR<Prisma.StaffCreateWithoutAppointmentsInput, Prisma.StaffUncheckedCreateWithoutAppointmentsInput>
+export type StaffUpsertWithoutTimeOffsInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutTimeOffsInput, Prisma.StaffUncheckedUpdateWithoutTimeOffsInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutTimeOffsInput, Prisma.StaffUncheckedCreateWithoutTimeOffsInput>
   where?: Prisma.StaffWhereInput
 }
 
-export type StaffUpdateToOneWithWhereWithoutAppointmentsInput = {
+export type StaffUpdateToOneWithWhereWithoutTimeOffsInput = {
   where?: Prisma.StaffWhereInput
-  data: Prisma.XOR<Prisma.StaffUpdateWithoutAppointmentsInput, Prisma.StaffUncheckedUpdateWithoutAppointmentsInput>
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutTimeOffsInput, Prisma.StaffUncheckedUpdateWithoutTimeOffsInput>
 }
 
-export type StaffUpdateWithoutAppointmentsInput = {
+export type StaffUpdateWithoutTimeOffsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutStaffNestedInput
   services?: Prisma.ServiceUpdateManyWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUpdateManyWithoutStaffNestedInput
 }
 
-export type StaffUncheckedUpdateWithoutAppointmentsInput = {
+export type StaffUncheckedUpdateWithoutTimeOffsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUncheckedUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffCreateWithoutBreaksInput = {
+  id?: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutStaffInput
+  services?: Prisma.ServiceCreateNestedManyWithoutStaffInput
+  availability?: Prisma.AvailabilityCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationCreateNestedManyWithoutStaffInput
+}
+
+export type StaffUncheckedCreateWithoutBreaksInput = {
+  id?: string
+  userId: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutStaffInput
+  availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutStaffInput
+  allocations?: Prisma.BookingAllocationUncheckedCreateNestedManyWithoutStaffInput
+}
+
+export type StaffCreateOrConnectWithoutBreaksInput = {
+  where: Prisma.StaffWhereUniqueInput
+  create: Prisma.XOR<Prisma.StaffCreateWithoutBreaksInput, Prisma.StaffUncheckedCreateWithoutBreaksInput>
+}
+
+export type StaffUpsertWithoutBreaksInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutBreaksInput, Prisma.StaffUncheckedUpdateWithoutBreaksInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutBreaksInput, Prisma.StaffUncheckedCreateWithoutBreaksInput>
+  where?: Prisma.StaffWhereInput
+}
+
+export type StaffUpdateToOneWithWhereWithoutBreaksInput = {
+  where?: Prisma.StaffWhereInput
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutBreaksInput, Prisma.StaffUncheckedUpdateWithoutBreaksInput>
+}
+
+export type StaffUpdateWithoutBreaksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutStaffNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutStaffNestedInput
+  availability?: Prisma.AvailabilityUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffUncheckedUpdateWithoutBreaksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutStaffNestedInput
+  availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUncheckedUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffCreateWithoutAllocationsInput = {
+  id?: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutStaffInput
+  services?: Prisma.ServiceCreateNestedManyWithoutStaffInput
+  availability?: Prisma.AvailabilityCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutStaffInput
+}
+
+export type StaffUncheckedCreateWithoutAllocationsInput = {
+  id?: string
+  userId: string
+  name: string
+  email?: string | null
+  phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutStaffInput
+  availability?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutStaffInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutStaffInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutStaffInput
+}
+
+export type StaffCreateOrConnectWithoutAllocationsInput = {
+  where: Prisma.StaffWhereUniqueInput
+  create: Prisma.XOR<Prisma.StaffCreateWithoutAllocationsInput, Prisma.StaffUncheckedCreateWithoutAllocationsInput>
+}
+
+export type StaffUpsertWithoutAllocationsInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutAllocationsInput, Prisma.StaffUncheckedUpdateWithoutAllocationsInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutAllocationsInput, Prisma.StaffUncheckedCreateWithoutAllocationsInput>
+  where?: Prisma.StaffWhereInput
+}
+
+export type StaffUpdateToOneWithWhereWithoutAllocationsInput = {
+  where?: Prisma.StaffWhereInput
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutAllocationsInput, Prisma.StaffUncheckedUpdateWithoutAllocationsInput>
+}
+
+export type StaffUpdateWithoutAllocationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutStaffNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutStaffNestedInput
+  availability?: Prisma.AvailabilityUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffUncheckedUpdateWithoutAllocationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutStaffNestedInput
+  availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffCreateManyUserInput = {
@@ -775,6 +1169,10 @@ export type StaffCreateManyUserInput = {
   name: string
   email?: string | null
   phone?: string | null
+  role?: string | null
+  specialty?: string | null
+  image?: string | null
+  color?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -785,12 +1183,18 @@ export type StaffUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUpdateManyWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutUserInput = {
@@ -798,12 +1202,18 @@ export type StaffUncheckedUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServiceUncheckedUpdateManyWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateManyWithoutUserInput = {
@@ -811,6 +1221,10 @@ export type StaffUncheckedUpdateManyWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -821,12 +1235,18 @@ export type StaffUpdateWithoutServicesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutStaffNestedInput
   availability?: Prisma.AvailabilityUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutServicesInput = {
@@ -835,11 +1255,17 @@ export type StaffUncheckedUpdateWithoutServicesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availability?: Prisma.AvailabilityUncheckedUpdateManyWithoutStaffNestedInput
-  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutStaffNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutStaffNestedInput
+  allocations?: Prisma.BookingAllocationUncheckedUpdateManyWithoutStaffNestedInput
 }
 
 export type StaffUncheckedUpdateManyWithoutServicesInput = {
@@ -848,6 +1274,10 @@ export type StaffUncheckedUpdateManyWithoutServicesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -861,13 +1291,17 @@ export type StaffUncheckedUpdateManyWithoutServicesInput = {
 export type StaffCountOutputType = {
   services: number
   availability: number
-  appointments: number
+  timeOffs: number
+  breaks: number
+  allocations: number
 }
 
 export type StaffCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   services?: boolean | StaffCountOutputTypeCountServicesArgs
   availability?: boolean | StaffCountOutputTypeCountAvailabilityArgs
-  appointments?: boolean | StaffCountOutputTypeCountAppointmentsArgs
+  timeOffs?: boolean | StaffCountOutputTypeCountTimeOffsArgs
+  breaks?: boolean | StaffCountOutputTypeCountBreaksArgs
+  allocations?: boolean | StaffCountOutputTypeCountAllocationsArgs
 }
 
 /**
@@ -897,8 +1331,22 @@ export type StaffCountOutputTypeCountAvailabilityArgs<ExtArgs extends runtime.Ty
 /**
  * StaffCountOutputType without action
  */
-export type StaffCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AppointmentWhereInput
+export type StaffCountOutputTypeCountTimeOffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TimeOffWhereInput
+}
+
+/**
+ * StaffCountOutputType without action
+ */
+export type StaffCountOutputTypeCountBreaksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BreakWhereInput
+}
+
+/**
+ * StaffCountOutputType without action
+ */
+export type StaffCountOutputTypeCountAllocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingAllocationWhereInput
 }
 
 
@@ -908,13 +1356,19 @@ export type StaffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   name?: boolean
   email?: boolean
   phone?: boolean
+  role?: boolean
+  specialty?: boolean
+  image?: boolean
+  color?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   services?: boolean | Prisma.Staff$servicesArgs<ExtArgs>
   availability?: boolean | Prisma.Staff$availabilityArgs<ExtArgs>
-  appointments?: boolean | Prisma.Staff$appointmentsArgs<ExtArgs>
+  timeOffs?: boolean | Prisma.Staff$timeOffsArgs<ExtArgs>
+  breaks?: boolean | Prisma.Staff$breaksArgs<ExtArgs>
+  allocations?: boolean | Prisma.Staff$allocationsArgs<ExtArgs>
   _count?: boolean | Prisma.StaffCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staff"]>
 
@@ -924,6 +1378,10 @@ export type StaffSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   email?: boolean
   phone?: boolean
+  role?: boolean
+  specialty?: boolean
+  image?: boolean
+  color?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -936,6 +1394,10 @@ export type StaffSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   email?: boolean
   phone?: boolean
+  role?: boolean
+  specialty?: boolean
+  image?: boolean
+  color?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -948,17 +1410,23 @@ export type StaffSelectScalar = {
   name?: boolean
   email?: boolean
   phone?: boolean
+  role?: boolean
+  specialty?: boolean
+  image?: boolean
+  color?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StaffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "email" | "phone" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["staff"]>
+export type StaffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "email" | "phone" | "role" | "specialty" | "image" | "color" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["staff"]>
 export type StaffInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   services?: boolean | Prisma.Staff$servicesArgs<ExtArgs>
   availability?: boolean | Prisma.Staff$availabilityArgs<ExtArgs>
-  appointments?: boolean | Prisma.Staff$appointmentsArgs<ExtArgs>
+  timeOffs?: boolean | Prisma.Staff$timeOffsArgs<ExtArgs>
+  breaks?: boolean | Prisma.Staff$breaksArgs<ExtArgs>
+  allocations?: boolean | Prisma.Staff$allocationsArgs<ExtArgs>
   _count?: boolean | Prisma.StaffCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StaffIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -974,7 +1442,9 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     user: Prisma.$UserPayload<ExtArgs>
     services: Prisma.$ServicePayload<ExtArgs>[]
     availability: Prisma.$AvailabilityPayload<ExtArgs>[]
-    appointments: Prisma.$AppointmentPayload<ExtArgs>[]
+    timeOffs: Prisma.$TimeOffPayload<ExtArgs>[]
+    breaks: Prisma.$BreakPayload<ExtArgs>[]
+    allocations: Prisma.$BookingAllocationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -982,6 +1452,10 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     name: string
     email: string | null
     phone: string | null
+    role: string | null
+    specialty: string | null
+    image: string | null
+    color: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1382,7 +1856,9 @@ export interface Prisma__StaffClient<T, Null = never, ExtArgs extends runtime.Ty
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   services<T extends Prisma.Staff$servicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   availability<T extends Prisma.Staff$availabilityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$availabilityArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  appointments<T extends Prisma.Staff$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  timeOffs<T extends Prisma.Staff$timeOffsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$timeOffsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimeOffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  breaks<T extends Prisma.Staff$breaksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$breaksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BreakPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  allocations<T extends Prisma.Staff$allocationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$allocationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingAllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1417,6 +1893,10 @@ export interface StaffFieldRefs {
   readonly name: Prisma.FieldRef<"Staff", 'String'>
   readonly email: Prisma.FieldRef<"Staff", 'String'>
   readonly phone: Prisma.FieldRef<"Staff", 'String'>
+  readonly role: Prisma.FieldRef<"Staff", 'String'>
+  readonly specialty: Prisma.FieldRef<"Staff", 'String'>
+  readonly image: Prisma.FieldRef<"Staff", 'String'>
+  readonly color: Prisma.FieldRef<"Staff", 'String'>
   readonly isActive: Prisma.FieldRef<"Staff", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Staff", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Staff", 'DateTime'>
@@ -1869,27 +2349,75 @@ export type Staff$availabilityArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Staff.appointments
+ * Staff.timeOffs
  */
-export type Staff$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Staff$timeOffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Appointment
+   * Select specific fields to fetch from the TimeOff
    */
-  select?: Prisma.AppointmentSelect<ExtArgs> | null
+  select?: Prisma.TimeOffSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Appointment
+   * Omit specific fields from the TimeOff
    */
-  omit?: Prisma.AppointmentOmit<ExtArgs> | null
+  omit?: Prisma.TimeOffOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AppointmentInclude<ExtArgs> | null
-  where?: Prisma.AppointmentWhereInput
-  orderBy?: Prisma.AppointmentOrderByWithRelationInput | Prisma.AppointmentOrderByWithRelationInput[]
-  cursor?: Prisma.AppointmentWhereUniqueInput
+  include?: Prisma.TimeOffInclude<ExtArgs> | null
+  where?: Prisma.TimeOffWhereInput
+  orderBy?: Prisma.TimeOffOrderByWithRelationInput | Prisma.TimeOffOrderByWithRelationInput[]
+  cursor?: Prisma.TimeOffWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+  distinct?: Prisma.TimeOffScalarFieldEnum | Prisma.TimeOffScalarFieldEnum[]
+}
+
+/**
+ * Staff.breaks
+ */
+export type Staff$breaksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Break
+   */
+  select?: Prisma.BreakSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Break
+   */
+  omit?: Prisma.BreakOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BreakInclude<ExtArgs> | null
+  where?: Prisma.BreakWhereInput
+  orderBy?: Prisma.BreakOrderByWithRelationInput | Prisma.BreakOrderByWithRelationInput[]
+  cursor?: Prisma.BreakWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BreakScalarFieldEnum | Prisma.BreakScalarFieldEnum[]
+}
+
+/**
+ * Staff.allocations
+ */
+export type Staff$allocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookingAllocation
+   */
+  select?: Prisma.BookingAllocationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookingAllocation
+   */
+  omit?: Prisma.BookingAllocationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingAllocationInclude<ExtArgs> | null
+  where?: Prisma.BookingAllocationWhereInput
+  orderBy?: Prisma.BookingAllocationOrderByWithRelationInput | Prisma.BookingAllocationOrderByWithRelationInput[]
+  cursor?: Prisma.BookingAllocationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingAllocationScalarFieldEnum | Prisma.BookingAllocationScalarFieldEnum[]
 }
 
 /**

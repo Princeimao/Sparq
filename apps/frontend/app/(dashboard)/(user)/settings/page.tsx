@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { BusinessHoursCard } from "@/components/settings/BusinessHoursCard";
 
 export default function SettingsPage() {
   const [savingPassword, setSavingPassword] = useState(false);
@@ -132,6 +133,9 @@ export default function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Business Hours */}
+      <BusinessHoursCard />
 
       {/* Webhook & AI Configuration */}
       <Card>

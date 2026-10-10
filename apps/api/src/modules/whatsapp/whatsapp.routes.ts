@@ -50,6 +50,16 @@ router.post("/webhook", async (req: Request, res: Response) => {
         for (const message of value.messages) {
           const msgType: string = message.type;
 
+          // Idempotency: Meta retries webhooks — skip messages we've
+          // already seen (waMessageId is unique in the DB).
+          if (message.id) {
+            const seen = await prisma.message.findUnique({
+              where: { waMessageId: message.id },
+              select: { id: true },
+            });
+            if (seen) continue;
+          }
+
           let text = "";
           let interactiveId: string | undefined;
           let messageType: "text" | "interactive" | "button" = "text";

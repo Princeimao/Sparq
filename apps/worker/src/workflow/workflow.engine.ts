@@ -6,20 +6,21 @@ import { LlmService } from "../services/llm.service";
 import { Intent } from "../types/intent";
 import { WhatsAppService } from "../services/whatsapp.service";
 import { MessageRouter } from "../services/message.router";
-import { GreetingHandler } from "./greeting/greeting.handler";
+import { getBusinessCapabilities } from "../services/business-capabilities";
 
 /**
  * WorkflowEngine — the central message dispatcher.
  *
- * Processing order (optimised for speed and correctness):
+ * Routing, module gating, menu buttons and help text all come from the
+ * WorkflowRegistry (which reads handler metadata). This class owns only the
+ * processing pipeline, so new flows never require changes here:
  * 1. If a conversation is already in-progress → resume it (no LLM needed)
- * 2. Handle hard-coded menu button IDs (MENU_ORDER, MENU_BOOK, etc.)
+ * 2. Map menu button IDs to intents via the registry
  * 3. Try the fast keyword MessageRouter (no API call)
  * 4. Fall back to LLM intent classification for ambiguous messages
  */
 export class WorkflowEngine {
   private readonly router = new MessageRouter();
-  private readonly greetingHandler = new GreetingHandler();
 
   constructor(
     private conversationStore: ConversationStore,
@@ -38,17 +39,11 @@ export class WorkflowEngine {
       return this.resumeConversation(message, state, whatsapp);
     }
 
-    // ── 2. Menu button shortcuts (interactive button_reply from greeting) ──
+    // ── 2. Menu button shortcuts (interactive button_reply) ──
     if (message.messageType === "interactive" || message.messageType === "button") {
-      const id = message.interactiveId?.toUpperCase();
-      if (id === "MENU_ORDER") {
-        return this.dispatchIntent(Intent.ORDER_PRODUCT, message, whatsapp, null);
-      }
-      if (id === "MENU_BOOK") {
-        return this.dispatchIntent(Intent.BOOK_APPOINTMENT, message, whatsapp, null);
-      }
-      if (id === "MENU_RESERVE") {
-        return this.dispatchIntent(Intent.RESERVE_TABLE, message, whatsapp, null);
+      const intent = this.registry.resolveButton(message.interactiveId ?? "");
+      if (intent) {
+        return this.dispatchIntent(intent, message, whatsapp, null);
       }
     }
 
@@ -78,32 +73,34 @@ export class WorkflowEngine {
     whatsapp: WhatsAppService,
     llm: any,
   ) {
-    switch (intent) {
-      case Intent.GREETING:
-        return this.greetingHandler.handle(message, whatsapp);
+    const caps = await getBusinessCapabilities(message.userId);
 
-      case Intent.GOODBYE:
-        return whatsapp.sendTextMessage(
-          `Thanks for reaching out! Have a great day 😊\n\nType *hi* anytime to start again.`
-        );
-
-      case Intent.HELP:
-        return this.sendHelpMenu(message, whatsapp);
-
-      case Intent.UNKNOWN:
-      case Intent.GENERAL_INQUIRY:
-        return this.sendUnknownResponse(message, whatsapp);
-
-      default: {
-        const handler = this.registry.get(intent);
-        if (!handler) {
-          return whatsapp.sendTextMessage(
-            `Sorry, I can't handle that yet. Type *help* to see what I can do!`
-          );
-        }
-        return handler.start({ message, llm, whatsapp });
-      }
+    // Module gate: don't run flows the business hasn't enabled.
+    const module = this.registry.moduleFor(intent);
+    if (module && !caps.enabledModules.has(module)) {
+      return whatsapp.sendTextMessage(
+        `Sorry, ${caps.businessName} doesn't offer that right now. Type *help* to see what I can help with! 😊`,
+      );
     }
+
+    const handler = this.registry.get(intent);
+    if (!handler) {
+      return whatsapp.sendTextMessage(
+        `Sorry, I can't handle that yet. Type *help* to see what I can do!`
+      );
+    }
+
+    const menu = this.registry
+      .menuEntries()
+      .filter((entry) => caps.enabledModules.has(entry.module));
+
+    return handler.start({
+      message,
+      llm,
+      whatsapp,
+      menu,
+      businessName: caps.businessName,
+    });
   }
 
   // ─── Resume ─────────────────────────────────────────────────────────────────
@@ -130,42 +127,5 @@ export class WorkflowEngine {
 
   private conversationKey(message: IncomingMessage) {
     return `${message.phoneNumberId}:${message.customerWaId}`;
-  }
-
-  private async sendHelpMenu(message: IncomingMessage, whatsapp: WhatsAppService) {
-    try {
-      await whatsapp.sendInteractiveButtons({
-        to: message.customerWaId,
-        bodyText:
-          "Here's what I can help with:\n\n" +
-          "🛒 *Order Products* — order anything from our catalog\n" +
-          "📅 *Book Appointment* — schedule a service or consultation\n" +
-          "🍽️ *Reservations* — reserve a table, room, or space",
-        footerText: "Tap a button or type your request",
-        buttons: [
-          { type: "reply", reply: { id: "MENU_ORDER", title: "🛒 Order Products" } },
-          { type: "reply", reply: { id: "MENU_BOOK", title: "📅 Book Appointment" } },
-          { type: "reply", reply: { id: "MENU_RESERVE", title: "🍽️ Reservations" } },
-        ],
-      });
-    } catch {
-      await whatsapp.sendTextMessage(
-        "Here's what I can help with:\n\n" +
-        "🛒 *Order Products* — type \"order\"\n" +
-        "📅 *Book Appointment* — type \"book\"\n" +
-        "🍽️ *Reserve Table/Room* — type \"reserve\""
-      );
-    }
-  }
-
-  private async sendUnknownResponse(message: IncomingMessage, whatsapp: WhatsAppService) {
-    await whatsapp.sendTextMessage(
-      `I didn't quite get that 🤔\n\n` +
-      `You can:\n` +
-      `• Type *order* to buy something\n` +
-      `• Type *book* to schedule an appointment\n` +
-      `• Type *reserve* to book a table or room\n` +
-      `• Type *help* to see the menu`
-    );
   }
 }

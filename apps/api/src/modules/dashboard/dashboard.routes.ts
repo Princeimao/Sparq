@@ -22,7 +22,6 @@ router.get(
         messagesCount,
         productsCount,
         appointmentsCount,
-        activeWorkflowsCount,
         integrationsCount,
       ] = await Promise.all([
         prisma.order.findMany({
@@ -35,18 +34,22 @@ router.get(
           },
         }),
         prisma.product.count({ where: { userId } }),
-        prisma.appointment.count({ where: { userId } }),
-        prisma.workflow.count({ where: { userId, isActive: true } }),
+        prisma.booking.count({ where: { userId } }),
         prisma.integration.count({ where: { userId, isActive: true } }),
       ]);
 
       const totalSales = orders.length;
       const paidOrders = orders.filter(
-        (o) => o.status === "PAID" || o.status === "COMPLETED"
+        (o) => o.status === "PAID" || o.status === "COMPLETED",
       );
-      const totalRevenue = paidOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+      const totalRevenue = paidOrders.reduce(
+        (sum, o) => sum + (o.amount || 0),
+        0,
+      );
 
-      const purchaseOrdersCount = orders.filter((o) => o.status === "PENDING").length;
+      const purchaseOrdersCount = orders.filter(
+        (o) => o.status === "PENDING",
+      ).length;
       const weeklyRevenue = paidOrders
         .filter((o) => o.createdAt >= startOfWeek)
         .reduce((sum, o) => sum + (o.amount || 0), 0);
@@ -56,11 +59,12 @@ router.get(
       const profitAmount = totalRevenue - expenseAmount;
 
       // Conversion Rate: ratio of paid orders to total leads/customers
-      const conversionRate = customersCount > 0
-        ? Number(((paidOrders.length / customersCount) * 100).toFixed(1))
-        : totalSales > 0
-          ? 100
-          : 0;
+      const conversionRate =
+        customersCount > 0
+          ? Number(((paidOrders.length / customersCount) * 100).toFixed(1))
+          : totalSales > 0
+            ? 100
+            : 0;
 
       // Weekly sales data (Last 7 days)
       const weeklySales = [];
@@ -72,7 +76,7 @@ router.get(
         const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
         const dayOrders = orders.filter(
-          (o) => o.createdAt >= startOfDay && o.createdAt <= endOfDay
+          (o) => o.createdAt >= startOfDay && o.createdAt <= endOfDay,
         );
         const dayRevenue = dayOrders
           .filter((o) => o.status === "PAID" || o.status === "COMPLETED")
@@ -87,15 +91,36 @@ router.get(
       }
 
       // Monthly sales breakdown (Last 12 months)
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
       const monthlySales = [];
       for (let i = 11; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
-        const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+        const monthEnd = new Date(
+          d.getFullYear(),
+          d.getMonth() + 1,
+          0,
+          23,
+          59,
+          59,
+          999,
+        );
 
         const monthOrders = orders.filter(
-          (o) => o.createdAt >= monthStart && o.createdAt <= monthEnd
+          (o) => o.createdAt >= monthStart && o.createdAt <= monthEnd,
         );
         const monthEarning = monthOrders
           .filter((o) => o.status === "PAID" || o.status === "COMPLETED")
@@ -112,15 +137,20 @@ router.get(
         });
       }
 
-      const orderStatus = ["PENDING", "PAID", "COMPLETED", "CANCELLED"].map((status) => ({
-        status,
-        count: orders.filter((order) => order.status === status).length,
-        amount: orders
-          .filter((order) => order.status === status)
-          .reduce((sum, order) => sum + (order.amount || 0), 0),
-      }));
+      const orderStatus = ["PENDING", "PAID", "COMPLETED", "CANCELLED"].map(
+        (status) => ({
+          status,
+          count: orders.filter((order) => order.status === status).length,
+          amount: orders
+            .filter((order) => order.status === status)
+            .reduce((sum, order) => sum + (order.amount || 0), 0),
+        }),
+      );
 
-      const productMap = new Map<string, { name: string; orders: number; revenue: number }>();
+      const productMap = new Map<
+        string,
+        { name: string; orders: number; revenue: number }
+      >();
       orders.forEach((order) => {
         const current = productMap.get(order.productName) || {
           name: order.productName,
@@ -136,7 +166,7 @@ router.get(
         .sort((a, b) => b.revenue - a.revenue)
         .slice(0, 5);
 
-      const [recentOrders, recentCustomers, upcomingAppointments, workflows] =
+      const [recentOrders, recentCustomers, upcomingAppointments] =
         await Promise.all([
           prisma.order.findMany({
             where: { userId },
@@ -156,18 +186,16 @@ router.get(
             orderBy: { createdAt: "desc" },
             take: 5,
           }),
-          prisma.appointment.findMany({
+          prisma.booking.findMany({
             where: {
               userId,
               startTime: { gte: now },
             },
             orderBy: { startTime: "asc" },
             take: 5,
-          }),
-          prisma.workflow.findMany({
-            where: { userId },
-            orderBy: { updatedAt: "desc" },
-            take: 5,
+            include: {
+              service: { select: { name: true } },
+            },
           }),
         ]);
 
@@ -186,7 +214,6 @@ router.get(
               messagesCount,
               productsCount,
               appointmentsCount,
-              activeWorkflowsCount,
               integrationsCount,
             },
             weeklySales,
@@ -196,16 +223,15 @@ router.get(
             recentOrders,
             recentCustomers,
             upcomingAppointments,
-            workflows,
           },
           "Dashboard data fetched successfully",
-          true
-        )
+          true,
+        ),
       );
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

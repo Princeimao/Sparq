@@ -45,6 +45,16 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
  * Model Integration
  * 
  */
@@ -85,11 +95,6 @@ export type Message = Prisma.MessageModel
  */
 export type Product = Prisma.ProductModel
 /**
- * Model Workflow
- * 
- */
-export type Workflow = Prisma.WorkflowModel
-/**
  * Model Flow
  * 
  */
@@ -110,17 +115,42 @@ export type Staff = Prisma.StaffModel
  */
 export type Availability = Prisma.AvailabilityModel
 /**
- * Model Appointment
+ * Model Resource
  * 
  */
-export type Appointment = Prisma.AppointmentModel
+export type Resource = Prisma.ResourceModel
 /**
- * Model ReservationSlot
+ * Model ServiceResource
  * 
  */
-export type ReservationSlot = Prisma.ReservationSlotModel
+export type ServiceResource = Prisma.ServiceResourceModel
 /**
- * Model ReservationBooking
+ * Model TimeOff
  * 
  */
-export type ReservationBooking = Prisma.ReservationBookingModel
+export type TimeOff = Prisma.TimeOffModel
+/**
+ * Model Break
+ * 
+ */
+export type Break = Prisma.BreakModel
+/**
+ * Model Booking
+ * 
+ */
+export type Booking = Prisma.BookingModel
+/**
+ * Model BookingAllocation
+ * 
+ */
+export type BookingAllocation = Prisma.BookingAllocationModel
+/**
+ * Model WebhookEvent
+ * 
+ */
+export type WebhookEvent = Prisma.WebhookEventModel
+/**
+ * Model BusinessProfile
+ * 
+ */
+export type BusinessProfile = Prisma.BusinessProfileModel

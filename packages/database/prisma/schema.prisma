@@ -7,8 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Enums ───────────────────────────────────────────────────────────────────
-
 enum Role {
   OWNER
   ADMIN
@@ -55,28 +53,36 @@ enum BookingMode {
   SELECT_STAFF
 }
 
-enum AppointmentStatus {
+// ─── Unified booking domain ─────────────────────────────────────────────────
+
+enum ResourceKind {
+  STAFF
+  TABLE
+  ROOM
+  EQUIPMENT
+  OTHER
+}
+
+enum AssignmentMode {
+  CUSTOMER_CHOICE
+  BUSINESS_ASSIGN
+  AUTO
+  SINGLE
+}
+
+enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
   COMPLETED
   NO_SHOW
-}
-
-enum ReservationSlotType {
-  HOTEL_ROOM
-  RESTAURANT_TABLE
-  MEETING_ROOM
-  EVENT_SPACE
-  OTHER
-}
-
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
   CHECKED_IN
-  COMPLETED
-  CANCELLED
+}
+
+enum BookingSource {
+  WHATSAPP
+  DASHBOARD
+  API
 }
 
 enum AvailabilityMode {
@@ -102,8 +108,61 @@ enum MessageStatus {
   FAILED
 }
 
+enum SubscriptionPlan {
+  FREE
+  GROWTH
+  PRO
+}
 
-// ─── Core Auth & Org ─────────────────────────────────────────────────────────
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING
+  PAUSED
+  CANCELED
+  EXPIRED
+  PAST_DUE
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentProvider {
+  RAZORPAY
+}
+
+enum BusinessType {
+  SALON
+  CLINIC
+  RESTAURANT
+  HOTEL
+  RETAIL
+  HOME_SERVICES
+  FITNESS
+  OTHER
+}
+
+enum OnboardingStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ServiceLocation {
+  AT_BUSINESS
+  AT_CUSTOMER
+  BOTH
+}
 
 model User {
   id        String   @id @default(cuid())
@@ -117,19 +176,98 @@ model User {
   customers    Customer[]
   orders       Order[]
   products     Product[]
-  appointments Appointment[]
-  workflows    Workflow[]
   flows        Flow[]
   service      Service[]
   staff        Staff[]
   messages Message[]
-  reservationSlots    ReservationSlot[]
-  reservationBookings ReservationBooking[]
+  resources    Resource[]
+  bookings     Booking[]
+  timeOffs     TimeOff[]
+  breaks       Break[]
+  payments    Payment[]
+  subscriptions Subscription[]
+  businessProfile BusinessProfile?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+model Payment {
+  id String @id @default(cuid())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  provider PaymentProvider @default(RAZORPAY)
+
+  status PaymentStatus
+
+  amount   Int
+  currency String @default("INR")
+
+  providerPaymentId String? @unique
+  providerOrderId   String? @unique
+  providerInvoiceId String?
+
+  method String?
+
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([providerPaymentId])
+  @@index([providerOrderId])
+  @@map("payments")
+}
+
+model Subscription {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan     SubscriptionPlan @default(FREE)
+  interval BillingInterval  @default(MONTHLY)
+  status   SubscriptionStatus @default(ACTIVE)
+
+  amount   Int
+  currency String @default("INR")
+
+  provider PaymentProvider @default(RAZORPAY)
+
+  providerSubscriptionId String? @unique
+
+  providerCustomerId String?
+  providerPlanId     String?
+
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+
+  cancelAtPeriodEnd Boolean   @default(false)
+  canceledAt        DateTime?
+
+  startedAt DateTime?
+
+  endedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments Payment[]
+
+  @@index([status])
+  @@index([plan])
+  @@index([currentPeriodEnd])
+  @@map("subscriptions")
 }
 
 model Integration {
@@ -179,12 +317,14 @@ model Customer {
   name       String?
   email      String?
   customFields Json?
+  notes String?
 
   user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders        Order[]
   conversations ConversationState[]
   messages      Message[]
   addresses     Address[]
+  bookings Booking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -199,6 +339,8 @@ model Address {
   customerId String
 
   type AddressType @default(SHIPPING)
+  label String?
+  isDefault Boolean @default(false)
   name        String?
   phone       String?
 
@@ -214,6 +356,7 @@ model Address {
 
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   orders Order[]
+  visitBookings Booking[] @relation("VisitAddress")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -321,23 +464,6 @@ model Product {
   @@map("products")
 }
 
-model Workflow {
-  id             String   @id @default(cuid())
-  userId String
-  name           String
-  description    String?
-  triggerType    String   
-  steps          Json     
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@map("workflows")
-}
-
 model Flow {
   id              String      @id @default(cuid())
   name            String
@@ -370,14 +496,23 @@ model Service {
 
   bookingMode     BookingMode     @default(ANY_STAFF)
   availabilityMode AvailabilityMode @default(MANUAL)
+  locationMode    ServiceLocation @default(AT_BUSINESS)
+
+  // Unified booking configuration
+  assignmentMode AssignmentMode @default(BUSINESS_ASSIGN)
+  requiresPartySize Boolean @default(false)
+  bufferMinutes Int @default(0)
+  minLeadMinutes Int @default(0)
+  maxAdvanceDays Int?
 
   price       Float?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   staff Staff[]
+  resourceLinks ServiceResource[]
 
-  appointments Appointment[]
+  bookings Booking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -393,6 +528,11 @@ model Staff {
   email    String?
   phone    String?
 
+  role      String?
+  specialty String?
+  image     String?
+  color     String?
+
   isActive Boolean @default(true)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -400,8 +540,10 @@ model Staff {
   services Service[]
 
   availability Availability[]
+  timeOffs     TimeOff[]
+  breaks       Break[]
 
-  appointments Appointment[]
+  allocations BookingAllocation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -413,6 +555,7 @@ model Availability {
   id String @id @default(cuid())
 
   staffId String?
+  resourceId String?
 
   dayOfWeek Int
 
@@ -424,97 +567,251 @@ model Availability {
   isActive Boolean @default(true)
 
   staff Staff? @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  resource Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([staffId])
+  @@index([resourceId])
 }
 
 
-model Appointment {
+// ─── Unified booking domain ───────────────────────────────────────────────────
+// A Service is the offering. A Resource is who/what fulfills it (people via
+// Staff, spaces & equipment via Resource). A Booking links customer +
+// offering + time + the allocated resources.
+
+model Resource {
+  id     String @id @default(cuid())
+  userId String
+
+  name        String
+  kind        ResourceKind @default(OTHER)
+  description String?
+  image       String?
+  color       String?
+
+  // Tables / rooms: how many guests fit. Null = not capacity-constrained.
+  capacity Int?
+
+  isActive Boolean @default(true)
+
+  locationMode ServiceLocation?
+
+  metadata Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  serviceLinks ServiceResource[]
+
+  availability Availability[]
+  timeOffs     TimeOff[]
+  breaks       Break[]
+  allocations  BookingAllocation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, kind])
+}
+
+model ServiceResource {
+  serviceId  String
+  resourceId String
+
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([serviceId, resourceId])
+  @@index([resourceId])
+  @@map("service_resources")
+}
+
+model TimeOff {
+  id     String @id @default(cuid())
+  userId String
+
+  staffId    String?
+  resourceId String?
+
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  staff    Staff?    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  resource Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([staffId])
+  @@index([resourceId])
+  @@map("time_offs")
+}
+
+model Break {
+  id     String @id @default(cuid())
+  userId String
+
+  staffId    String?
+  resourceId String?
+
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  label     String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  staff    Staff?    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  resource Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([staffId])
+  @@index([resourceId])
+  @@map("breaks")
+}
+
+model Booking {
   id String @id @default(cuid())
 
   userId String
 
-  serviceId String
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
 
-  // nullable because salon may assign later
-  staffId String?
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  // Transaction-time snapshot — history stays accurate if names change.
   customerName  String
   customerEmail String?
   customerPhone String?
 
+  locationMode ServiceLocation?
+  visitAddressId String?
+  visitAddress Address? @relation("VisitAddress", fields: [visitAddressId], references: [id], onDelete: SetNull)
+
   startTime DateTime
   endTime   DateTime
 
-  status AppointmentStatus @default(PENDING)
+  status BookingStatus @default(PENDING)
+  source BookingSource @default(DASHBOARD)
+
+  // Restaurant-style bookings.
+  partySize Int?
 
   notes String?
-
-  service Service @relation(fields: [serviceId], references: [id])
-
-  staff Staff? @relation(fields: [staffId], references: [id])
+  totalAmount Float?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  allocations BookingAllocation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([serviceId])
-  @@index([staffId])
+  @@index([customerId])
   @@index([startTime])
+  @@index([userId, startTime])
+  @@map("bookings")
 }
 
-// ─── Reservations ─────────────────────────────────────────────────────────────
+model BookingAllocation {
+  id String @id @default(cuid())
 
-model ReservationSlot {
-  id          String              @id @default(cuid())
-  userId      String
-  name        String
-  type        ReservationSlotType @default(OTHER)
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  staffId String?
+  staff   Staff? @relation(fields: [staffId], references: [id], onDelete: SetNull)
+
+  resourceId String?
+  resource   Resource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+
+  // PRIMARY | ROOM | ASSISTANT | TABLE ...
+  role String @default("PRIMARY")
+
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([staffId])
+  @@index([resourceId])
+  @@map("booking_allocations")
+}
+
+
+model WebhookEvent {
+  id String @id @default(cuid())
+
+  provider PaymentProvider @default(RAZORPAY)
+
+  // Razorpay event id (e.g. from webhook payload `id`). Unique => idempotent.
+  eventId String @unique
+  type    String
+
+  payload Json
+
+  processedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@map("webhook_events")
+}
+
+// ─── Business onboarding / personalization ────────────────────────────────────
+
+model BusinessProfile {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  businessName String?
+  businessType BusinessType?
   description String?
-  capacity    Int?
-  pricePerUnit Float?
-  priceUnit   String?             // "per night", "per hour", etc.
-  image       String?
-  amenities   String[]            @default([])
-  isActive    Boolean             @default(true)
+  contactEmail String?
+  contactPhone String?
+  industry String?
+  servicesOffered String[] @default([])
 
-  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bookings ReservationBooking[]
+  // Subset of: "products" | "bookings" (customers & conversations are core)
+  enabledModules String[] @default([])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  addressLine1 String?
+  city         String?
+  state        String?
+  pincode      String?
+  country      String  @default("India")
 
-  @@index([userId])
-  @@map("reservation_slots")
-}
+  locationMode ServiceLocation?
+  serviceArea String?
+  timezone String @default("Asia/Kolkata")
 
-model ReservationBooking {
-  id             String            @id @default(cuid())
-  userId         String
-  slotId         String
-  customerName   String
-  customerPhone  String?
-  customerEmail  String?
-  startDate      DateTime
-  endDate        DateTime
-  guestCount     Int?
-  specialRequests String?
-  totalAmount    Float?
-  status         ReservationStatus @default(PENDING)
+  operatingHours Json?
+  staffCount Int?
 
-  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  slot ReservationSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  communicationPrefs Json?
+  settings Json?
+
+  onboardingStatus OnboardingStatus @default(NOT_STARTED)
+  onboardingStep Int @default(0)
+  onboardingDraft Json?
+  completedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
-  @@index([slotId])
-  @@index([startDate])
-  @@map("reservation_bookings")
+  @@map("business_profiles")
 }

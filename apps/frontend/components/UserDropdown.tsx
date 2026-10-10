@@ -29,17 +29,18 @@ type Props = {
 type MenuItem = {
   label: string;
   icon: LucideIcon;
+  href?: string;
   destructive?: boolean;
 };
 
 const PROFILE_ITEMS: MenuItem[] = [
-  { label: "My Profile", icon: CircleUserRound },
-  { label: "My Subscription", icon: CreditCard },
-  { label: "My Invoice", icon: ReceiptText },
+  { label: "My Profile", icon: CircleUserRound, href: "/profile" },
+  { label: "My Subscription", icon: CreditCard, href: "/subscription" },
+  { label: "My Invoice", icon: ReceiptText, href: "/subscription" },
 ];
 
 const SETTINGS_ITEMS: MenuItem[] = [
-  { label: "Account Settings", icon: Settings },
+  { label: "Account Settings", icon: Settings, href: "/settings" },
 ];
 
 const LOGOUT_ITEM: MenuItem = {
@@ -50,12 +51,14 @@ const LOGOUT_ITEM: MenuItem = {
 
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 import { logoutUser } from "@/lib/store/authSlice";
+import { useRouter } from "next/navigation";
 
 const itemClass =
   "p-2 text-sm font-medium text-popover-foreground cursor-pointer gap-2";
 
 const UserDropdown = ({ trigger, defaultOpen, align = "end" }: Props) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
 
   const getInitials = (name?: string | null) => {
@@ -70,6 +73,7 @@ const UserDropdown = ({ trigger, defaultOpen, align = "end" }: Props) => {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    router.push("/");
   };
 
   return (
@@ -111,8 +115,12 @@ const UserDropdown = ({ trigger, defaultOpen, align = "end" }: Props) => {
 
           {/* Main Links */}
           <DropdownMenuGroup>
-            {PROFILE_ITEMS.map(({ label, icon: Icon }) => (
-              <DropdownMenuItem key={label} className={itemClass}>
+            {PROFILE_ITEMS.map(({ label, icon: Icon, href }) => (
+              <DropdownMenuItem
+                key={label}
+                className={itemClass}
+                onClick={() => href && router.push(href)}
+              >
                 <Icon size={20} />
                 <span>{label}</span>
               </DropdownMenuItem>
@@ -123,8 +131,12 @@ const UserDropdown = ({ trigger, defaultOpen, align = "end" }: Props) => {
 
           {/* Settings */}
           <DropdownMenuGroup>
-            {SETTINGS_ITEMS.map(({ label, icon: Icon }) => (
-              <DropdownMenuItem key={label} className={itemClass}>
+            {SETTINGS_ITEMS.map(({ label, icon: Icon, href }) => (
+              <DropdownMenuItem
+                key={label}
+                className={itemClass}
+                onClick={() => href && router.push(href)}
+              >
                 <Icon size={20} />
                 <span>{label}</span>
               </DropdownMenuItem>

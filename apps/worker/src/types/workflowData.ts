@@ -24,4 +24,17 @@ export interface WorkflowData {
   pendingAddress?: string;
   /** True when the user is providing a replacement shipping address */
   changingAddress?: boolean;
+  /** Home-visit vs in-business choice for BOTH-mode services */
+  locationChoice?: "AT_BUSINESS" | "AT_CUSTOMER";
+  /** Visit address collected fresh for this booking (never auto-filled) */
+  visitAddress?: { line1?: string; city?: string; pincode?: string; landmark?: string };
+  visitAddressId?: string;
+  selectedStaffId?: string;
+  /** Assignment + eligibility resolved during the flow */
+  assignmentMode?: "CUSTOMER_CHOICE" | "BUSINESS_ASSIGN" | "AUTO" | "SINGLE";
+  eligibleStaffIds?: string[];
+  linkedResourceIds?: string[];
+  /** Allocated table for reservation flows */
+  tableId?: string;
+  tableName?: string;
 }

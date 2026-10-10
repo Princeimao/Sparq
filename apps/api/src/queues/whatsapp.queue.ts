@@ -18,8 +18,11 @@ export const whatsappQueue = new Queue<WhatsAppJobData>("whatsapp-messages", {
 export async function enqueueWhatsAppMessage(
   data: WhatsAppJobData,
 ): Promise<void> {
-  console.log("hey");
-  await whatsappQueue.add(`message_${data.messageId}`, data);
+  // jobId = stable message key: BullMQ drops duplicate adds, so webhook
+  // retries and double-deliveries never create competing jobs.
+  await whatsappQueue.add(`message_${data.messageId}`, data, {
+    jobId: `wa-msg-${data.messageId}`,
+  });
   console.log(
     `Enqueued message ${data.messageId} from ${data.customerWaId} for background processing`,
   );

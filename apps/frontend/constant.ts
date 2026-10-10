@@ -1,7 +1,6 @@
 import {
   LucideIcon,
   Blocks,
-  Workflow,
   Contact,
   ShoppingBag,
   Home,
@@ -24,11 +23,9 @@ import {
   Route,
   TrendingUp,
   Briefcase,
-  Hotel,
+  Armchair,
   Layers,
-  User,
-  CreditCard,
-  Settings,
+  Workflow,
 } from "lucide-react";
 export type NavigationSection = {
   title: string;
@@ -134,39 +131,53 @@ export const FAQ_DATA = [
 export const PLANS_DATA = [
   {
     name: "Free",
-    description: "Perfect for testing and small operations starting out.",
+    description:
+      "A simple way to get started with selling and managing customer conversations on WhatsApp.",
     price: 0,
     yearlyPrice: 0,
+    yearlyBilledAmount: 0,
+
     features: [
-      "Standard repeat order tracking",
-      "Basic WhatsApp setup",
-      "Community support",
+      "50 customer conversation sessions/month",
+      "WhatsApp storefront",
+      "Product & service catalog",
+      "Customer conversation management",
+      "Order & purchase tracking",
+      "Basic analytics",
+      "Customer onboarding",
+      "Payment collection",
     ],
+
     notIncluded: [
-      "Email automation",
-      "Custom automation rules",
-      "Employee invitation option",
+      "Unlimited conversation sessions",
+      "Advanced conversation features",
     ],
+
     recommended: false,
     cta: "Start Free",
   },
 
   {
-    name: "Normal",
+    name: "Growth",
     description:
-      "Ideal for growing brands scaling customer engagement and automation.",
+      "For growing businesses that want to manage unlimited customer conversations and sell directly through WhatsApp.",
     price: 999,
     yearlyPrice: 799,
     yearlyBilledAmount: 9588,
+
     features: [
-      "Email automation",
-      "Custom automation rules",
-      "Employee invitation option",
-      "WhatsApp Business Cloud API connection",
-      "Standard support (24h)",
-      "Multiple workflow automation",
+      "Unlimited customer conversation sessions",
+      "WhatsApp storefront",
+      "Product & service catalog",
+      "Customer conversation management",
+      "Order & purchase tracking",
+      "Basic analytics",
+      "Customer onboarding",
+      "Payment collection",
     ],
-    notIncluded: ["Priority support", "Advanced analytics", "Custom billing"],
+
+    notIncluded: ["Advanced conversation features"],
+
     recommended: true,
     cta: "Get Started",
   },
@@ -174,74 +185,136 @@ export const PLANS_DATA = [
   {
     name: "Pro",
     description:
-      "Built for businesses handling high-volume automation and customer workflows.",
+      "For businesses that need the complete Sparq experience to manage and grow their WhatsApp storefront.",
     price: 2499,
     yearlyPrice: 1999,
     yearlyBilledAmount: 23988,
+
     features: [
-      "Everything in Normal",
-      "Unlimited automation workflows",
-      "Advanced analytics dashboard",
-      "Priority 24/7 dedicated support",
-      "Custom billing & invoicing",
-      "Team collaboration tools",
-      "Advanced integrations",
+      "Everything in Growth",
+      "Unlimited customer conversation sessions",
+      "Advanced conversation features",
+      "Advanced customer & order management",
+      "Advanced analytics",
+      "Priority feature access",
     ],
+
     notIncluded: [],
+
     recommended: false,
     cta: "Go Pro",
   },
 ];
 
 export const comparisonData = {
-  workspace: [
+  storefront: [
     {
-      feature: "Team Members Invitation",
-      free: false,
-      normal: true,
+      feature: "WhatsApp Storefront",
+      free: true,
+      growth: true,
       pro: true,
     },
     {
-      feature: "Workspace Analytics Dashboard",
+      feature: "Product & Service Catalog",
+      free: true,
+      growth: true,
+      pro: true,
+    },
+    {
+      feature: "Customer Onboarding",
+      free: true,
+      growth: true,
+      pro: true,
+    },
+  ],
+
+  conversations: [
+    {
+      feature: "Customer Conversation Sessions",
+      free: "50/month",
+      growth: "Unlimited",
+      pro: "Unlimited",
+    },
+    {
+      feature: "Conversation Management",
       free: "Basic",
-      normal: "Full",
+      growth: "Full",
+      pro: "Advanced",
+    },
+    {
+      feature: "Customer Purchase Journey",
+      free: true,
+      growth: true,
+      pro: true,
+    },
+  ],
+
+  commerce: [
+    {
+      feature: "Product & Service Selling",
+      free: true,
+      growth: true,
+      pro: true,
+    },
+    {
+      feature: "Order Management",
+      free: true,
+      growth: true,
+      pro: true,
+    },
+    {
+      feature: "Payment Collection",
+      free: true,
+      growth: true,
+      pro: true,
+    },
+    {
+      feature: "Customer & Order Tracking",
+      free: "Basic",
+      growth: "Full",
       pro: "Advanced",
     },
   ],
-  automation: [
-    { feature: "Email Automation", free: false, normal: true, pro: true },
+
+  analytics: [
     {
-      feature: "Custom Automation Rules",
+      feature: "Analytics Dashboard",
+      free: "Basic",
+      growth: "Basic",
+      pro: "Advanced",
+    },
+  ],
+
+  advanced: [
+    {
+      feature: "Advanced Conversation Features",
       free: false,
-      normal: true,
+      growth: false,
       pro: true,
     },
     {
-      feature: "Campaign Scheduling & Cron Jobs",
-      free: "Standard Only",
-      normal: "Flexible Scheduler",
-      pro: "Real-time & Flex",
-    },
-    {
-      feature: "Smart State-Machine Flow",
-      free: "Linear Only",
-      normal: "Configurable",
-      pro: "Custom Dialogues",
-    },
-  ],
-  integration: [
-    {
-      feature: "WhatsApp Cloud API Integration",
-      free: "Simulated Webhooks",
-      normal: "Direct Meta Cloud API",
-      pro: "Direct Meta Cloud API",
-    },
-    { feature: "Stripe Payment Links", free: false, normal: true, pro: true },
-    {
-      feature: "API Access",
+      feature: "Advanced Customer Management",
       free: false,
-      normal: "Standard",
-      pro: "High Rate-Limit",
+      growth: false,
+      pro: true,
+    },
+    {
+      feature: "Advanced Order Management",
+      free: false,
+      growth: false,
+      pro: true,
+    },
+    {
+      feature: "Advanced Analytics",
+      free: false,
+      growth: false,
+      pro: true,
+    },
+    {
+      feature: "Priority Feature Access",
+      free: false,
+      growth: false,
+      pro: true,
     },
   ],
 };
@@ -273,32 +346,20 @@ export const navData: NavItem[] = [
   { title: "Calendar", icon: Calendar, href: "/calendar" },
   { title: "Integrations", icon: Blocks, href: "/integrations" },
   { title: "WhatsApp Flows", icon: MessageSquareCode, href: "/flows" },
-  { title: "Workflows", icon: Workflow, href: "/workflows" },
   { title: "Customers", icon: Contact, href: "/customers" },
   { label: "CATALOG", isSection: true },
   { title: "Products", icon: ShoppingBag, href: "/products" },
   { title: "Services", icon: Briefcase, href: "/services" },
-  { title: "Reservations", icon: Hotel, href: "/reservations" },
+  { title: "Resources", icon: Armchair, href: "/resources" },
   { label: "TOOLS", isSection: true },
   { title: "Form Builder", icon: Layers, href: "/forms" },
-  { label: "ACCOUNT", isSection: true },
-  { title: "Profile", icon: User, href: "/profile" },
-  { title: "Subscription", icon: CreditCard, href: "/subscription" },
-  { title: "Settings", icon: Settings, href: "/settings" },
 ];
 
 export type IntegrationProvider =
-  | "whatsapp"
-  | "stripe"
-  | "razorpay"
-  | "calcom"
-  | "woocommerce";
+  "whatsapp" | "stripe" | "razorpay" | "calcom" | "woocommerce";
 
 export type IntegrationCategory =
-  | "messaging"
-  | "payment"
-  | "scheduling"
-  | "ecommerce";
+  "messaging" | "payment" | "scheduling" | "ecommerce";
 
 export type IntegrationDefinition = {
   name: string;
@@ -345,7 +406,6 @@ export const integrations: IntegrationDefinition[] = [
     category: "ecommerce",
   },
 ];
-
 
 export const sections = [
   {
@@ -420,7 +480,7 @@ export const PRIVACY_SECTION = [
     content: `We use collected information to:
     
 • Provide, operate, and maintain the Sparq platform.
-• Enable WhatsApp automation, workflows, and integrations.
+• Enable WhatsApp automation, and integrations.
 • Process subscriptions and payments.
 • Improve platform performance and security.
 • Provide customer support.

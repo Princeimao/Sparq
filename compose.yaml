@@ -19,27 +19,27 @@ services:
     volumes:
       - sparq-redis:/data
 
-  sparq-api:
-    image: sparq-api:1.0
-    container_name: sparq-api
-    ports:
-      - "4000:4000"
-    env_file:
-      - ./apps/api/.env
-    depends_on:
-      - redis
-    environment:
-      - REDIS_URL=redis://redis:6379
+  # sparq-api:
+  #   image: sparq-api:1.0
+  #   container_name: sparq-api
+  #   ports:
+  #     - "4000:4000"
+  #   env_file:
+  #     - ./apps/api/.env
+  #   depends_on:
+  #     - redis
+  #   environment:
+  #     - REDIS_URL=redis://redis:6379
 
-  sparq-worker: 
-    image: sparq-worker:1.0
-    container_name: sparq-worker
-    env_file:
-      - ./apps/worker/.env
-    depends_on:
-      - redis
-    environment:
-      - REDIS_URL=redis://redis:6379
+  # sparq-worker: 
+  #   image: sparq-worker:1.0
+  #   container_name: sparq-worker
+  #   env_file:
+  #     - ./apps/worker/.env
+  #   depends_on:
+  #     - redis
+  #   environment:
+  #     - REDIS_URL=redis://redis:6379
 
 volumes:
   sparq-db:

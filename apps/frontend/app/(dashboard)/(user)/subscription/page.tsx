@@ -1,39 +1,170 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { PLANS_DATA, FAQ_DATA } from "@/constant";
 import { toast } from "sonner";
 import {
   Check,
   Zap,
-  Sparkles,
   CreditCard,
   Download,
-  Calendar,
-  MessageSquare,
-  Workflow,
-  ShoppingBag,
-  ArrowRight,
   ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  cancelSubscription,
+  changePlan,
+  formatINR,
+  getPayments,
+  getPlans,
+  getSubscription,
+  isCheckoutResult,
+  openRazorpayCheckout,
+  startSubscription,
+  verifySubscriptionPayment,
+  type BillingInterval,
+  type Payment,
+  type Plan,
+  type PlanId,
+  type Subscription,
+} from "@/lib/billing";
 
 export default function SubscriptionPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
-  const [currentPlan, setCurrentPlan] = useState<string>("Normal");
-  const [upgrading, setUpgrading] = useState<string | null>(null);
+  return (
+    <Suspense>
+      <SubscriptionInner />
+    </Suspense>
+  );
+}
 
-  const handleUpgrade = (planName: string) => {
-    setUpgrading(planName);
-    setTimeout(() => {
-      setCurrentPlan(planName);
-      setUpgrading(null);
-      toast.success(`Subscribed to ${planName} Plan! Billing schedule updated.`);
-    }, 1200);
+function SubscriptionInner() {
+  const searchParams = useSearchParams();
+  // Plan preselected during signup onboarding (?plan=GROWTH).
+  const requestedPlan = (["FREE", "GROWTH", "PRO"] as const).find(
+    (p) => p === searchParams.get("plan"),
+  );
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [acting, setActing] = useState<string | null>(null);
+
+  const interval: BillingInterval = billingCycle === "yearly" ? "YEARLY" : "MONTHLY";
+
+  const refresh = useCallback(async () => {
+    const [fetchedPlans, fetchedSub, fetchedPayments] = await Promise.all([
+      getPlans(),
+      getSubscription(),
+      getPayments(10).catch(() => [] as Payment[]),
+    ]);
+    setPlans(fetchedPlans);
+    setSubscription(fetchedSub);
+    setPayments(fetchedPayments);
+  }, []);
+
+  useEffect(() => {
+    refresh()
+      .catch(() => toast.error("Failed to load billing information"))
+      .finally(() => setLoading(false));
+  }, [refresh]);
+
+  // Scroll a plan chosen during onboarding into view.
+  useEffect(() => {
+    if (!loading && requestedPlan) {
+      document
+        .getElementById(`plan-${requestedPlan}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [loading, requestedPlan]);
+
+  const completeCheckout = async (plan: Plan, planId: PlanId) => {
+    // Create (or change to) the subscription server-side, then open
+    // Razorpay Checkout with the IDs the API returns.
+    const isChange =
+      subscription != null && !(subscription.plan === "FREE" && planId !== "FREE");
+    const result = isChange
+      ? await changePlan(planId, interval)
+      : await startSubscription(planId as Exclude<PlanId, "FREE">, interval);
+
+    if (!isCheckoutResult(result)) {
+      setSubscription(result.subscription);
+      toast.success(`Subscribed to ${plan.name} plan`);
+      setActing(null);
+      return;
+    }
+
+    await openRazorpayCheckout({
+      key: result.razorpayKeyId,
+      subscriptionId: result.razorpaySubscriptionId,
+      description: `${plan.name} plan (${billingCycle})`,
+      onSuccess: async (response) => {
+        try {
+          const verified = await verifySubscriptionPayment(response);
+          setSubscription(verified.subscription);
+          toast.success(`Subscribed to ${plan.name} plan!`);
+        } catch {
+          toast.error("Payment verification failed. Contact support.");
+        } finally {
+          setActing(null);
+          refresh().catch(() => {});
+        }
+      },
+      onDismiss: () => {
+        setActing(null);
+        refresh().catch(() => {});
+      },
+    });
   };
+
+  const handleSelectPlan = async (plan: Plan) => {
+    if (subscription && subscription.plan === plan.id && subscription.interval === interval) return;
+    setActing(plan.id);
+    try {
+      if (plan.id === "FREE") {
+        const res = await changePlan("FREE", interval);
+        setSubscription(res.subscription);
+        toast.success("Downgraded to Free. Takes effect at period end.");
+      } else {
+        await completeCheckout(plan, plan.id);
+      }
+    } catch (error: unknown) {
+      const message =
+        (error as { response?: { data?: { error?: string } } })?.response?.data?.error ??
+        "Could not update subscription";
+      toast.error(message);
+      setActing(null);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!confirm("Cancel your subscription at the end of the billing period?")) return;
+    setActing("cancel");
+    try {
+      const res = await cancelSubscription(true);
+      setSubscription(res.subscription);
+      toast.success("Subscription will cancel at period end");
+    } catch {
+      toast.error("Failed to cancel subscription");
+    } finally {
+      setActing(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  const currentPlanName = subscription?.plan ?? "FREE";
+  const isActive = subscription?.status === "ACTIVE" || subscription?.status === "PENDING";
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10">
@@ -45,7 +176,7 @@ export default function SubscriptionPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Subscription & Billing</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage your Sparq plan, view monthly usage meters, and download invoice history.
+            Manage your Sparq plan and view invoice history.
           </p>
         </div>
         <div className="flex items-center gap-3 bg-muted/40 p-1.5 rounded-xl border">
@@ -63,7 +194,7 @@ export default function SubscriptionPage() {
               billingCycle === "yearly" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Yearly (Save 28%)
+            Yearly (Save 20%)
             <Badge variant="secondary" className="bg-emerald-500 text-white text-[9px] px-1 py-0 border-none">
               Save
             </Badge>
@@ -71,81 +202,65 @@ export default function SubscriptionPage() {
         </div>
       </motion.div>
 
-      {/* Usage Overview Bar */}
+      {/* Current subscription status */}
       <Card className="bg-gradient-to-r from-primary/5 via-blue-500/5 to-purple-500/5 border-primary/20">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">
-              <Zap className="size-4 text-primary fill-primary" /> Current Tier: {currentPlan} Plan
+              <Zap className="size-4 text-primary fill-primary" /> Current Tier: {currentPlanName} Plan
             </CardTitle>
-            <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">Active</Badge>
+            <Badge className={isActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" : "bg-amber-500/10 text-amber-600 border-amber-500/30"}>
+              {subscription?.status ?? "FREE"}
+            </Badge>
           </div>
-          <CardDescription>Your next billing date is September 10, 2026.</CardDescription>
+          <CardDescription>
+            {subscription?.cancelAtPeriodEnd
+              ? `Cancels at period end (${new Date(subscription.currentPeriodEnd).toLocaleDateString()}).`
+              : subscription?.currentPeriodEnd
+                ? `Your next billing date is ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}.`
+                : "You are on the Free plan."}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-          {/* Meter 1: WhatsApp Messages */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <MessageSquare className="size-3.5 text-blue-500" /> WhatsApp Messages
-              </span>
-              <span className="font-semibold">4,280 / 10,000</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: "42%" }} />
-            </div>
-          </div>
-
-          {/* Meter 2: Active Workflows */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <Workflow className="size-3.5 text-purple-500" /> Active Automation Flows
-              </span>
-              <span className="font-semibold">6 / 15</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-              <div className="h-full bg-purple-500 rounded-full" style={{ width: "40%" }} />
-            </div>
-          </div>
-
-          {/* Meter 3: Catalog Items */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <ShoppingBag className="size-3.5 text-amber-500" /> Products & Services
-              </span>
-              <span className="font-semibold">28 / Unlimited</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: "15%" }} />
-            </div>
-          </div>
-        </CardContent>
+        {subscription && subscription.plan !== "FREE" && !subscription.cancelAtPeriodEnd && (
+          <CardContent>
+            <Button variant="outline" size="sm" onClick={handleCancel} disabled={acting === "cancel"}>
+              {acting === "cancel" ? <Loader2 className="size-4 animate-spin" /> : "Cancel subscription"}
+            </Button>
+          </CardContent>
+        )}
       </Card>
 
       {/* Subscription Plans */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold tracking-tight">Available Subscription Plans</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {PLANS_DATA.map((plan) => {
-            const isCurrent = currentPlan === plan.name;
-            const displayPrice =
-              billingCycle === "yearly" ? plan.yearlyPrice : plan.price;
+          {plans.map((plan) => {
+            const isCurrent = subscription?.plan === plan.id && (plan.id === "FREE" || subscription.interval === interval);
+            const highlighted = requestedPlan === plan.id && !isCurrent;
+            const displayPaise = billingCycle === "yearly" ? plan.yearlyPricePaisePerMonth : plan.monthlyPricePaise;
 
             return (
               <Card
-                key={plan.name}
-                className={`relative flex flex-col justify-between transition-all duration-300 ${
-                  plan.recommended
-                    ? "border-2 border-primary shadow-lg scale-[1.02] bg-gradient-to-b from-primary/5 to-transparent"
-                    : "hover:border-primary/50"
+                key={plan.id}
+                id={`plan-${plan.id}`}
+                className={`relative flex flex-col justify-between transition-all duration-300 scroll-mt-24 ${
+                  highlighted
+                    ? "border-2 border-zinc-900 shadow-lg scale-[1.02]"
+                    : plan.recommended
+                      ? "border-2 border-primary shadow-lg scale-[1.02] bg-gradient-to-b from-primary/5 to-transparent"
+                      : "hover:border-primary/50"
                 }`}
               >
-                {plan.recommended && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3">
-                    Most Popular
+                {highlighted ? (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-xs px-3">
+                    Chosen during setup
                   </Badge>
+                ) : (
+                  plan.recommended && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3">
+                      Most Popular
+                    </Badge>
+                  )
                 )}
 
                 <CardHeader>
@@ -154,9 +269,14 @@ export default function SubscriptionPage() {
                     {plan.description}
                   </CardDescription>
                   <div className="pt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-extrabold">₹{displayPrice}</span>
+                    <span className="text-3xl font-extrabold">{formatINR(displayPaise)}</span>
                     <span className="text-xs text-muted-foreground">/ month</span>
                   </div>
+                  {billingCycle === "yearly" && plan.yearlyBilledPaise > 0 && (
+                    <p className="text-[11px] text-muted-foreground">
+                      Billed {formatINR(plan.yearlyBilledPaise)} annually
+                    </p>
+                  )}
                 </CardHeader>
 
                 <CardContent className="space-y-3 flex-1 pt-2">
@@ -175,17 +295,17 @@ export default function SubscriptionPage() {
 
                 <CardFooter className="pt-4 border-t mt-auto">
                   <Button
-                    onClick={() => handleUpgrade(plan.name)}
-                    disabled={isCurrent || upgrading === plan.name}
+                    onClick={() => handleSelectPlan(plan)}
+                    disabled={isCurrent || acting === plan.id}
                     variant={isCurrent ? "outline" : plan.recommended ? "default" : "secondary"}
                     className="w-full py-5 rounded-xl font-medium"
                   >
-                    {upgrading === plan.name ? (
-                      <span className="size-4 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                    {acting === plan.id ? (
+                      <Loader2 className="size-4 animate-spin" />
                     ) : isCurrent ? (
                       "Current Plan"
                     ) : (
-                      `Upgrade to ${plan.name}`
+                      `Switch to ${plan.name}`
                     )}
                   </Button>
                 </CardFooter>
@@ -204,42 +324,48 @@ export default function SubscriptionPage() {
           <CardDescription>Past receipts and invoice history for your account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {[
-              { id: "INV-2026-008", date: "Aug 10, 2026", amount: "₹799.00", status: "Paid" },
-              { id: "INV-2026-007", date: "Jul 10, 2026", amount: "₹799.00", status: "Paid" },
-              { id: "INV-2026-006", date: "Jun 10, 2026", amount: "₹799.00", status: "Paid" },
-            ].map((inv) => (
-              <div
-                key={inv.id}
-                className="flex items-center justify-between p-3 rounded-xl border bg-muted/20 hover:bg-muted/40 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600">
-                    <ShieldCheck className="size-4" />
+          {payments.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-6 text-center">
+              No payments recorded yet
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {payments.map((payment) => (
+                <div
+                  key={payment.id}
+                  className="flex items-center justify-between p-3 rounded-xl border bg-muted/20 hover:bg-muted/40 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600">
+                      <ShieldCheck className="size-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold">{payment.id}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {new Date(payment.createdAt).toLocaleDateString()}
+                        {payment.method ? ` • ${payment.method}` : ""}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold">{inv.id}</p>
-                    <p className="text-[11px] text-muted-foreground">{inv.date}</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs font-mono font-bold">
+                      {formatINR(payment.amount)}
+                    </span>
+                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                      {payment.status}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 rounded-lg"
+                    >
+                      <Download className="size-3.5" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-mono font-bold">{inv.amount}</span>
-                  <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-                    {inv.status}
-                  </Badge>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => toast.success(`Downloading invoice ${inv.id}...`)}
-                    className="size-8 rounded-lg"
-                  >
-                    <Download className="size-3.5" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

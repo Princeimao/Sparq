@@ -1,82 +1,112 @@
 import axios from "axios";
 import { store } from "./store";
-import { setTokens, clearAuth } from "./store/authSlice";
+import { clearAuth, fetchCurrentUser } from "./store/authSlice";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  // Session cookies (httpOnly) are sent automatically. Tokens are never
+  // stored in localStorage and never set as Authorization headers.
   withCredentials: true,
 });
 
-// Request interceptor: attach Access Token if present
-api.interceptors.request.use(
-  (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Single-flight refresh: concurrent 401s share one refresh request so token
+// rotation can't invalidate itself through parallel calls.
+let refreshPromise: Promise<unknown> | null = null;
 
-// Response interceptor: handle token refresh on 401
+function refreshSession(): Promise<unknown> {
+  if (!refreshPromise) {
+    // Raw axios (no interceptors) to avoid loops. The refresh token travels
+    // in its httpOnly cookie — no request body needed.
+    refreshPromise = axios
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, null, {
+        withCredentials: true,
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
+// Circuit breaker: once a refresh has definitively failed (no session),
+// don't keep hammering /auth/refresh on every subsequent 401. Resets on
+// full page load and on any successful refresh.
+let sessionExpired = false;
+
+// App routes that require a session (mirror the dashboard nav). Public pages
+// (landing, pricing, auth callback, …) must NEVER hard-redirect on 401,
+// otherwise logged-out visitors get stuck in a reload loop.
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/calendar",
+  "/customers",
+  "/flows",
+  "/forms",
+  "/integrations",
+  "/products",
+  "/resources",
+  "/services",
+  "/profile",
+  "/subscription",
+  "/settings",
+];
+
+function isProtectedRoute(): boolean {
+  if (typeof window === "undefined") return false;
+  const path = window.location.pathname;
+  return PROTECTED_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
+}
+
+function isAuthEndpoint(url?: string): boolean {
+  return (
+    !!url &&
+    (url.includes("/auth/refresh") ||
+      url.includes("/auth/logout") ||
+      url.includes("/auth/callback"))
+  );
+}
+
+// Response interceptor: on 401, silently refresh the cookie session once,
+// then retry the original request.
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
-    // If it's a 401 unauthorized and we haven't retried yet
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
-      // Don't intercept refresh token calls or logout calls to avoid infinite loop
-      if (
-        originalRequest.url?.includes("/auth/refresh") ||
-        originalRequest.url?.includes("/auth/logout")
-      ) {
+
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !isAuthEndpoint(originalRequest.url)
+    ) {
+      originalRequest._retry = true;
+
+      // No session at all (previous refresh already failed) — fail fast
+      // instead of hitting /auth/refresh again.
+      if (sessionExpired) {
+        store.dispatch(clearAuth());
         return Promise.reject(error);
       }
-      
-      originalRequest._retry = true;
-      
-      const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null;
-      
-      if (refreshToken) {
-        try {
-          // Use raw axios to avoid interceptor loop
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
-            { refreshToken },
-            { withCredentials: true }
-          );
-          
-          const { accessToken, refreshToken: newRefreshToken } = response.data;
-          
-          // Dispatch setTokens to update Redux store and localStorage
-          store.dispatch(setTokens({ accessToken, refreshToken: newRefreshToken }));
-          
-          // Update authorization header on the original request
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          
-          // Retry the original request
-          return api(originalRequest);
-        } catch (refreshError) {
-          // If refresh fails, clear auth state and redirect to landing page
-          store.dispatch(clearAuth());
-          if (typeof window !== "undefined") {
-            window.location.href = "/";
-          }
-          return Promise.reject(refreshError);
-        }
-      } else {
-        // No refresh token available, clear auth and redirect
+
+      try {
+        await refreshSession();
+        sessionExpired = false;
+        // Session cookies are fresh — update user state and retry.
+        await store.dispatch(fetchCurrentUser()).unwrap();
+        return api(originalRequest);
+      } catch {
+        sessionExpired = true;
         store.dispatch(clearAuth());
-        if (typeof window !== "undefined") {
+        // Only bounce to landing from pages that actually need a session.
+        // Redirecting from public pages causes a reload loop.
+        if (typeof window !== "undefined" && isProtectedRoute()) {
           window.location.href = "/";
         }
       }
     }
-    
+
     return Promise.reject(error);
-  }
+  },
 );

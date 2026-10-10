@@ -1,36 +1,27 @@
 "use client";
 
 import { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAppDispatch } from "@/lib/store";
-import { setTokens, fetchCurrentUser } from "@/lib/store/authSlice";
+import { fetchCurrentUser } from "@/lib/store/authSlice";
 
 function AuthCallbackHandler() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const accessToken = searchParams.get("access_token");
-    const refreshToken = searchParams.get("refresh_token");
-
-    if (accessToken && refreshToken) {
-      dispatch(setTokens({ accessToken, refreshToken }));
-
-      // Fetch user profile
-      dispatch(fetchCurrentUser())
-        .unwrap()
-        .then((data) => {
-          router.push("/");
-        })
-        .catch(() => {
-          router.push("/");
-        });
-    } else {
-      router.push("/");
-    }
-  }, [router, searchParams, dispatch]);
+    // The backend sets httpOnly session cookies before redirecting here,
+    // so no tokens ever appear in the URL. Just confirm the session.
+    dispatch(fetchCurrentUser())
+      .unwrap()
+      .then(() => {
+        router.push("/dashboard");
+      })
+      .catch(() => {
+        router.push("/");
+      });
+  }, [router, dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#ffffff] text-black">

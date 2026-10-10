@@ -423,10 +423,6 @@ export type EnumIntegrationTypeFieldUpdateOperationsInput = {
   set?: $Enums.IntegrationType
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type IntegrationCreateWithoutUserInput = {
   id?: string
   type: $Enums.IntegrationType

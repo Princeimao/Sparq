@@ -5,7 +5,7 @@ import { FlowRepository } from "../../repository/flow.repository";
 import { ConversationStore } from "../../services/store/conversation.store";
 import { PaymentIntegrationManager } from "../../services/integrations";
 import { FlowFallbackService } from "../../services/flow.fallback.service";
-import { WorkflowHandler } from "../../types/handler";
+import { BusinessModule, MenuEntry, WorkflowHandler } from "../../types/handler";
 import { WorkflowContext } from "../../types/workflowContext";
 import { Intent } from "../../types/intent";
 import { OrderStep } from "./order.state";
@@ -14,6 +14,17 @@ import { WorkflowStep } from "../../types/workflowStep";
 const TTL = 3600000; // 1 hour
 
 export class OrderHandler implements WorkflowHandler {
+  readonly intents = [Intent.ORDER_PRODUCT] as const;
+  readonly module: BusinessModule = "products";
+  readonly menu: MenuEntry = {
+    buttonId: "MENU_ORDER",
+    module: "products",
+    emoji: "🛒",
+    title: "Order Products",
+    hint: "order anything from our catalog",
+    textHint: "Type *order* to buy something",
+  };
+
   constructor(
     private productRepository: ProductRepository,
     private customerRepository: CustomerRepository,

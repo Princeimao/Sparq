@@ -32,6 +32,15 @@ const envSchema = z.object({
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
+  // Razorpay Subscriptions
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
+  RAZORPAY_PLAN_GROWTH_MONTHLY: z.string().optional(),
+  RAZORPAY_PLAN_GROWTH_YEARLY: z.string().optional(),
+  RAZORPAY_PLAN_PRO_MONTHLY: z.string().optional(),
+  RAZORPAY_PLAN_PRO_YEARLY: z.string().optional(),
+
   // Frontend
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
 
