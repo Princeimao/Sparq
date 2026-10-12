@@ -1,19 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Check, X, Flame, PlusIcon, ArrowUpRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { Check, X, ArrowUpRight } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { TextAnimate } from "@/components/ui/text-animate";
 import { cn } from "@/lib/utils";
 import { comparisonData, PLANS_DATA } from "@/constant";
+import { SectionHeading, usePrefersReducedMotion } from "./landing/reveal";
 
 type PricingSectionProps = {
   showComparisonTable?: boolean;
@@ -26,251 +19,251 @@ export default function PricingSection({
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
     "monthly",
   );
+  const reduce = usePrefersReducedMotion();
 
   const handleGoogleLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
   };
 
   return (
-    <div className="w-full bg-white text-black py-16 px-4 md:px-8 selection:bg-purple-100 selection:text-purple-900">
-      {/* Header and Toggle */}
-      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center text-center space-y-6 mb-16">
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-zinc-900 leading-[1.1]">
-          Choose your Sparq. subscription.
-        </h2>
-        <p className="text-zinc-500 max-w-2xl text-base md:text-lg">
-          Get full access to all apps & features from only{" "}
-          <span className="font-semibold text-zinc-950">₹799 per month</span>{" "}
-          (billed annually) — Cancel any time.
-        </p>
+    <div className="w-full bg-[#faf9f6] text-zinc-900 py-16 md:py-24 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto">
+        <SectionHeading
+          align="center"
+          eyebrow="Pricing"
+          title={
+            <>
+              Start free.{" "}
+              <TextAnimate
+                as="span"
+                by="word"
+                animation="blurInUp"
+                startOnView
+                once
+                className="font-serif italic font-normal"
+                > Grow when ready.</TextAnimate>
+            </>
+          }
+          lede="Transparent INR pricing, billed monthly or yearly. Cancel anytime."
+        />
 
-        {/* Billing Period Toggle */}
-        <div className="flex items-center gap-2 p-1 bg-zinc-100 rounded-full border border-zinc-200/80 w-fit">
-          <button
-            onClick={() => setBillingPeriod("monthly")}
-            className={cn(
-              "px-4 py-2 text-xs font-semibold rounded-full transition-all duration-300",
-              billingPeriod === "monthly"
-                ? "bg-white text-black shadow-sm"
-                : "text-zinc-500 hover:text-zinc-950",
-            )}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBillingPeriod("yearly")}
-            className={cn(
-              "px-4 py-2 text-xs font-semibold rounded-full transition-all duration-300 flex items-center gap-1.5",
-              billingPeriod === "yearly"
-                ? "bg-white text-black shadow-sm"
-                : "text-zinc-500 hover:text-zinc-950",
-            )}
-          >
-            Yearly
-            <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-              -28%
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Pricing Cards */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch mb-24">
-        {PLANS_DATA.map((plan, idx) => {
-          const isNormal = plan.name === "Normal";
-          const currentPrice =
-            billingPeriod === "monthly" ? plan.price : plan.yearlyPrice;
-          const billingLabel =
-            plan.price === 0
-              ? ""
-              : billingPeriod === "monthly"
-                ? "/mo"
-                : "/mo (billed yearly)";
-
-          return (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="flex"
-            >
-              <Card
+        {/* Billing toggle */}
+        <div className="mt-8 flex justify-center">
+          <div className="flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1">
+            {(["monthly", "yearly"] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setBillingPeriod(p)}
+                aria-pressed={billingPeriod === p}
                 className={cn(
-                  "w-full rounded-3xl p-8 flex flex-col justify-between border shadow-xs transition-all relative overflow-hidden bg-white",
-                  isNormal
-                    ? "border-zinc-950 ring-1 ring-zinc-950"
-                    : "border-zinc-200 hover:border-zinc-300",
+                  "flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300",
+                  billingPeriod === p
+                    ? "bg-[#14160f] text-white"
+                    : "text-zinc-500 hover:text-zinc-900",
                 )}
               >
-                {isNormal && (
-                  <span className="absolute top-4 right-4 bg-zinc-950 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                    <Flame size={12} className="fill-white" /> Recommended
+                {p === "monthly" ? "Monthly" : "Yearly"}
+                {p === "yearly" && (
+                  <span className="rounded-full bg-[#178a4c] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    -20%
                   </span>
                 )}
+              </button>
+            ))}
+          </div>
+        </div>
 
-                <div>
-                  <CardHeader className="p-0 mb-6">
-                    <CardTitle className="text-2xl font-bold text-zinc-900">
-                      {plan.name}
-                    </CardTitle>
-                    <CardDescription className="text-zinc-500 mt-2 text-sm">
-                      {plan.description}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="p-0">
-                    <div className="flex items-baseline gap-1 mb-6">
-                      <span className="text-4xl md:text-5xl font-extrabold text-zinc-900">
-                        ₹{currentPrice.toLocaleString()}
-                      </span>
-                      {billingLabel && (
-                        <span className="text-zinc-500 text-sm font-medium">
-                          {billingLabel}
-                        </span>
+        {/* Cards */}
+        <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3 items-stretch">
+          {PLANS_DATA.map((plan, idx) => {
+            const featured = plan.recommended;
+            const currentPrice =
+              billingPeriod === "monthly" ? plan.price : plan.yearlyPrice;
+            return (
+              <motion.div
+                key={plan.name}
+                initial={reduce ? false : { opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                className="flex"
+              >
+                <div
+                  className={cn(
+                    "relative flex w-full flex-col justify-between overflow-hidden rounded-3xl border p-7 transition-transform duration-300 hover:-translate-y-1",
+                    featured
+                      ? "border-[#14160f] bg-[#14160f] text-white shadow-[0_24px_60px_-30px_rgba(20,22,15,0.6)]"
+                      : "border-zinc-200 bg-white",
+                  )}
+                >
+                  {featured && (
+                    <span className="absolute right-5 top-5 rounded-full bg-[#178a4c] px-3 py-1 text-[11px] font-bold text-white">
+                      Most popular
+                    </span>
+                  )}
+                  <div>
+                    <h3
+                      className={cn(
+                        "text-lg font-semibold",
+                        featured ? "text-white" : "text-zinc-900",
                       )}
+                    >
+                      {plan.name}
+                    </h3>
+                    <p
+                      className={cn(
+                        "mt-1.5 min-h-10 text-[13px] leading-relaxed",
+                        featured ? "text-zinc-300" : "text-zinc-500",
+                      )}
+                    >
+                      {plan.description}
+                    </p>
+                    <div className="mt-5 flex items-baseline gap-1.5">
+                      <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                          key={billingPeriod + plan.name}
+                          initial={reduce ? false : { opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={reduce ? undefined : { opacity: 0, y: -8 }}
+                          transition={{ duration: 0.25 }}
+                          className="text-4xl font-bold tracking-tight tabular-nums"
+                        >
+                          ₹{currentPrice.toLocaleString("en-IN")}
+                        </motion.span>
+                      </AnimatePresence>
+                      <span
+                        className={cn(
+                          "text-xs font-medium",
+                          featured ? "text-zinc-400" : "text-zinc-500",
+                        )}
+                      >
+                        {plan.price === 0
+                          ? "forever"
+                          : billingPeriod === "monthly"
+                            ? "/mo"
+                            : "/mo, billed yearly"}
+                      </span>
                     </div>
-
-                    {billingPeriod === "yearly" && plan.yearlyBilledAmount && (
-                      <p className="text-xs text-zinc-400 font-medium -mt-4 mb-6">
-                        Billed ₹{plan.yearlyBilledAmount.toLocaleString()}{" "}
-                        annually
+                    {billingPeriod === "yearly" && plan.yearlyBilledAmount > 0 && (
+                      <p
+                        className={cn(
+                          "mt-1 text-xs",
+                          featured ? "text-zinc-400" : "text-zinc-400",
+                        )}
+                      >
+                        Billed ₹{plan.yearlyBilledAmount.toLocaleString("en-IN")} annually
                       </p>
                     )}
-
-                    <Button
+                    <button
                       onClick={handleGoogleLogin}
                       className={cn(
-                        "w-full h-11 rounded-xl font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-all active:scale-98",
-                        isNormal
-                          ? "bg-zinc-950 hover:bg-zinc-800 text-white"
-                          : "bg-white hover:bg-zinc-50 text-zinc-950 border border-zinc-200",
+                        "mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all active:scale-[0.98]",
+                        featured
+                          ? "bg-[#178a4c] text-white hover:bg-[#12703d]"
+                          : "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900",
                       )}
                     >
                       {plan.cta}
-                      <ArrowUpRight size={16} />
-                    </Button>
-
-                    <Separator className="my-6 bg-zinc-100" />
-
-                    <ul className="space-y-4">
+                      <ArrowUpRight className="size-4" />
+                    </button>
+                    <ul className="mt-6 space-y-3">
                       {plan.features.map((feature) => (
                         <li
                           key={feature}
-                          className="flex items-start gap-3 text-sm text-zinc-600 font-medium"
+                          className={cn(
+                            "flex items-start gap-2.5 text-[13px] font-medium",
+                            featured ? "text-zinc-200" : "text-zinc-600",
+                          )}
                         >
-                          <Check className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                          <Check className="mt-0.5 size-4 shrink-0 text-[#178a4c]" strokeWidth={2.5} />
                           <span>{feature}</span>
                         </li>
                       ))}
                       {plan.notIncluded.map((feature) => (
                         <li
                           key={feature}
-                          className="flex items-start gap-3 text-sm text-zinc-400 font-medium"
+                          className="flex items-start gap-2.5 text-[13px] font-medium text-zinc-400"
                         >
-                          <X className="size-4 text-zinc-300 shrink-0 mt-0.5" />
+                          <X className="mt-0.5 size-4 shrink-0 text-zinc-300" strokeWidth={2} />
                           <span>{feature}</span>
                         </li>
                       ))}
                     </ul>
-                  </CardContent>
+                  </div>
                 </div>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
+              </motion.div>
+            );
+          })}
+        </div>
 
-      {/* Comparison Table */}
-      {showComparisonTable && (
-        <div className="max-w-5xl mx-auto mb-24 hidden md:block">
-          <div className="text-center md:text-left mb-12">
-            <h3 className="text-2xl md:text-3xl font-bold text-zinc-900">
-              Compare plans & features
-            </h3>
-            <p className="text-zinc-500 mt-2">
-              Find the right fit for your custom workflows.
-            </p>
-          </div>
-
-          <div className="border border-zinc-200 rounded-3xl overflow-hidden shadow-xs bg-white">
-            <table className="w-full border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-zinc-200 bg-zinc-50/50">
-                  <th className="px-8 py-5 font-bold text-zinc-800 w-1/3">
-                    Feature
-                  </th>
-
-                  <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center">
-                    Free
-                  </th>
-
-                  <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center bg-zinc-50/30">
-                    Growth
-                  </th>
-
-                  <th className="px-6 py-5 font-bold text-zinc-800 w-2/9 text-center">
-                    Pro
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {Object.entries(comparisonData).map(([category, rows]) => (
-                  <React.Fragment key={category}>
-                    {/* Category */}
-                    <tr className="bg-zinc-50/80 border-b border-zinc-200">
-                      <td
-                        colSpan={4}
-                        className="px-8 py-3 font-bold text-[11px] text-zinc-400 tracking-wider uppercase"
+        {/* Comparison table */}
+        {showComparisonTable && (
+          <div className="mx-auto mt-20 hidden max-w-5xl md:block">
+            <div className="mb-8">
+              <h3 className="text-2xl font-semibold tracking-tight">
+                Compare plans <span className="font-serif italic font-normal">in detail.</span>
+              </h3>
+            </div>
+            <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white">
+              <table className="w-full border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-200">
+                    <th className="w-1/3 px-8 py-5 font-semibold text-zinc-700">Feature</th>
+                    {["Free", "Growth", "Pro"].map((p) => (
+                      <th
+                        key={p}
+                        className={cn(
+                          "w-2/9 px-6 py-5 text-center font-semibold",
+                          p === "Growth" ? "bg-[#f2faf5] text-zinc-950" : "text-zinc-700",
+                        )}
                       >
-                        {category === "storefront" && "Storefront"}
-
-                        {category === "conversations" && "Conversations"}
-
-                        {category === "commerce" && "Commerce"}
-
-                        {category === "analytics" && "Analytics"}
-
-                        {category === "advanced" && "Advanced Features"}
-                      </td>
-                    </tr>
-
-                    {/* Features */}
-                    {rows.map((row) => (
-                      <tr
-                        key={row.feature}
-                        className="border-b border-zinc-100 hover:bg-zinc-50/30 transition-colors"
-                      >
-                        {/* Feature name */}
-                        <td className="px-8 py-4 font-semibold text-zinc-700">
-                          {row.feature}
-                        </td>
-
-                        {/* Free */}
-                        <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                          {renderComparisonValue(row.free)}
-                        </td>
-
-                        {/* Growth */}
-                        <td className="px-6 py-4 text-center font-bold text-zinc-950 bg-zinc-50/10">
-                          {renderComparisonValue(row.growth)}
-                        </td>
-
-                        {/* Pro */}
-                        <td className="px-6 py-4 text-center font-medium text-zinc-500">
-                          {renderComparisonValue(row.pro)}
+                        {p}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(comparisonData).map(([category, rows]) => (
+                    <React.Fragment key={category}>
+                      <tr className="border-b border-zinc-100 bg-zinc-50/70">
+                        <td
+                          colSpan={4}
+                          className="px-8 py-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400"
+                        >
+                          {category === "storefront" && "Storefront"}
+                          {category === "conversations" && "Conversations"}
+                          {category === "commerce" && "Commerce"}
+                          {category === "analytics" && "Analytics"}
+                          {category === "advanced" && "Advanced Features"}
                         </td>
                       </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+                      {rows.map((row) => (
+                        <tr
+                          key={row.feature}
+                          className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50/50"
+                        >
+                          <td className="px-8 py-3.5 font-medium text-zinc-700">
+                            {row.feature}
+                          </td>
+                          <td className="px-6 py-3.5 text-center text-zinc-500">
+                            {renderComparisonValue(row.free)}
+                          </td>
+                          <td className="bg-[#f2faf5]/60 px-6 py-3.5 text-center font-semibold text-zinc-950">
+                            {renderComparisonValue(row.growth)}
+                          </td>
+                          <td className="px-6 py-3.5 text-center text-zinc-500">
+                            {renderComparisonValue(row.pro)}
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -280,11 +273,10 @@ const renderComparisonValue = (
 ) => {
   if (typeof value === "boolean") {
     return value ? (
-      <Check className="mx-auto size-4 text-emerald-600" strokeWidth={2.5} />
+      <Check className="mx-auto size-4 text-[#178a4c]" strokeWidth={2.5} />
     ) : (
       <X className="mx-auto size-4 text-zinc-300" strokeWidth={2} />
     );
   }
-
   return value ?? "—";
 };

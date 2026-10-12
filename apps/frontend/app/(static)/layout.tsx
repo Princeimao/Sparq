@@ -1,12 +1,31 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/lib/store";
-import { Loader2 } from "lucide-react";
+import { motion, useScroll, useSpring, useReducedMotion } from "motion/react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { navigationData } from "@/constant";
+
+function ScrollProgress() {
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 28,
+    mass: 0.4,
+  });
+  useEffect(() => {
+    if (reduce) scaleX.set(1);
+  }, [reduce, scaleX]);
+  if (reduce) return null;
+  return (
+    <motion.div
+      aria-hidden
+      style={{ scaleX }}
+      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-[#178a4c]"
+    />
+  );
+}
 
 export default function StaticLayout({
   children,
@@ -33,7 +52,7 @@ export default function StaticLayout({
 
   return (
     <div className="relative min-h-screen bg-black">
-      <div className="relative z-16 bg-background rounded-b-[32px] md:rounded-b-[48px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.3)] pb-12">
+      <div className="relative z-16 overflow-clip bg-background rounded-b-[32px] md:rounded-b-[48px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.3)]">
         <Header navigationData={navigationData} />
         {children}
       </div>

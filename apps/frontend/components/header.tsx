@@ -48,14 +48,14 @@ const CollaborateButton = ({
   <Button
     onClick={onClick}
     className={cn(
-      "relative text-sm font-medium rounded-full h-10 p-1 ps-4 pe-12 group transition-all duration-500 hover:ps-12 hover:pe-4 w-fit overflow-hidden cursor-pointer",
+      "relative text-sm font-medium rounded-full h-10 p-1 ps-4 pe-12 group transition-all duration-500 hover:ps-12 hover:pe-4 w-fit overflow-hidden cursor-pointer bg-[#14160f] text-white hover:bg-[#178a4c]",
       className,
     )}
   >
     <span className="relative z-10 transition-all duration-500">
       {isAuthenticated ? "Dashboard" : "Get Started"}
     </span>
-    <span className="absolute right-1 w-8 h-8 bg-background text-foreground rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-36px)] group-hover:rotate-45">
+    <span className="absolute right-1 w-8 h-8 bg-white/15 text-white rounded-full flex items-center justify-center transition-all duration-500 group-hover:right-[calc(100%-36px)] group-hover:rotate-45">
       <ArrowUpRight size={16} />
     </span>
   </Button>
@@ -119,18 +119,18 @@ const Header = ({ className }: HeaderProps) => {
           <Image
             src="/logo.svg"
             alt="Sparq Logo"
-            width={38}
-            height={38}
+            width={34}
+            height={34}
             priority
           />
-          <span className="font-bold text-xl tracking-tight hidden sm:inline-block">
-            Sparq<span className="text-sky-500">.</span>
+          <span className="font-bold text-xl tracking-tight hidden sm:inline-block text-zinc-900">
+            Sparq<span className="text-[#178a4c]">.</span>
           </span>
         </Link>
 
         {/* Desktop Navigation with Hover Dropdowns */}
         <div className="hidden lg:block">
-          <NavigationMenu className="bg-muted/80 backdrop-blur-md p-1 rounded-full border border-border/40">
+          <NavigationMenu className="bg-white/70 backdrop-blur-md p-1 rounded-full border border-zinc-200/70">
             <NavigationMenuList className="flex items-center gap-1">
               {/* Features Dropdown */}
               <NavigationMenuItem>
@@ -144,7 +144,7 @@ const Header = ({ className }: HeaderProps) => {
                       href={feat.href}
                       className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/80 transition-colors group/item"
                     >
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors mt-0.5">
+                      <div className="p-2 rounded-lg bg-zinc-900 text-white transition-colors mt-0.5">
                         <feat.icon className="size-4" />
                       </div>
                       <div>
@@ -173,7 +173,7 @@ const Header = ({ className }: HeaderProps) => {
                       href={integ.href}
                       className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/80 transition-colors group/item"
                     >
-                      <div className="p-2 rounded-lg bg-sky-500/10 text-sky-500 group-hover/item:bg-sky-500 group-hover/item:text-white transition-colors mt-0.5">
+                      <div className="p-2 rounded-lg bg-[#178a4c]/10 text-[#178a4c] transition-colors mt-0.5">
                         <integ.icon className="size-4" />
                       </div>
                       <div>

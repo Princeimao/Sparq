@@ -8,15 +8,15 @@ import { ArrowUpRight } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white w-full border-t border-zinc-900">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 md:py-24 py-8">
-        <div className="flex flex-col gap-16">
-          <div className="flex flex-col gap-12">
+    <footer className="bg-black text-white w-full">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 md:py-20 py-10">
+        <div className="flex flex-col gap-14">
+          <div className="flex flex-col gap-10">
             <div className="grid grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-100 ease-in-out fill-mode-both">
               <div className="col-span-12 md:col-span-3">
-                <p className="w-full text-zinc-400">
-                  Stay updated with the latest news, promotions, and exclusive
-                  offers.
+                <p className="w-full text-zinc-400 text-sm leading-relaxed">
+                  Product updates and WhatsApp automation tips, once in a while.
+                  No spam.
                 </p>
               </div>
               <div className="md:col-span-1" />
@@ -27,8 +27,8 @@ export default function Footer() {
                       required
                       type="email"
                       name="email"
-                      placeholder="enter your email"
-                      className="rounded-full h-full py-2 text-white border-zinc-800 bg-zinc-900/50 focus-visible:ring-zinc-700 placeholder:text-zinc-500"
+                      placeholder="you@business.com"
+                      className="rounded-full h-full py-2.5 text-white border-white/15 bg-white/5 focus-visible:ring-emerald-400/50 placeholder:text-zinc-500"
                     />
                     <Button
                       type="submit"
@@ -38,8 +38,8 @@ export default function Footer() {
                     </Button>
                   </form>
                   <p className="text-sm flex-1 text-zinc-400">
-                    By subscribing, you agree to receive our promotional emails.
-                    You can unsubscribe at any time.
+                    By subscribing, you agree to receive our emails. Unsubscribe
+                    anytime.
                   </p>
                 </div>
               </div>
@@ -48,8 +48,11 @@ export default function Footer() {
           </div>
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-7 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-100 ease-in-out fill-mode-both">
-              <h2 className="sm:text-5xl text-3xl font-medium mb-6 text-white">
-                Ready to start your journey with us?
+              <h2 className="sm:text-5xl text-3xl font-semibold mb-6 text-white tracking-tight text-balance">
+                Ready to put WhatsApp{" "}
+                <span className="font-serif italic font-normal text-emerald-200">
+                  to work?
+                </span>
               </h2>
               <Button className="relative text-sm font-medium rounded-full h-12 p-1 ps-6 pe-14 bg-white text-black hover:bg-zinc-200 group transition-all duration-500 hover:ps-14 hover:pe-6 w-fit overflow-hidden cursor-pointer">
                 <span className="relative z-10 transition-all duration-500">

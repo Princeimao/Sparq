@@ -1,0 +1,101 @@
+{
+    "version":  1,
+    "project":  {
+                    "name":  "Sparq",
+                    "productType":  "whatsapp-saas-marketing",
+                    "stack":  [
+                                  "nextjs-16",
+                                  "react-19",
+                                  "tailwind-4",
+                                  "motion",
+                                  "animejs",
+                                  "shadcn"
+                              ]
+                },
+    "sources":  {
+                    "tokens":  [
+
+                               ],
+                    "components":  [
+
+                                   ],
+                    "assets":  [
+
+                               ],
+                    "instructions":  [
+
+                                     ]
+                },
+    "design":  {
+                   "colorMode":  "light",
+                   "colors":  {
+                                  "brand":  "#178a4c",
+                                  "paper":  "#faf9f6",
+                                  "brandDeep":  "#0c2b1d",
+                                  "ink":  "#131511"
+                              },
+                   "typography":  {
+                                      "accent":  "Instrument Serif italic",
+                                      "sans":  "Geist/Inter"
+                                  },
+                   "spacing":  {
+
+                               },
+                   "radius":  {
+
+                              },
+                   "shadows":  {
+
+                               },
+                   "motion":  {
+                                  "reducedMotion":  "required",
+                                  "libraries":  [
+                                                    "animejs",
+                                                    "motion"
+                                                ]
+                              },
+                   "density":  "unknown"
+               },
+    "components":  {
+                       "installed":  [
+
+                                     ],
+                       "preferredPrimitives":  [
+                                                   "shadcn",
+                                                   "21st:felipemenezes098/hero-05",
+                                                   "21st:solaceui/chat-messages-2"
+                                               ],
+                       "patterns":  [
+
+                                    ]
+                   },
+    "constraints":  {
+                        "must":  [
+                                     "off-white paper background",
+                                     "near-black typography",
+                                     "green accent sparingly",
+                                     "no invented stats/testimonials/logos",
+                                     "reduced-motion support",
+                                     "mobile-first responsive"
+                                 ],
+                        "avoid":  [
+                                      "generic gradient blobs",
+                                      "glassmorphism excess",
+                                      "floating purposeless icons",
+                                      "centered-everything sections",
+                                      "scroll hijacking"
+                                  ]
+                    },
+    "decisions":  [
+                      {
+                          "summary":  "Minimal off-white editorial marketing site; asymmetric hero with live booking simulation; dark green final CTA. Rejected Midnight Console (dark/dev-tool mismatch) and Pastel Panels (generic AI-SaaS look).",
+                          "direction":  "Editorial Ledger",
+                          "id":  "landing-2026-10",
+                          "date":  "2026-10-10"
+                      }
+                  ],
+    "evidence":  [
+
+                 ],
+    "generatedAt":  "2026-10-10T11:06:03.978Z"
+}
