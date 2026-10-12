@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import {
   SidebarGroup,
@@ -85,20 +86,31 @@ export function NavMain({ items }: { items: NavItem[] }) {
       return (
         <SidebarGroup key={item.title} className="p-0">
           <SidebarMenu>
-            <SidebarMenuItem>
+            <SidebarMenuItem className="relative">
+              {isActive && (
+                <motion.span
+                  layoutId="sparq-nav-pill"
+                  transition={{ type: "spring", stiffness: 500, damping: 38 }}
+                  className="absolute inset-0 rounded-xl bg-ink"
+                  aria-hidden
+                />
+              )}
               <SidebarMenuButton
                 tooltip={item.title}
                 className={cn(
-                  "rounded-lg text-sm px-3 py-2 h-9 ",
+                  "relative rounded-xl text-sm px-3 py-2 h-9 bg-transparent",
                   isActive
-                    ? "bg-primary hover:bg-primary dark:bg-blue-500 text-white dark:hover:bg-blue-500 hover:text-white"
-                    : "",
+                    ? "text-white hover:text-white font-medium"
+                    : "hover:bg-ink/5",
                 )}
               >
                 {item.icon && <item.icon />}
                 <a href={itemHref} className="w-full">
                   {item.title}
                 </a>
+                {isActive && (
+                  <span className="size-1.5 rounded-full bg-brand shrink-0" aria-hidden />
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

@@ -3,6 +3,14 @@ import { env } from "./env";
 
 const redisUrl = env.REDIS_URL;
 
+// Log only host:port (never credentials) so env mismatches are visible at boot.
+try {
+  const u = new URL(redisUrl);
+  console.log(`Redis connecting to ${u.hostname}:${u.port || "6379"}`);
+} catch {
+  console.log("Redis connecting (REDIS_URL is not a parseable URL)");
+}
+
 export const redis = new Redis(redisUrl, {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,

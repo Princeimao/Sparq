@@ -14,6 +14,7 @@ import {
   Plus,
   ShoppingBag,
   StickyNote,
+  Tag,
   Trash2,
   User,
 } from "lucide-react";
@@ -53,6 +54,13 @@ const STATUS_STYLES: Record<string, string> = {
   FAILED: "bg-red-500/10 text-red-600 border-red-500/20",
   CAPTURED: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
 };
+
+const TAG_PRESETS = ["VIP", "Regular", "New", "Corporate", "Family"];
+
+function tagsOf(customer: CustomerDetail | null): string[] {
+  const raw = (customer?.customFields as { tags?: unknown } | null)?.tags;
+  return Array.isArray(raw) ? raw.filter((t): t is string => typeof t === "string") : [];
+}
 
 function StatusBadge({ status }: { status: string }) {
   return (
@@ -97,6 +105,8 @@ export default function CustomerDetailPage({
   const [modules, setModules] = useState<string[]>(["products", "bookings"]);
   const [notes, setNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [savingTags, setSavingTags] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressForm, setAddressForm] = useState({
     label: "",
@@ -118,6 +128,7 @@ export default function CustomerDetailPage({
       ]);
       setCustomer(detail);
       setNotes(detail.notes ?? "");
+      setTags(tagsOf(detail));
       if (profile && profile.enabledModules.length > 0) {
         setModules(normalizeModules(profile.enabledModules));
       }
@@ -143,6 +154,24 @@ export default function CustomerDetailPage({
       toast.error("Could not save notes");
     } finally {
       setSavingNotes(false);
+    }
+  };
+
+  const saveTags = async (next: string[]) => {
+    if (!customer) return;
+    setTags(next);
+    setSavingTags(true);
+    try {
+      const updated = await updateCustomer(customer.id, {
+        customFields: { ...((customer.customFields as Record<string, unknown> | null) ?? {}), tags: next },
+      });
+      setCustomer({ ...customer, customFields: updated.customFields });
+      toast.success("Tags updated");
+    } catch {
+      setTags(tagsOf(customer));
+      toast.error("Could not save tags");
+    } finally {
+      setSavingTags(false);
     }
   };
 
@@ -275,7 +304,7 @@ export default function CustomerDetailPage({
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             <Card className="rounded-2xl">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
@@ -323,6 +352,48 @@ export default function CustomerDetailPage({
                 <Button size="sm" onClick={saveNotes} disabled={savingNotes}>
                   {savingNotes ? "Saving…" : "Save notes"}
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl md:col-span-2 xl:col-span-1">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Tag className="size-4 text-brand" /> Tags
+                </CardTitle>
+                <CardDescription>
+                  Segments you can filter and greet by on WhatsApp.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex flex-wrap gap-1.5">
+                  {TAG_PRESETS.map((t) => {
+                    const on = tags.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        disabled={savingTags}
+                        onClick={() =>
+                          saveTags(on ? tags.filter((x) => x !== t) : [...tags, t])
+                        }
+                        aria-pressed={on}
+                        className={cn(
+                          "text-xs px-2.5 py-1.5 rounded-full border transition-colors disabled:opacity-50",
+                          on
+                            ? "border-ink bg-ink text-white"
+                            : "border-zinc-200 hover:border-zinc-500",
+                        )}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+                {tags.length > 0 && (
+                  <p className="text-[11px] text-muted-foreground">
+                    {tags.length} tag{tags.length === 1 ? "" : "s"} · taps save instantly
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>

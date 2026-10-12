@@ -1,11 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useReducedMotion } from "framer-motion";
-import { animate, stagger } from "animejs";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  Check,
+  Clock,
+  Globe,
+  Loader2,
+  MapPin,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { formatINR, getPlans } from "@/lib/billing";
 import {
   BUSINESS_TYPE_META,
@@ -37,26 +47,40 @@ interface PlanOption {
 
 const STATIC_PLANS: PlanOption[] = [
   { id: "FREE", name: "Free", monthlyPaise: 0, blurb: "For trying things out" },
-  { id: "GROWTH", name: "Growth", monthlyPaise: 99900, blurb: "For growing businesses" },
-  { id: "PRO", name: "Pro", monthlyPaise: 249900, blurb: "The complete Sparq experience" },
+  {
+    id: "GROWTH",
+    name: "Growth",
+    monthlyPaise: 99900,
+    blurb: "For growing businesses",
+  },
+  {
+    id: "PRO",
+    name: "Pro",
+    monthlyPaise: 249900,
+    blurb: "The complete Sparq experience",
+  },
 ];
 
-const STEP_COPY: Record<StepId, { title: string; subtitle: string }> = {
+const STEP_COPY: Record<StepId, { eyebrow: string; title: string; subtitle: string }> = {
   business: {
+    eyebrow: "Your business",
     title: "Tell us about your business",
-    subtitle: "This personalizes your assistant and dashboard",
+    subtitle: "This personalizes your assistant and dashboard.",
   },
   use: {
-    title: "How do you plan to use Sparq?",
-    subtitle: "Select everything you want Sparq to handle",
+    eyebrow: "Your toolkit",
+    title: "How will you use Sparq?",
+    subtitle: "Select everything you want Sparq to handle.",
   },
   details: {
+    eyebrow: "The specifics",
     title: "A few more details",
-    subtitle: "Only what your business actually needs",
+    subtitle: "Only what your business actually needs.",
   },
   plan: {
+    eyebrow: "Your plan",
     title: "Choose your plan",
-    subtitle: "Start free, upgrade anytime",
+    subtitle: "Start free, upgrade anytime.",
   },
 };
 
@@ -72,7 +96,8 @@ function profileToDraft(profile: Record<string, unknown>): OnboardingDraft {
   const get = (k: string) => (profile[k] as never) ?? undefined;
   return {
     businessName: (get("businessName") as string) || undefined,
-    businessType: (get("businessType") as OnboardingDraft["businessType"]) ?? undefined,
+    businessType:
+      (get("businessType") as OnboardingDraft["businessType"]) ?? undefined,
     enabledModules: (get("enabledModules") as BusinessModule[]) ?? [],
     addressLine1: (get("addressLine1") as string) || undefined,
     city: (get("city") as string) || undefined,
@@ -80,15 +105,17 @@ function profileToDraft(profile: Record<string, unknown>): OnboardingDraft {
     pincode: (get("pincode") as string) || undefined,
     locationMode: (get("locationMode") as LocationMode) ?? undefined,
     serviceArea: (get("serviceArea") as string) || undefined,
-    operatingHours: (get("operatingHours") as Record<string, OperatingDay>) ?? undefined,
+    operatingHours:
+      (get("operatingHours") as Record<string, OperatingDay>) ?? undefined,
     staffCount: (get("staffCount") as number) ?? undefined,
   };
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 export default function OnboardingPage() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const bodyRef = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -100,7 +127,7 @@ export default function OnboardingPage() {
   const [missing, setMissing] = useState<string[]>([]);
   const [done, setDone] = useState(false);
 
-  // Steps are dynamic: the details step only exists when needed.
+  // Dynamic steps based on current business setup
   const steps = useMemo<StepId[]>(() => {
     const list: StepId[] = ["business", "use"];
     if (showDetailsStep(draft)) list.push("details");
@@ -109,7 +136,6 @@ export default function OnboardingPage() {
   }, [draft]);
   const step = steps[Math.min(stepIndex, steps.length - 1)] as StepId;
 
-  // Boot: resume draft; completed profiles go straight to the app.
   useEffect(() => {
     Promise.all([
       getOnboarding().catch(() => null),
@@ -121,7 +147,9 @@ export default function OnboardingPage() {
           return;
         }
         if (profile) {
-          setDraft(profileToDraft(profile as unknown as Record<string, unknown>));
+          setDraft(
+            profileToDraft(profile as unknown as Record<string, unknown>),
+          );
         }
         if (fetchedPlans && fetchedPlans.length > 0) {
           const byId = new Map(fetchedPlans.map((p) => [p.id, p]));
@@ -143,57 +171,19 @@ export default function OnboardingPage() {
       .finally(() => setLoading(false));
   }, [router]);
 
-  // Anime.js: staggered entrance on every step change.
-  useEffect(() => {
-    if (loading || reduceMotion) return;
-    const root = bodyRef.current;
-    if (!root) return;
-    const rows = root.querySelectorAll("[data-ob-row]");
-    if (rows.length === 0) return;
-    const anim = animate(rows, {
-      opacity: [0, 1],
-      translateY: [14, 0],
-      duration: 450,
-      delay: stagger(65),
-      ease: "outCubic",
-    });
-    return () => {
-      anim.revert();
-    };
-  }, [step, loading, reduceMotion]);
-
-  // Anime.js: success pop before routing out.
-  useEffect(() => {
-    if (!done || reduceMotion) return;
-    const el = document.querySelector("[data-ob-success]");
-    if (!el) return;
-    const anim = animate(el, {
-      scale: [0.4, 1],
-      opacity: [0, 1],
-      duration: 550,
-      ease: "outBack(1.6)",
-    });
-    return () => {
-      anim.revert();
-    };
-  }, [done, reduceMotion]);
-
-  const popCheck = (e: React.MouseEvent<HTMLElement>) => {
-    if (reduceMotion) return;
-    const check = e.currentTarget.querySelector("[data-ob-check]");
-    if (check) animate(check, { scale: [0.5, 1], duration: 280, ease: "outBack(2)" });
-  };
-
-  const persist = useCallback(async (next: OnboardingDraft, nextStep: number) => {
-    setSaving(true);
-    try {
-      await saveOnboardingDraft({ ...next, step: nextStep });
-    } catch {
-      toast.error("Couldn't save progress just now");
-    } finally {
-      setSaving(false);
-    }
-  }, []);
+  const persist = useCallback(
+    async (next: OnboardingDraft, nextStep: number) => {
+      setSaving(true);
+      try {
+        await saveOnboardingDraft({ ...next, step: nextStep });
+      } catch {
+        toast.error("Couldn't save progress just now");
+      } finally {
+        setSaving(false);
+      }
+    },
+    [],
+  );
 
   const go = (nextIndex: number) => {
     setMissing([]);
@@ -201,8 +191,7 @@ export default function OnboardingPage() {
     void persist(draft, nextIndex);
   };
 
-  const toggleModule = (e: React.MouseEvent<HTMLElement>, module: BusinessModule) => {
-    popCheck(e);
+  const toggleModule = (module: BusinessModule) => {
     const current = draft.enabledModules ?? [];
     setDraft({
       ...draft,
@@ -220,14 +209,17 @@ export default function OnboardingPage() {
       await persist(draft, stepIndex);
       await completeOnboarding(draft);
       setDone(true);
-      // Brief success beat, then route by plan choice.
       setTimeout(() => {
         if (plan === "FREE") router.replace("/dashboard");
         else router.replace(`/subscription?plan=${plan}`);
-      }, 1400);
+      }, 1500);
     } catch (error: unknown) {
       const data = (
-        error as { response?: { data?: { data?: { missing?: string[] }; error?: string } } }
+        error as {
+          response?: {
+            data?: { data?: { missing?: string[] }; error?: string };
+          };
+        }
       )?.response?.data;
       const missingFields = data?.data?.missing ?? [];
       if (missingFields.length > 0) {
@@ -250,287 +242,504 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="pt-10 space-y-3" aria-label="Loading setup">
-        <div className="h-3 w-40 bg-zinc-100 rounded animate-pulse" />
-        <div className="h-7 w-72 bg-zinc-100 rounded animate-pulse" />
-        <div className="h-64 rounded-2xl border border-zinc-200 animate-pulse" />
+      <div className="pt-10 space-y-5 max-w-xl" aria-label="Loading setup">
+        <div className="h-3 w-32 bg-ink/10 rounded-full animate-pulse" />
+        <div className="h-10 w-72 bg-ink/10 rounded-2xl animate-pulse" />
+        <div className="h-72 rounded-[2rem] bg-ink/[0.04] animate-pulse" />
       </div>
     );
   }
 
   if (done) {
     return (
-      <div className="pt-20 flex flex-col items-center text-center">
-        <div
-          data-ob-success
-          className="size-16 rounded-full bg-zinc-900 text-white flex items-center justify-center"
+      <div className="pt-16 flex flex-col items-center text-center max-w-md mx-auto">
+        <motion.div
+          initial={reduceMotion ? false : { scale: 0.4, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+          className="size-20 rounded-full bg-ink text-white flex items-center justify-center"
         >
-          <Check className="size-8" aria-hidden />
-        </div>
-        <h1 className="text-2xl font-semibold tracking-tight mt-5">You&apos;re all set</h1>
-        <p className="text-sm text-zinc-500 mt-1.5">
-          {plan === "FREE" ? "Taking you to your dashboard…" : "Taking you to checkout…"}
-        </p>
+          <Check className="size-9" aria-hidden />
+        </motion.div>
+        <motion.h1
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: EASE }}
+          className="text-4xl font-semibold tracking-[-0.03em] mt-7 text-ink"
+        >
+          You&apos;re all set
+        </motion.h1>
+        <motion.p
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-[15px] text-ink/55 mt-2"
+        >
+          {plan === "FREE"
+            ? "Preparing your dashboard experience…"
+            : "Redirecting to checkout…"}
+        </motion.p>
       </div>
     );
   }
 
   const copy = STEP_COPY[step];
+  const pct = Math.round(((stepIndex + 1) / steps.length) * 100);
+  const canAdvance = !(
+    saving ||
+    (step === "business" && (!draft.businessName?.trim() || !draft.businessType))
+  );
 
   return (
-    <div ref={bodyRef} className="pt-6 sm:pt-10">
-      {/* Progress */}
-      <p className="text-[13px] text-zinc-500">
-        Step {stepIndex + 1} of {steps.length}
-      </p>
-      <div className="flex gap-1.5 mt-2" aria-hidden>
-        {steps.map((s, i) => (
-          <span
-            key={s}
-            className={cn(
-              "h-[3px] flex-1 rounded-full transition-colors duration-300",
-              i <= stepIndex ? "bg-zinc-900" : "bg-zinc-200",
-            )}
+    <div className="relative pt-6 sm:pt-10 pb-12">
+      {/* Ambient washes */}
+      {!reduceMotion && (
+        <>
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -top-28 -right-28 size-80 rounded-full bg-brand/15 blur-[110px]"
+            animate={{ x: [0, -24, 0], y: [0, 24, 0] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
           />
-        ))}
-      </div>
-
-      {/* Heading */}
-      <h1 data-ob-row className="text-[22px] font-semibold tracking-tight mt-5">
-        {copy.title}
-      </h1>
-      <p data-ob-row className="text-sm text-zinc-500 mt-1">
-        {copy.subtitle}
-      </p>
-
-      {/* Card */}
-      <div data-ob-row className="mt-5 rounded-2xl border border-zinc-200 bg-white overflow-hidden">
-        {step === "business" && (
-          <StepBusiness
-            draft={draft}
-            onName={(v) => setDraft({ ...draft, businessName: v })}
-            onType={(t) => {
-              const next = { ...draft, businessType: t };
-              if ((next.enabledModules ?? []).length === 0 && t) {
-                next.enabledModules = defaultModulesFor(t);
-              }
-              setDraft(next);
-            }}
-            onPop={popCheck}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute top-64 -left-32 size-80 rounded-full bg-[#e3ddc9]/70 blur-[110px]"
+            animate={{ x: [0, 24, 0], y: [0, -20, 0] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
           />
-        )}
+        </>
+      )}
 
-        {step === "use" && <StepUse draft={draft} onToggle={toggleModule} />}
-
-        {step === "details" && (
-          <StepDetails
-            draft={draft}
-            onPatch={(patch) => setDraft({ ...draft, ...patch })}
-            missing={missing}
+      <div className="relative">
+        {/* Progress */}
+        <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/45">
+          <span className="text-brand">
+            {copy.eyebrow} · {stepIndex + 1}/{steps.length}
+          </span>
+          <span className="tabular-nums">{pct}%</span>
+        </div>
+        <div
+          className="mt-2.5 h-1.5 rounded-full bg-ink/10 overflow-hidden"
+          role="progressbar"
+          aria-valuenow={pct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-brand to-ink"
+            initial={false}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.6, ease: EASE }}
           />
-        )}
+        </div>
 
-        {step === "plan" && (
-          <StepPlan plans={plans} plan={plan} onPick={(e, id) => { popCheck(e); setPlan(id); }} />
-        )}
+        {/* Heading */}
+        <motion.div
+          key={step}
+          initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: EASE }}
+          className="mt-8"
+        >
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-[-0.03em] leading-[1.02] text-ink">
+            {copy.title}
+          </h1>
+          <p className="text-[15px] text-ink/55 mt-2.5 leading-relaxed">
+            {copy.subtitle}
+          </p>
+        </motion.div>
+
+        {/* Step body — open canvas, no container */}
+        <div className="mt-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={reduceMotion ? false : { opacity: 0, x: 32 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: -32 }}
+              transition={{ duration: 0.3, ease: EASE }}
+            >
+              {step === "business" && (
+                <StepBusiness
+                  draft={draft}
+                  reduceMotion={!!reduceMotion}
+                  onName={(v) => setDraft({ ...draft, businessName: v })}
+                  onType={(t) => {
+                    const next = { ...draft, businessType: t };
+                    if ((next.enabledModules ?? []).length === 0 && t) {
+                      next.enabledModules = defaultModulesFor(t);
+                    }
+                    setDraft(next);
+                  }}
+                />
+              )}
+
+              {step === "use" && (
+                <StepUse
+                  draft={draft}
+                  reduceMotion={!!reduceMotion}
+                  onToggle={toggleModule}
+                />
+              )}
+
+              {step === "details" && (
+                <StepDetails
+                  draft={draft}
+                  reduceMotion={!!reduceMotion}
+                  onPatch={(patch) => setDraft({ ...draft, ...patch })}
+                  missing={missing}
+                />
+              )}
+
+              {step === "plan" && (
+                <StepPlan
+                  plans={plans}
+                  plan={plan}
+                  reduceMotion={!!reduceMotion}
+                  onPick={setPlan}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-zinc-100 bg-zinc-50/70 px-4 py-3">
+        <div className="mt-9 flex items-center justify-between gap-3">
           <div>
             {stepIndex > 0 && (
               <button
                 onClick={() => go(stepIndex - 1)}
-                className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors px-2 py-1.5"
+                className="group inline-flex h-12 items-center gap-2 px-2 text-sm font-medium text-ink/60 hover:text-ink transition-colors"
               >
+                <span className="flex size-9 items-center justify-center rounded-full bg-ink/[0.06] transition-transform duration-300 group-hover:-translate-x-0.5">
+                  <ArrowLeft className="size-4" aria-hidden />
+                </span>
                 Back
               </button>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {step !== "plan" && (
               <button
                 onClick={() => go(stepIndex + 1)}
-                className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors px-3 py-1.5"
+                className="h-12 px-4 text-sm font-medium text-ink/50 hover:text-ink transition-colors"
               >
                 Skip
               </button>
             )}
             {step === "plan" ? (
-              <button
+              <PrimaryPill
                 onClick={finish}
                 disabled={!plan || finishing || saving}
-                className="flex items-center gap-1.5 bg-zinc-900 text-white text-sm font-medium rounded-lg px-4 py-2 hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {finishing ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
-                ) : null}
-                {plan === "FREE" ? "Go to dashboard" : "Continue to payment"}
-                <ArrowRight className="size-4" aria-hidden />
-              </button>
+                busy={finishing}
+                label={plan === "FREE" ? "Go to dashboard" : "Continue to payment"}
+              />
             ) : (
-              <button
+              <PrimaryPill
                 onClick={() => go(stepIndex + 1)}
-                disabled={
-                  saving ||
-                  (step === "business" &&
-                    (!draft.businessName?.trim() || !draft.businessType))
-                }
-                className="bg-zinc-900 text-white text-sm font-medium rounded-lg px-4 py-2 hover:bg-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+                disabled={!canAdvance}
+                busy={false}
+                label="Next"
+              />
             )}
           </div>
         </div>
-      </div>
 
-      {step === "business" &&
-        (!draft.businessName?.trim() || !draft.businessType) && (
-          <p className="text-xs text-zinc-400 mt-2.5">
-            Add your business name and pick a type to continue — or Skip.
+        {step === "business" &&
+          (!draft.businessName?.trim() || !draft.businessType) && (
+            <p className="text-xs text-ink/40 mt-4">
+              Add your business name and pick a type to continue — or Skip.
+            </p>
+          )}
+        {saving && (
+          <p className="text-xs text-ink/40 mt-3 animate-pulse">
+            Saving changes…
           </p>
         )}
-      {saving && (
-        <p className="text-xs text-zinc-400 mt-2.5">Saving…</p>
-      )}
+      </div>
     </div>
   );
 }
 
-// ─── Rows ─────────────────────────────────────────────────────────────────────
+// ─── Landing-style primary pill ──────────────────────────────────────────────
 
-function SelectRow({
-  selected,
+function PrimaryPill({
   onClick,
-  title,
-  blurb,
-  multi,
+  disabled,
+  busy,
+  label,
 }: {
-  selected: boolean;
-  onClick: (e: React.MouseEvent<HTMLElement>) => void;
-  title: string;
-  blurb?: string;
-  multi?: boolean;
+  onClick: () => void;
+  disabled: boolean;
+  busy: boolean;
+  label: string;
 }) {
   return (
-    <button
+    <motion.button
+      whileTap={disabled ? undefined : { scale: 0.97 }}
       onClick={onClick}
-      aria-pressed={selected}
-      className={cn(
-        "w-full flex items-center justify-between gap-4 px-4 py-3.5 text-left transition-colors",
-        "hover:bg-zinc-50 focus-visible:outline-none focus-visible:bg-zinc-50",
-        selected && "bg-zinc-50/70",
-      )}
+      disabled={disabled}
+      className="group inline-flex h-12 items-center gap-2 rounded-full bg-ink pl-6 pr-2 text-sm font-medium text-white transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
     >
-      <span className="min-w-0">
-        <span className="block text-[15px] font-medium text-zinc-900">{title}</span>
-        {blurb && (
-          <span className="block text-[13px] text-zinc-500 mt-0.5 leading-snug">
-            {blurb}
-          </span>
-        )}
+      {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : label}
+      <span className="flex size-9 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 group-hover:translate-x-0.5">
+        <ArrowRight className="size-4" aria-hidden />
       </span>
-      <span
-        data-ob-check
-        aria-hidden
-        className={cn(
-          "shrink-0 size-5 flex items-center justify-center border transition-colors",
-          multi ? "rounded-md" : "rounded-full",
-          selected
-            ? "border-zinc-900 bg-zinc-900 text-white"
-            : "border-zinc-300 bg-white",
-        )}
-      >
-        {selected && <Check className={multi ? "size-3.5" : "size-3"} />}
-      </span>
-    </button>
+    </motion.button>
   );
 }
 
-// ─── Step: business ───────────────────────────────────────────────────────────
+// ─── Eyebrow label ───────────────────────────────────────────────────────────
+
+function Eyebrow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/45">
+      <span className="text-brand">{icon}</span>
+      {children}
+    </span>
+  );
+}
+
+// ─── Filled borderless input ─────────────────────────────────────────────────
+
+function FillInput(
+  props: React.InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean },
+) {
+  const { invalid, className, ...rest } = props;
+  return (
+    <input
+      {...rest}
+      className={cn(
+        "w-full rounded-2xl bg-ink/[0.05] px-5 py-4 text-[15px] font-medium text-ink",
+        "placeholder:text-ink/30 placeholder:font-normal",
+        "transition-colors duration-200 hover:bg-ink/[0.07]",
+        "focus:outline-none focus:bg-ink/[0.08]",
+        invalid && "bg-red-500/10 focus:bg-red-500/15",
+        className,
+      )}
+    />
+  );
+}
+
+// ─── Selection tile (tonal, borderless) ──────────────────────────────────────
+
+function Tile({
+  selected,
+  onClick,
+  index,
+  reduceMotion,
+  className,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  index: number;
+  reduceMotion: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(index * 0.045, 0.4), duration: 0.4, ease: EASE }}
+      whileTap={{ scale: 0.98 }}
+      className={cn(
+        "text-left rounded-[1.4rem] p-5 transition-colors duration-250",
+        "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+        selected
+          ? "bg-ink text-white"
+          : "bg-ink/[0.045] hover:bg-ink/[0.08] text-ink",
+        className,
+      )}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+function CheckDot({ selected, dark }: { selected: boolean; dark?: boolean }) {
+  return (
+    <motion.span
+      aria-hidden
+      initial={false}
+      animate={selected ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0.9 }}
+      transition={{ type: "spring", stiffness: 500, damping: 26 }}
+      className={cn(
+        "shrink-0 size-6 flex items-center justify-center rounded-full",
+        selected
+          ? dark
+            ? "bg-white text-ink"
+            : "bg-brand text-white"
+          : "bg-ink/10 text-transparent",
+      )}
+    >
+      <Check className="size-3.5" strokeWidth={3} />
+    </motion.span>
+  );
+}
+
+// ─── Step 1: Business ────────────────────────────────────────────────────────
 
 function StepBusiness({
   draft,
+  reduceMotion,
   onName,
   onType,
-  onPop,
 }: {
   draft: OnboardingDraft;
+  reduceMotion: boolean;
   onName: (v: string) => void;
   onType: (t: OnboardingDraft["businessType"]) => void;
-  onPop: (e: React.MouseEvent<HTMLElement>) => void;
 }) {
   return (
-    <div>
-      <div data-ob-row className="px-4 py-4 border-b border-zinc-100">
-        <label
-          htmlFor="ob-business-name"
-          className="block text-[13px] font-medium text-zinc-700 mb-1.5"
-        >
+    <div className="space-y-8">
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+        className="space-y-3"
+      >
+        <Eyebrow icon={<Building2 className="size-3.5" aria-hidden />}>
           Business name
-        </label>
-        <input
-          id="ob-business-name"
-          placeholder="e.g. Glow Salon"
-          value={draft.businessName ?? ""}
-          onChange={(e) => onName(e.target.value)}
-          autoComplete="organization"
-          className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/5"
-        />
-      </div>
-      <div className="divide-y divide-zinc-100 max-h-[380px] overflow-y-auto">
-        {BUSINESS_TYPE_META.map((t) => (
-          <div key={t.id} data-ob-row>
-            <SelectRow
-              selected={draft.businessType === t.id}
-              onClick={(e) => {
-                onPop(e);
-                onType(t.id);
-              }}
-              title={t.label}
-              blurb={t.blurb}
-            />
-          </div>
-        ))}
+        </Eyebrow>
+        <div className="relative">
+          <FillInput
+            id="ob-business-name"
+            placeholder="e.g. Glow Salon & Spa"
+            value={draft.businessName ?? ""}
+            onChange={(e) => onName(e.target.value)}
+            autoComplete="organization"
+            aria-label="Business name"
+          />
+          {draft.businessName?.trim() && (
+            <motion.span
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center size-6 rounded-full bg-brand/15 text-brand"
+            >
+              <Check className="size-3.5" strokeWidth={3} />
+            </motion.span>
+          )}
+        </div>
+      </motion.div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Eyebrow icon={<Sparkles className="size-3.5" aria-hidden />}>
+            Select category
+          </Eyebrow>
+          <span className="text-xs text-ink/40">Pick what describes you best</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[400px] overflow-y-auto pr-1 -mr-1 pb-1">
+          {BUSINESS_TYPE_META.map((t, i) => {
+            const isSelected = draft.businessType === t.id;
+            return (
+              <Tile
+                key={t.id}
+                selected={isSelected}
+                index={i}
+                reduceMotion={reduceMotion}
+                onClick={() => onType(t.id)}
+              >
+                <span className="flex items-start justify-between gap-3">
+                  <span
+                    className={cn(
+                      "text-[15px] font-semibold tracking-tight",
+                      isSelected ? "text-white" : "text-ink",
+                    )}
+                  >
+                    {t.label}
+                  </span>
+                  <CheckDot selected={isSelected} dark />
+                </span>
+                {t.blurb && (
+                  <span
+                    className={cn(
+                      "block text-[13px] mt-1.5 leading-relaxed",
+                      isSelected ? "text-white/60" : "text-ink/50",
+                    )}
+                  >
+                    {t.blurb}
+                  </span>
+                )}
+              </Tile>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 }
 
-// ─── Step: use ────────────────────────────────────────────────────────────────
+// ─── Step 2: Use Case ────────────────────────────────────────────────────────
 
 function StepUse({
   draft,
+  reduceMotion,
   onToggle,
 }: {
   draft: OnboardingDraft;
-  onToggle: (e: React.MouseEvent<HTMLElement>, m: BusinessModule) => void;
+  reduceMotion: boolean;
+  onToggle: (m: BusinessModule) => void;
 }) {
   return (
-    <div className="divide-y divide-zinc-100">
-      {MODULE_META.map((m) => (
-        <div key={m.id} data-ob-row>
-          <SelectRow
-            multi
-            selected={hasModule(draft, m.id)}
-            onClick={(e) => onToggle(e, m.id)}
-            title={m.label}
-            blurb={m.blurb}
-          />
-        </div>
-      ))}
+    <div className="space-y-2.5">
+      {MODULE_META.map((m, i) => {
+        const selected = hasModule(draft, m.id);
+        return (
+          <Tile
+            key={m.id}
+            selected={selected}
+            index={i}
+            reduceMotion={reduceMotion}
+            onClick={() => onToggle(m.id)}
+            className="w-full"
+          >
+            <span className="flex items-center justify-between gap-4">
+              <span className="min-w-0">
+                <span
+                  className={cn(
+                    "block text-[15px] font-semibold tracking-tight",
+                    selected ? "text-white" : "text-ink",
+                  )}
+                >
+                  {m.label}
+                </span>
+                {m.blurb && (
+                  <span
+                    className={cn(
+                      "block text-[13px] mt-1 leading-relaxed",
+                      selected ? "text-white/60" : "text-ink/50",
+                    )}
+                  >
+                    {m.blurb}
+                  </span>
+                )}
+              </span>
+              <CheckDot selected={selected} dark />
+            </span>
+          </Tile>
+        );
+      })}
     </div>
   );
 }
 
-// ─── Step: details (only rendered when needed) ────────────────────────────────
+// ─── Step 3: Details ─────────────────────────────────────────────────────────
 
 function StepDetails({
   draft,
+  reduceMotion,
   onPatch,
   missing,
 }: {
   draft: OnboardingDraft;
+  reduceMotion: boolean;
   onPatch: (patch: Partial<OnboardingDraft>) => void;
   missing: string[];
 }) {
@@ -541,241 +750,345 @@ function StepDetails({
   const hours = draft.operatingHours ?? {};
 
   const missingSet = new Set(missing);
-  const err = (f: string) =>
-    missingSet.has(f) ? "text-red-600 text-xs mt-1" : "hidden";
+  const hasErr = (f: string) => missingSet.has(f);
+
+  const section = (delay: number) =>
+    reduceMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 14 } as const,
+          animate: { opacity: 1, y: 0 } as const,
+          transition: { delay, duration: 0.4, ease: EASE } as const,
+        };
 
   return (
-    <div>
+    <div className="space-y-8">
       {missing.length > 0 && (
-        <div data-ob-row className="px-4 py-3 border-b border-zinc-100 bg-red-50/60">
-          <p className="text-[13px] font-medium text-red-700">
-            Still needed: {missing.join(", ")}
+        <motion.div
+          {...section(0)}
+          className="px-5 py-4 rounded-[1.4rem] bg-red-500/10 flex items-center gap-3"
+        >
+          <span className="relative flex size-2 shrink-0">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-60 animate-ping" />
+            <span className="relative inline-flex size-2 rounded-full bg-red-500" />
+          </span>
+          <p className="text-[13px] font-semibold text-red-700">
+            Missing details required: {missing.join(", ")}
           </p>
-        </div>
+        </motion.div>
       )}
 
+      {/* Location */}
       {showLocation && (
-        <div data-ob-row className="border-b border-zinc-100">
-          <p className="px-4 pt-3.5 text-[13px] font-medium text-zinc-700">
-            Where do services happen?
-          </p>
-          <div className="divide-y divide-zinc-100 mt-1">
+        <motion.div {...section(0.02)} className="space-y-3">
+          <Eyebrow icon={<MapPin className="size-3.5" aria-hidden />}>
+            Service delivery
+          </Eyebrow>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {(
               [
-                { id: "AT_BUSINESS", title: "At my business" },
-                { id: "AT_CUSTOMER", title: "At the customer's place" },
-                { id: "BOTH", title: "Both" },
-              ] as Array<{ id: LocationMode; title: string }>
-            ).map((opt) => (
-              <SelectRow
-                key={opt.id}
-                selected={draft.locationMode === opt.id}
-                onClick={() => onPatch({ locationMode: opt.id })}
-                title={opt.title}
-              />
-            ))}
+                { id: "AT_BUSINESS", title: "At business", blurb: "They come to you" },
+                { id: "AT_CUSTOMER", title: "At customer", blurb: "You go to them" },
+                { id: "BOTH", title: "Both", blurb: "Either works" },
+              ] as Array<{ id: LocationMode; title: string; blurb: string }>
+            ).map((opt, i) => {
+              const isSelected = draft.locationMode === opt.id;
+              return (
+                <Tile
+                  key={opt.id}
+                  selected={isSelected}
+                  index={i}
+                  reduceMotion={reduceMotion}
+                  onClick={() => onPatch({ locationMode: opt.id })}
+                  className="p-4 text-center"
+                >
+                  <span
+                    className={cn(
+                      "block text-sm font-semibold",
+                      isSelected ? "text-white" : "text-ink",
+                    )}
+                  >
+                    {opt.title}
+                  </span>
+                  <span
+                    className={cn(
+                      "block text-xs mt-0.5",
+                      isSelected ? "text-white/60" : "text-ink/50",
+                    )}
+                  >
+                    {opt.blurb}
+                  </span>
+                </Tile>
+              );
+            })}
           </div>
-        </div>
+        </motion.div>
       )}
 
+      {/* Address + area */}
       {(showAddress || showArea) && (
-        <div data-ob-row className="px-4 py-4 border-b border-zinc-100 space-y-3">
+        <motion.div {...section(0.06)} className="space-y-6">
           {showAddress && (
-            <>
-              <div>
-                <label htmlFor="ob-addr" className="block text-[13px] font-medium text-zinc-700 mb-1.5">
-                  Business address
-                </label>
-                <input
-                  id="ob-addr"
-                  placeholder="Street address"
-                  value={draft.addressLine1 ?? ""}
-                  onChange={(e) => onPatch({ addressLine1: e.target.value })}
-                  autoComplete="street-address"
-                  className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
-                />
-                <p className={err("addressLine1")}>Required to finish setup.</p>
-              </div>
-              <div className="grid grid-cols-3 gap-2.5">
+            <div className="space-y-3">
+              <Eyebrow icon={<Building2 className="size-3.5" aria-hidden />}>
+                Physical address
+              </Eyebrow>
+              <div className="space-y-2.5">
                 <div>
-                  <input
-                    placeholder="City"
-                    aria-label="City"
-                    value={draft.city ?? ""}
-                    onChange={(e) => onPatch({ city: e.target.value })}
-                    className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                  <FillInput
+                    id="ob-addr"
+                    placeholder="Street address"
+                    aria-label="Street address"
+                    value={draft.addressLine1 ?? ""}
+                    onChange={(e) => onPatch({ addressLine1: e.target.value })}
+                    autoComplete="street-address"
+                    invalid={hasErr("addressLine1")}
                   />
-                  <p className={err("city")}>Required.</p>
+                  {hasErr("addressLine1") && (
+                    <Err>Street address is required.</Err>
+                  )}
                 </div>
-                <div>
-                  <input
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div>
+                    <FillInput
+                      placeholder="City"
+                      aria-label="City"
+                      value={draft.city ?? ""}
+                      onChange={(e) => onPatch({ city: e.target.value })}
+                      invalid={hasErr("city")}
+                      className="px-4 py-3.5 text-sm"
+                    />
+                    {hasErr("city") && <Err>Required.</Err>}
+                  </div>
+                  <FillInput
                     placeholder="State"
                     aria-label="State"
                     value={draft.state ?? ""}
                     onChange={(e) => onPatch({ state: e.target.value })}
-                    className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+                    className="px-4 py-3.5 text-sm"
                   />
-                </div>
-                <div>
-                  <input
-                    placeholder="Pincode"
-                    aria-label="Pincode"
-                    inputMode="numeric"
-                    value={draft.pincode ?? ""}
-                    onChange={(e) => onPatch({ pincode: e.target.value })}
-                    className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
-                  />
-                  <p className={err("pincode")}>6-digit.</p>
+                  <div>
+                    <FillInput
+                      placeholder="Pincode"
+                      aria-label="Pincode"
+                      inputMode="numeric"
+                      value={draft.pincode ?? ""}
+                      onChange={(e) => onPatch({ pincode: e.target.value })}
+                      invalid={hasErr("pincode")}
+                      className="px-4 py-3.5 text-sm tabular-nums"
+                    />
+                    {hasErr("pincode") && <Err>6 digits.</Err>}
+                  </div>
                 </div>
               </div>
-            </>
-          )}
-          {showArea && (
-            <div>
-              <label htmlFor="ob-area" className="block text-[13px] font-medium text-zinc-700 mb-1.5">
-                Service area
-              </label>
-              <input
-                id="ob-area"
-                placeholder="e.g. Andheri to Bandra, Mumbai"
-                value={draft.serviceArea ?? ""}
-                onChange={(e) => onPatch({ serviceArea: e.target.value })}
-                className="w-full rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
-              />
-              <p className={err("serviceArea")}>Required for home visits.</p>
             </div>
           )}
-        </div>
+
+          {showArea && (
+            <div className="space-y-3">
+              <Eyebrow icon={<Globe className="size-3.5" aria-hidden />}>
+                Service region
+              </Eyebrow>
+              <FillInput
+                id="ob-area"
+                placeholder="e.g. Andheri West, Mumbai"
+                value={draft.serviceArea ?? ""}
+                onChange={(e) => onPatch({ serviceArea: e.target.value })}
+                invalid={hasErr("serviceArea")}
+              />
+              {hasErr("serviceArea") && <Err>Service area is required.</Err>}
+            </div>
+          )}
+        </motion.div>
       )}
 
+      {/* Hours + staff */}
       {showHours && (
-        <div data-ob-row className="px-4 py-4 border-b border-zinc-100">
-          <p className="text-[13px] font-medium text-zinc-700 mb-2">Weekly hours</p>
-          <div className="rounded-xl border border-zinc-200 divide-y divide-zinc-100">
-            {WEEK_DAYS.map((day) => {
-              const value: OperatingDay = hours[day.id] ?? { open: "09:00", close: "18:00" };
-              const closed = !!value.closed;
-              return (
-                <div key={day.id} className="flex items-center gap-2.5 px-3 py-2">
-                  <span className="text-[13px] w-9 text-zinc-600">{day.label}</span>
-                  <button
-                    onClick={() =>
-                      onPatch({
-                        operatingHours: { ...hours, [day.id]: { ...value, closed: !closed } },
-                      })
-                    }
-                    aria-pressed={closed}
+        <motion.div {...section(0.1)} className="space-y-6">
+          <div className="space-y-3">
+            <Eyebrow icon={<Clock className="size-3.5" aria-hidden />}>
+              Weekly hours
+            </Eyebrow>
+            <div className="space-y-1.5">
+              {WEEK_DAYS.map((day, i) => {
+                const value: OperatingDay = hours[day.id] ?? {
+                  open: "09:00",
+                  close: "18:00",
+                };
+                const closed = !!value.closed;
+                return (
+                  <motion.div
+                    key={day.id}
+                    initial={reduceMotion ? false : { opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + Math.min(i * 0.03, 0.2), duration: 0.35, ease: EASE }}
                     className={cn(
-                      "text-xs px-2 py-1 rounded-md border transition-colors",
-                      closed
-                        ? "border-zinc-200 text-zinc-400"
-                        : "border-zinc-900 bg-zinc-900 text-white",
+                      "flex items-center justify-between gap-3 rounded-2xl px-4 py-2.5 transition-colors duration-200",
+                      closed ? "bg-ink/[0.025]" : "bg-ink/[0.05]",
                     )}
                   >
-                    {closed ? "Closed" : "Open"}
-                  </button>
-                  {!closed && (
-                    <div className="flex items-center gap-1.5 ml-auto">
-                      <input
-                        type="time"
-                        aria-label={`${day.label} opens`}
-                        value={value.open}
-                        onChange={(e) =>
+                    <span
+                      className={cn(
+                        "text-[13px] font-semibold w-10",
+                        closed ? "text-ink/35" : "text-ink",
+                      )}
+                    >
+                      {day.label}
+                    </span>
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() =>
                           onPatch({
-                            operatingHours: { ...hours, [day.id]: { ...value, open: e.target.value } },
+                            operatingHours: {
+                              ...hours,
+                              [day.id]: { ...value, closed: !closed },
+                            },
                           })
                         }
-                        className="text-[13px] rounded-lg border border-zinc-200 px-1.5 py-1 focus:outline-none focus:border-zinc-400"
-                      />
-                      <span className="text-zinc-400 text-xs">–</span>
-                      <input
-                        type="time"
-                        aria-label={`${day.label} closes`}
-                        value={value.close}
-                        onChange={(e) =>
-                          onPatch({
-                            operatingHours: { ...hours, [day.id]: { ...value, close: e.target.value } },
-                          })
-                        }
-                        className="text-[13px] rounded-lg border border-zinc-200 px-1.5 py-1 focus:outline-none focus:border-zinc-400"
-                      />
+                        aria-pressed={closed}
+                        className={cn(
+                          "text-[11px] font-semibold px-3 py-1.5 rounded-full transition-colors duration-200",
+                          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                          closed
+                            ? "bg-ink/10 text-ink/45"
+                            : "bg-brand text-white",
+                        )}
+                      >
+                        {closed ? "Closed" : "Open"}
+                      </button>
+                      {!closed && (
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="time"
+                            aria-label={`${day.label} opens`}
+                            value={value.open}
+                            onChange={(e) =>
+                              onPatch({
+                                operatingHours: {
+                                  ...hours,
+                                  [day.id]: { ...value, open: e.target.value },
+                                },
+                              })
+                            }
+                            className="text-xs font-medium rounded-xl bg-white/70 px-2 py-1.5 text-ink focus:outline-none focus:bg-white"
+                          />
+                          <span className="text-ink/30 text-xs">–</span>
+                          <input
+                            type="time"
+                            aria-label={`${day.label} closes`}
+                            value={value.close}
+                            onChange={(e) =>
+                              onPatch({
+                                operatingHours: {
+                                  ...hours,
+                                  [day.id]: { ...value, close: e.target.value },
+                                },
+                              })
+                            }
+                            className="text-xs font-medium rounded-xl bg-white/70 px-2 py-1.5 text-ink focus:outline-none focus:bg-white"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  </motion.div>
+                );
+              })}
+            </div>
+            {hasErr("operatingHours") && <Err>Operating hours are required.</Err>}
           </div>
-          <p className={err("operatingHours")}>Required to finish setup.</p>
-          <div className="mt-3">
-            <label htmlFor="ob-staff" className="block text-[13px] font-medium text-zinc-700 mb-1.5">
-              Team size <span className="text-zinc-400 font-normal">(optional)</span>
-            </label>
-            <input
+
+          <div className="space-y-3">
+            <Eyebrow icon={<Users className="size-3.5" aria-hidden />}>
+              Team size <span className="normal-case font-normal">(optional)</span>
+            </Eyebrow>
+            <FillInput
               id="ob-staff"
               type="number"
               min={0}
-              placeholder="e.g. 4"
+              placeholder="e.g. 5"
               value={draft.staffCount ?? ""}
               onChange={(e) =>
-                onPatch({ staffCount: e.target.value === "" ? undefined : Number(e.target.value) })
+                onPatch({
+                  staffCount:
+                    e.target.value === "" ? undefined : Number(e.target.value),
+                })
               }
-              className="w-32 rounded-xl border border-zinc-200 px-3.5 py-2.5 text-[15px] focus:outline-none focus:border-zinc-400"
+              className="max-w-40 tabular-nums"
             />
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );
 }
 
-// ─── Step: plan ───────────────────────────────────────────────────────────────
+function Err({ children }: { children: React.ReactNode }) {
+  return <p className="text-xs font-medium text-red-600 mt-1.5 px-1">{children}</p>;
+}
+
+// ─── Step 4: Plan ────────────────────────────────────────────────────────────
 
 function StepPlan({
   plans,
   plan,
+  reduceMotion,
   onPick,
 }: {
   plans: PlanOption[];
   plan: PlanOption["id"] | null;
-  onPick: (e: React.MouseEvent<HTMLElement>, id: PlanOption["id"]) => void;
+  reduceMotion: boolean;
+  onPick: (id: PlanOption["id"]) => void;
 }) {
   return (
-    <div className="divide-y divide-zinc-100">
-      {plans.map((p) => (
-        <div key={p.id} data-ob-row>
-          <button
-            onClick={(e) => onPick(e, p.id)}
-            aria-pressed={plan === p.id}
-            className={cn(
-              "w-full flex items-center justify-between gap-4 px-4 py-4 text-left transition-colors",
-              "hover:bg-zinc-50 focus-visible:outline-none focus-visible:bg-zinc-50",
-              plan === p.id && "bg-zinc-50/70",
-            )}
+    <div className="space-y-2.5">
+      {plans.map((p, i) => {
+        const selected = plan === p.id;
+        return (
+          <Tile
+            key={p.id}
+            selected={selected}
+            index={i}
+            reduceMotion={reduceMotion}
+            onClick={() => onPick(p.id)}
+            className="w-full"
           >
-            <span className="min-w-0">
-              <span className="flex items-baseline gap-2">
-                <span className="text-[15px] font-medium text-zinc-900">{p.name}</span>
-                <span className="text-[13px] text-zinc-500">
-                  {p.monthlyPaise === 0 ? "Free forever" : `${formatINR(p.monthlyPaise)}/mo`}
+            <span className="flex items-center justify-between gap-4">
+              <span className="min-w-0">
+                <span className="flex items-baseline gap-2.5">
+                  <span
+                    className={cn(
+                      "text-base font-semibold tracking-tight",
+                      selected ? "text-white" : "text-ink",
+                    )}
+                  >
+                    {p.name}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-[13px] font-medium tabular-nums",
+                      selected ? "text-brand-ink/80" : "text-brand",
+                    )}
+                  >
+                    {p.monthlyPaise === 0
+                      ? "Free forever"
+                      : `${formatINR(p.monthlyPaise)}/mo`}
+                  </span>
+                </span>
+                <span
+                  className={cn(
+                    "block text-[13px] mt-1",
+                    selected ? "text-white/60" : "text-ink/50",
+                  )}
+                >
+                  {p.blurb}
                 </span>
               </span>
-              <span className="block text-[13px] text-zinc-500 mt-0.5">{p.blurb}</span>
+              <CheckDot selected={selected} dark />
             </span>
-            <span
-              data-ob-check
-              aria-hidden
-              className={cn(
-                "shrink-0 size-5 rounded-full border flex items-center justify-center transition-colors",
-                plan === p.id
-                  ? "border-zinc-900 bg-zinc-900 text-white"
-                  : "border-zinc-300 bg-white",
-              )}
-            >
-              {plan === p.id && <Check className="size-3" />}
-            </span>
-          </button>
-        </div>
-      ))}
+          </Tile>
+        );
+      })}
     </div>
   );
 }

@@ -13,6 +13,7 @@ import { Loader2, Plus, Package, Edit, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ProductDrawer } from "@/components/products/ProductDrawer";
+import { ProductWizard } from "@/components/wizards/ProductWizard";
 import { ProductCardComp } from "@/components/ProductCardComp";
 
 export interface Product {
@@ -29,6 +30,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const fetchProducts = useCallback(async () => {
@@ -77,7 +79,7 @@ export default function ProductsPage() {
 
   const openCreateDrawer = () => {
     setSelectedProduct(null);
-    setDrawerOpen(true);
+    setWizardOpen(true);
   };
 
   const openUpdateDrawer = (product: Product) => {
@@ -193,6 +195,11 @@ export default function ProductsPage() {
         onOpenChange={setDrawerOpen}
         product={selectedProduct}
         onSave={handleSaveProduct}
+      />
+      <ProductWizard
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+        onCreated={(p) => setProducts((prev) => [p, ...prev])}
       />
     </div>
   );

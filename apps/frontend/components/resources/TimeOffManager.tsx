@@ -13,9 +13,40 @@ import {
   type TimeOff,
 } from "@/lib/resources";
 
+function toLocalInput(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function atDay(base: Date, dayOffset: number, hour: number, minute = 0): Date {
+  const d = new Date(base);
+  d.setDate(d.getDate() + dayOffset);
+  d.setHours(hour, minute, 0, 0);
+  return d;
+}
+
+/** One-tap ranges that fill the leave form — no calendar maths required. */
+function presets(now: Date): { label: string; start: string; end: string }[] {
+  const day = now.getDay(); // 0 = Sun
+  const untilSaturday = (6 - day + 7) % 7;
+  return [
+    { label: "Today", start: toLocalInput(atDay(now, 0, 0)), end: toLocalInput(atDay(now, 0, 23, 59)) },
+    { label: "Tomorrow", start: toLocalInput(atDay(now, 1, 0)), end: toLocalInput(atDay(now, 1, 23, 59)) },
+    {
+      label: "This weekend",
+      start: toLocalInput(atDay(now, untilSaturday, 0)),
+      end: toLocalInput(atDay(now, untilSaturday + 1, 23, 59)),
+    },
+    {
+      label: "Next 7 days",
+      start: toLocalInput(atDay(now, 0, 0)),
+      end: toLocalInput(atDay(now, 6, 23, 59)),
+    },
+  ];
+}
+
 /** Leave / holiday blocks that close a provider or resource for a period. */
-export function TimeOffManager({ scope }: { scope: { staffId?: string; resourceId?: string } }) {
-  const [items, setItems] = useState<TimeOff[]>([]);
+export function TimeOffManager({ scope }: { scope: { staffId?: string; resourceId?: string } }) {  const [items, setItems] = useState<TimeOff[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ start: "", end: "", reason: "" });
@@ -101,6 +132,18 @@ export function TimeOffManager({ scope }: { scope: { staffId?: string; resourceI
       )}
 
       <form onSubmit={submit} className="rounded-xl border p-3 space-y-2.5 bg-card">
+        <div className="flex flex-wrap gap-1.5">
+          {presets(new Date()).map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, start: p.start, end: p.end }))}
+              className="text-[11px] px-2 py-1 rounded-full border border-zinc-200 hover:border-zinc-900 transition-colors"
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
             <Label htmlFor="to-start" className="text-xs">From</Label>

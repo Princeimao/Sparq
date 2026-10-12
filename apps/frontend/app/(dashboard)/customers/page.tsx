@@ -31,11 +31,13 @@ import {
   deleteCustomer,
   type Customer,
 } from "@/lib/customers";
+import { CustomerWizard } from "@/components/wizards/CustomerWizard";
 
 export default function CustomersPage() {
   const reduceMotion = useReducedMotion();
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -122,7 +124,7 @@ export default function CustomersPage() {
           </p>
         </div>
         <Button
-          onClick={() => router.push("/customers/new")}
+          onClick={() => setWizardOpen(true)}
           className="py-5 rounded-2xl self-start sm:self-auto"
         >
           <Plus className="size-4 mr-2" />
@@ -167,7 +169,7 @@ export default function CustomersPage() {
           </p>
           {!debouncedSearch && (
             <Button
-              onClick={() => router.push("/customers/new")}
+              onClick={() => setWizardOpen(true)}
               variant="outline"
             >
               <Plus className="size-4 mr-2" />
@@ -291,6 +293,12 @@ export default function CustomersPage() {
           </div>
         </div>
       )}
+
+      <CustomerWizard
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+        onCreated={(c) => setCustomers((prev) => [c, ...prev])}
+      />
 
     </div>
   );

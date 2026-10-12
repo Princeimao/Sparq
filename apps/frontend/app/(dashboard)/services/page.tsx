@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ServiceDrawer } from "@/components/services/ServiceDrawer";
+import { ServiceWizard } from "@/components/wizards/ServiceWizard";
 
 export interface Service {
   id: string;
@@ -64,6 +65,7 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
   const fetchServices = useCallback(async () => {
@@ -127,7 +129,7 @@ export default function ServicesPage() {
           </p>
         </div>
         <Button
-          onClick={() => { setSelectedService(null); setDrawerOpen(true); }}
+          onClick={() => { setSelectedService(null); setWizardOpen(true); }}
           className="py-5 rounded-2xl"
         >
           <Plus className="size-4 mr-2" />
@@ -150,7 +152,7 @@ export default function ServicesPage() {
           <p className="text-sm text-muted-foreground mt-1 mb-4">
             Add your first service to get started.
           </p>
-          <Button onClick={() => { setSelectedService(null); setDrawerOpen(true); }} variant="outline">
+          <Button onClick={() => { setSelectedService(null); setWizardOpen(true); }} variant="outline">
             <Plus className="size-4 mr-2" />
             Add Service
           </Button>
@@ -273,6 +275,11 @@ export default function ServicesPage() {
         onOpenChange={setDrawerOpen}
         service={selectedService}
         onSave={handleSave}
+      />
+      <ServiceWizard
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+        onCreated={(s) => setServices((prev) => [s, ...prev])}
       />
     </div>
   );

@@ -30,6 +30,8 @@ import {
 } from "@/lib/resources";
 import { StaffDrawer } from "@/components/resources/StaffDrawer";
 import { ResourceDrawer } from "@/components/resources/ResourceDrawer";
+import { StaffWizard } from "@/components/wizards/StaffWizard";
+import { ResourceWizard } from "@/components/wizards/ResourceWizard";
 import { cn } from "@/lib/utils";
 
 const KIND_ICON: Record<string, typeof Armchair> = {
@@ -49,6 +51,8 @@ export default function ResourcesPage() {
   const [loading, setLoading] = useState(true);
   const [staffOpen, setStaffOpen] = useState(false);
   const [resourceOpen, setResourceOpen] = useState(false);
+  const [staffWizardOpen, setStaffWizardOpen] = useState(false);
+  const [resourceWizardOpen, setResourceWizardOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
   const [selectedResource, setSelectedResource] = useState<SpaceResource | null>(null);
 
@@ -135,7 +139,7 @@ export default function ResourcesPage() {
             className="rounded-xl"
             onClick={() => {
               setSelectedResource(null);
-              setResourceOpen(true);
+              setResourceWizardOpen(true);
             }}
           >
             <Plus className="size-4 mr-2" /> Add space
@@ -144,7 +148,7 @@ export default function ResourcesPage() {
             className="rounded-xl"
             onClick={() => {
               setSelectedStaff(null);
-              setStaffOpen(true);
+              setStaffWizardOpen(true);
             }}
           >
             <Plus className="size-4 mr-2" /> Add provider
@@ -177,7 +181,7 @@ export default function ResourcesPage() {
               actionLabel="Add provider"
               onAction={() => {
                 setSelectedStaff(null);
-                setStaffOpen(true);
+                setStaffWizardOpen(true);
               }}
             />
           ) : (
@@ -265,7 +269,7 @@ export default function ResourcesPage() {
               actionLabel="Add space"
               onAction={() => {
                 setSelectedResource(null);
-                setResourceOpen(true);
+                setResourceWizardOpen(true);
               }}
             />
           ) : (
@@ -355,6 +359,16 @@ export default function ResourcesPage() {
           setResourceOpen(false);
           load();
         }}
+      />
+      <StaffWizard
+        open={staffWizardOpen}
+        onOpenChange={setStaffWizardOpen}
+        onCreated={() => load()}
+      />
+      <ResourceWizard
+        open={resourceWizardOpen}
+        onOpenChange={setResourceWizardOpen}
+        onCreated={() => load()}
       />
     </div>
   );

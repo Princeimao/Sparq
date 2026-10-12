@@ -39,8 +39,10 @@ export default function DashboardLayout({
         }
       })
       .catch(() => {
-        // Fail open so a billing/profile API blip can't lock users out.
-        if (!cancelled) setAllowed(true);
+        // Fail toward onboarding, not into the app: a new user whose
+        // profile can't be read must land in the signup flow, and the
+        // onboarding page itself bounces COMPLETED profiles back here.
+        if (!cancelled) router.replace("/onboarding");
       });
     return () => {
       cancelled = true;

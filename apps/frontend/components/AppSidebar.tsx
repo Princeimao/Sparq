@@ -20,13 +20,14 @@ const AppSidebar = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <Sidebar className="py-4 px-0 bg-background">
+      <Sidebar className="py-4 px-0 bg-paper border-r border-zinc-200/70">
         <SidebarHeader className="py-0 px-4">
           <SidebarMenu>
             <SidebarMenuItem>
-              <a href="/" className="w-full h-full flex">
-                <p className="text-xl font-semibold">Spar</p>
+              <a href="/" className="w-full h-full flex items-center">
+                <p className="text-xl font-semibold tracking-tight text-ink">Sparq</p>
                 <Image src="/logo.svg" alt="Logo" width={20} height={20} />
+                <span className="size-1.5 rounded-full bg-brand ml-0.5 mt-2" aria-hidden />
               </a>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -41,8 +42,8 @@ const AppSidebar = ({ children }: { children: React.ReactNode }) => {
         </SidebarContent>
       </Sidebar>
 
-      <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-50 flex items-center border-b px-6 py-3 bg-background">
+      <div className="flex flex-1 flex-col bg-paper min-h-screen">
+        <header className="sticky top-0 z-50 flex items-center border-b border-zinc-200/70 px-6 py-3 bg-paper/85 backdrop-blur-xl">
           <SiteHeader />
         </header>
         <main className="flex-1">{children}</main>

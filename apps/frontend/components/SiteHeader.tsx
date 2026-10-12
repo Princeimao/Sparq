@@ -17,7 +17,7 @@ export function SiteHeader() {
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1 h-8 w-8 cursor-pointer" />
-        <InputGroup className="h-9 rounded-md">
+        <InputGroup className="h-9 rounded-full border-zinc-200/80 bg-white/70">
           <InputGroupInput placeholder="Search" />
           <InputGroupAddon>
             <SearchIcon />

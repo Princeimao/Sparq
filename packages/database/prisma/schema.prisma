@@ -615,6 +615,7 @@ model Resource {
 
   @@index([userId])
   @@index([userId, kind])
+  @@map("resources")
 }
 
 model ServiceResource {
