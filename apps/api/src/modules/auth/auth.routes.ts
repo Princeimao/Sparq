@@ -20,26 +20,38 @@ const REFRESH_COOKIE = "refresh_token";
 // Scoped so the long-lived refresh token is only sent to auth endpoints.
 const REFRESH_COOKIE_PATH = "/api/auth";
 
+// Cross-site hosting (Vercel frontend × Catalyst API) requires
+// SameSite=None; Secure — browsers silently drop Lax cookies on cross-site
+// fetch, which is exactly "login works but the dashboard gets 401".
+// Localhost dev stays Lax (browsers reject SameSite=None over plain HTTP).
+const COOKIE_SAMESITE = (env.COOKIE_SAMESITE ??
+  (env.NODE_ENV === "production" ? "none" : "lax")) as "lax" | "none";
+const COOKIE_SECURE =
+  env.COOKIE_SECURE ?? env.NODE_ENV === "production";
+
 function setAuthCookies(res: Response, accessToken: string, refreshToken: string): void {
   res.cookie(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: COOKIE_SECURE,
+    sameSite: COOKIE_SAMESITE,
     path: "/",
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
   res.cookie(REFRESH_COOKIE, refreshToken, {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: COOKIE_SECURE,
+    sameSite: COOKIE_SAMESITE,
     path: REFRESH_COOKIE_PATH,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 }
 
 function clearAuthCookies(res: Response): void {
-  res.clearCookie(ACCESS_COOKIE, { path: "/" });
-  res.clearCookie(REFRESH_COOKIE, { path: REFRESH_COOKIE_PATH });
+  // Clearing must mirror the original attributes — otherwise the browser
+  // treats it as a different cookie and the session survives logout.
+  const base = { secure: COOKIE_SECURE, sameSite: COOKIE_SAMESITE } as const;
+  res.clearCookie(ACCESS_COOKIE, { ...base, path: "/" });
+  res.clearCookie(REFRESH_COOKIE, { ...base, path: REFRESH_COOKIE_PATH });
 }
 
 const googleClient = new OAuth2Client(

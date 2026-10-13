@@ -43,8 +43,18 @@ const envSchema = z.object({
   RAZORPAY_PLAN_PRO_MONTHLY: z.string().optional(),
   RAZORPAY_PLAN_PRO_YEARLY: z.string().optional(),
 
-  // Frontend
-  FRONTEND_URL: z.string().url().default("http://localhost:3000"),
+  // Frontend origin(s) allowed by CORS. Comma-separated to cover the
+  // production Vercel URL plus preview deployments, e.g.
+  // "https://sparq.vercel.app,https://sparq-git-main-user.vercel.app".
+  FRONTEND_URL: z.string().min(1).default("http://localhost:3000"),
+
+  // Session cookies. The hosted frontend (Vercel) and API (Catalyst) are
+  // cross-site, so production cookies MUST be SameSite=None; Secure —
+  // browsers drop Lax cookies on cross-site fetch, which surfaces as
+  // "OAuth works but every dashboard call is 401". Localhost dev stays
+  // Lax (SameSite=None without HTTPS is rejected by browsers).
+  COOKIE_SAMESITE: z.enum(["lax", "none"]).optional(),
+  COOKIE_SECURE: z.coerce.boolean().optional(),
 
   // Redis
   REDIS_URL: z.string().url(),
