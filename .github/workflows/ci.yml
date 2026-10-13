@@ -20,14 +20,13 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: "npm"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-        # have to write lint script
-      - name: check-types
+      - name: Check types
         run: npm run check-types
 
-      - name: build
+      - name: Build
         run: npm run build
