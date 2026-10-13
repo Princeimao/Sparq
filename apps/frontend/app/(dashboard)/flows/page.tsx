@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { animate, stagger } from "animejs";
-import { useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import {
   Plus,
-  Loader2,
   MoreVertical,
   Trash2,
   MessageSquareCode,
@@ -17,17 +15,10 @@ import {
   Circle,
   FileText,
   Globe,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FuseButton } from "@/components/bits/FuseButton";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import {
@@ -37,7 +28,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CreateFlowDialog } from "@/components/flows/CreateFlowDialog";
+import { CreateFlowDialog, type FlowTemplateBlock } from "@/components/flows/CreateFlowDialog";
+import { FlowsStatusBanner, WhatsAppRequiredGate } from "@/components/flows/FlowsGate";
+import { SlidePills } from "@/components/bits/SlidePills";
+import { useFlowsGate } from "@/hooks/integration";
 import { cn } from "@/lib/utils";
 
 interface FlowItem {
@@ -55,29 +49,29 @@ interface FlowItem {
 const statusConfig = {
   DRAFT: {
     label: "Draft",
-    className: "bg-zinc-500/10 text-zinc-500 border-zinc-500/20",
+    className: "bg-ink/10 text-ink/60",
     icon: Circle,
   },
   PUBLISHED: {
     label: "Published",
-    className:
-      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-transparent",
+    className: "bg-brand/15 text-brand-deep",
     icon: CheckCircle2,
   },
   ARCHIVED: {
     label: "Archived",
-    className:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-transparent",
+    className: "bg-amber-500/15 text-amber-700",
     icon: FileText,
   },
 };
 
 type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 export default function FlowsPage() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const gridRef = useRef<HTMLDivElement>(null);
+  const { gate, loading: gateLoading, refresh: refreshGate } = useFlowsGate();
   const [flows, setFlows] = useState<FlowItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -90,21 +84,22 @@ export default function FlowsPage() {
   }, []);
 
   useEffect(() => {
-    const loadFlows = async () => {
-      setLoading(true);
-
-      try {
-        const flows = await fetchFlows();
-        setFlows(flows);
-      } catch {
-        toast.error("Failed to load flows");
-      } finally {
-        setLoading(false);
-      }
+    if (!gate.connected) return;
+    let cancelled = false;
+    fetchFlows()
+      .then((f) => {
+        if (!cancelled) setFlows(f);
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Failed to load flows");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
     };
-
-    loadFlows();
-  }, [fetchFlows]);
+  }, [fetchFlows, gate.connected]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -123,12 +118,15 @@ export default function FlowsPage() {
         prev.map((f) => (f.id === id ? { ...f, status: "PUBLISHED" } : f)),
       );
       toast.success("Flow published to WhatsApp!");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to publish flow");
+    } catch (err: unknown) {
+      toast.error(
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Failed to publish flow",
+      );
     }
   };
 
-  const handleCreate = async (data: { name: string; blocks: any[] }) => {
+  const handleCreate = async (data: { name: string; blocks: FlowTemplateBlock[] }) => {
     try {
       const res = await api.post("/flows", {
         name: data.name,
@@ -159,127 +157,182 @@ export default function FlowsPage() {
     ARCHIVED: flows.filter((f) => f.status === "ARCHIVED").length,
   };
 
-  // Anime.js stagger on the visible cards.
-  useEffect(() => {
-    if (loading || reduceMotion) return;
-    const root = gridRef.current;
-    if (!root) return;
-    const cards = root.querySelectorAll("[data-flow-card]");
-    if (cards.length === 0) return;
-    const anim = animate(cards, {
-      opacity: [0, 1],
-      translateY: [16, 0],
-      scale: [0.97, 1],
-      duration: 450,
-      delay: stagger(55),
-      ease: "outCubic",
-    });
-    return () => {
-      anim.revert();
-    };
-  }, [loading, reduceMotion, statusFilter, query, flows.length]);
+  // WhatsApp is required to build flows — gate the whole surface.
+  if (!gateLoading && !gate.connected) {
+    return <WhatsAppRequiredGate />;
+  }
+
+  const locked = !gateLoading && gate.connected && !gate.eligible;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="relative p-6 max-w-7xl mx-auto space-y-5">
+      {!reduceMotion && (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 right-0 size-72 rounded-full bg-brand/10 blur-[110px]"
+          animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: EASE }}
+        className="relative flex flex-col sm:flex-row sm:items-end gap-4"
+      >
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">
+            Collect in chat
+          </p>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-ink mt-1">
             WhatsApp Flows
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Build data-collection flows sent to customers via WhatsApp
+          <p className="text-[15px] text-ink/55 mt-2 max-w-lg leading-relaxed">
+            One form customers fill inside WhatsApp — no more one-by-one
+            questions.
           </p>
         </div>
         <div className="flex items-center gap-2 sm:ml-auto">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-ink/40" />
             <Input
               placeholder="Search flows…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-8 h-9 w-44 rounded-full text-xs"
+              className="pl-8 h-10 w-44 rounded-full text-xs bg-ink/[0.05]! border-0"
               aria-label="Search flows"
             />
           </div>
-          <FuseButton onClick={() => setDialogOpen(true)} ariaLabel="New flow">
+          <FuseButton
+            onClick={() => setDialogOpen(true)}
+            ariaLabel="New flow"
+            disabled={locked}
+          >
             <Plus className="size-4" />
             New Flow
           </FuseButton>
         </div>
+      </motion.div>
+
+      {/* Availability banner */}
+      <div className="relative">
+        {gateLoading ? (
+          <div className="flex items-center gap-2 px-5 py-4 rounded-[1.4rem] bg-ink/[0.045] text-sm text-ink/50">
+            <Loader2 className="size-4 animate-spin" /> Checking Flows availability…
+          </div>
+        ) : (
+          <FlowsStatusBanner gate={gate} onRetry={refreshGate} />
+        )}
       </div>
 
       {/* Status pills */}
-      <div className="flex p-1 rounded-full border bg-card w-fit">
-        {(["ALL", "DRAFT", "PUBLISHED", "ARCHIVED"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            aria-pressed={statusFilter === s}
-            className={cn(
-              "text-xs font-medium px-3 py-1.5 rounded-full transition-colors capitalize",
-              statusFilter === s
-                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {s === "ALL" ? "All" : s.charAt(0) + s.slice(1).toLowerCase()}{" "}
-            <span className="tabular-nums opacity-70">{counts[s]}</span>
-          </button>
-        ))}
+      <div className="relative">
+        <SlidePills
+          id="flows-status"
+          size="sm"
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={(["ALL", "DRAFT", "PUBLISHED", "ARCHIVED"] as const).map((s) => ({
+            value: s,
+            label: (
+              <>
+                {s === "ALL" ? "All" : s.charAt(0) + s.slice(1).toLowerCase()}{" "}
+                <span className="tabular-nums opacity-70">{counts[s]}</span>
+              </>
+            ),
+          }))}
+        />
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-44 rounded-3xl bg-muted animate-pulse" />
+            <div key={i} className="h-44 rounded-[1.4rem] bg-ink/[0.045] animate-pulse" />
           ))}
         </div>
       ) : flows.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 py-20 border-2 border-dashed rounded-3xl bg-muted/5 text-center">
-          <div className="flex items-center justify-center size-14 rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: EASE }}
+          className="relative flex flex-col items-center justify-center gap-4 py-20 rounded-[1.6rem] bg-ink/[0.035] text-center"
+        >
+          <motion.span
+            initial={reduceMotion ? false : { scale: 0.7 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.1 }}
+            className="flex items-center justify-center size-14 rounded-[1.2rem] bg-ink text-white"
+          >
             <MessageSquareCode className="size-7" />
-          </div>
+          </motion.span>
           <div>
-            <p className="font-medium">No flows yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Create your first WhatsApp flow to collect customer information
+            <p className="font-semibold text-ink">No flows yet</p>
+            <p className="text-sm text-ink/50 mt-1">
+              Create your first flow — customers fill it in one go, inside WhatsApp.
             </p>
           </div>
-          <FuseButton onClick={() => setDialogOpen(true)}>
+          <FuseButton onClick={() => setDialogOpen(true)} disabled={locked}>
             <Plus className="size-4 mr-1" />
             Create Flow
           </FuseButton>
-        </div>
+        </motion.div>
       ) : visible.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-2 py-20 text-center">
-          <p className="font-medium text-sm">No flows match</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="font-medium text-sm text-ink">No flows match</p>
+          <p className="text-xs text-ink/50">
             Try a different search or filter.
           </p>
         </div>
       ) : (
-        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {visible.map((flow) => {
-            const status = statusConfig[flow.status] ?? statusConfig.DRAFT;
-            const StatusIcon = status.icon;
+        <motion.div layout className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <AnimatePresence mode="popLayout">
+            {visible.map((flow, i) => {
+              const status = statusConfig[flow.status] ?? statusConfig.DRAFT;
+              const StatusIcon = status.icon;
 
-            return (
-              <Card
-                key={flow.id}
-                data-flow-card
-                className="rounded-3xl border shadow-sm group cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
-                onClick={() => router.push(`/flows/${flow.id}`)}
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
+              return (
+                <motion.div
+                  key={flow.id}
+                  layout
+                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+                  transition={{
+                    delay: Math.min(i * 0.05, 0.3),
+                    duration: 0.35,
+                    ease: EASE,
+                  }}
+                  onClick={() => router.push(`/flows/${flow.id}`)}
+                  className={cn(
+                    "rounded-[1.4rem] p-5 cursor-pointer transition-colors duration-200 group",
+                    flow.status === "PUBLISHED"
+                      ? "bg-ink text-white"
+                      : "bg-ink/[0.045] hover:bg-ink/[0.07]",
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="flex items-center justify-center size-10 rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 shrink-0">
+                      <motion.span
+                        whileHover={reduceMotion ? undefined : { rotate: -6, scale: 1.06 }}
+                        className={cn(
+                          "flex items-center justify-center size-10 rounded-2xl shrink-0",
+                          flow.status === "PUBLISHED"
+                            ? "bg-white/10 text-white"
+                            : "bg-white text-ink",
+                        )}
+                      >
                         <MessageSquareCode className="size-5" />
-                      </div>
-                      <CardTitle className="text-[15px] font-semibold truncate">
+                      </motion.span>
+                      <p
+                        className={cn(
+                          "text-[15px] font-semibold tracking-tight truncate",
+                          flow.status === "PUBLISHED" ? "text-white" : "text-ink",
+                        )}
+                      >
                         {flow.name}
-                      </CardTitle>
+                      </p>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -289,7 +342,12 @@ export default function FlowsPage() {
                         <Button
                           variant="ghost"
                           size="icon-xs"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          className={cn(
+                            "opacity-0 group-hover:opacity-100 transition-opacity rounded-full",
+                            flow.status === "PUBLISHED"
+                              ? "text-white/70 hover:text-white hover:bg-white/10"
+                              : "",
+                          )}
                         >
                           <MoreVertical className="size-3.5" />
                         </Button>
@@ -329,43 +387,56 @@ export default function FlowsPage() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </CardHeader>
 
-                <CardContent>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge
-                      variant="outline"
-                      className={`text-[11px] flex items-center gap-1 ${status.className}`}
+                  <div className="flex items-center gap-1.5 mt-4 flex-wrap">
+                    <span
+                      className={cn(
+                        "text-[11px] font-semibold flex items-center gap-1 px-2.5 py-1 rounded-full",
+                        status.className,
+                        flow.status === "PUBLISHED" && "bg-white/10 text-white",
+                      )}
                     >
                       <StatusIcon className="size-3" />
                       {status.label}
-                    </Badge>
-                    <Badge variant="secondary" className="text-[11px] rounded-full">
-                      {flow.flowSchema?.blocks?.length ?? 0} fields
-                    </Badge>
-                  </div>
-                </CardContent>
-
-                <CardFooter className="pt-2">
-                  <span className="text-xs text-muted-foreground">
-                    Updated {new Date(flow.updatedAt).toLocaleDateString()}
-                  </span>
-                  {flow.status !== "PUBLISHED" && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePublish(flow.id);
-                      }}
-                      className="ml-auto text-xs font-medium text-emerald-600 hover:underline underline-offset-2"
+                    </span>
+                    <span
+                      className={cn(
+                        "text-[11px] px-2.5 py-1 rounded-full font-medium",
+                        flow.status === "PUBLISHED"
+                          ? "bg-white/10 text-white/70"
+                          : "bg-ink/[0.06] text-ink/55",
+                      )}
                     >
-                      Publish →
-                    </button>
-                  )}
-                </CardFooter>
-              </Card>
-            );
-          })}
-        </div>
+                      {flow.flowSchema?.blocks?.length ?? 0} fields
+                    </span>
+                  </div>
+
+                  <div className="flex items-center mt-4">
+                    <span
+                      className={cn(
+                        "text-xs",
+                        flow.status === "PUBLISHED" ? "text-white/50" : "text-ink/45",
+                      )}
+                    >
+                      Updated {new Date(flow.updatedAt).toLocaleDateString()}
+                    </span>
+                    {flow.status !== "PUBLISHED" && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePublish(flow.id);
+                        }}
+                        className="ml-auto text-xs font-semibold text-brand hover:underline underline-offset-2"
+                      >
+                        Publish →
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
       )}
 
       <CreateFlowDialog

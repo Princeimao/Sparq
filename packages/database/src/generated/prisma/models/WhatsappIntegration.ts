@@ -175,7 +175,7 @@ export type WhatsappIntegrationGroupByOutputType = {
   id: string
   userId: string
   isActive: boolean
-  businessId: string
+  businessId: string | null
   wabaId: string
   phoneNumberId: string
   accessToken: string
@@ -208,7 +208,7 @@ export type WhatsappIntegrationWhereInput = {
   id?: Prisma.StringFilter<"WhatsappIntegration"> | string
   userId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   isActive?: Prisma.BoolFilter<"WhatsappIntegration"> | boolean
-  businessId?: Prisma.StringFilter<"WhatsappIntegration"> | string
+  businessId?: Prisma.StringNullableFilter<"WhatsappIntegration"> | string | null
   wabaId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   phoneNumberId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   accessToken?: Prisma.StringFilter<"WhatsappIntegration"> | string
@@ -221,7 +221,7 @@ export type WhatsappIntegrationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  businessId?: Prisma.SortOrder
+  businessId?: Prisma.SortOrderInput | Prisma.SortOrder
   wabaId?: Prisma.SortOrder
   phoneNumberId?: Prisma.SortOrder
   accessToken?: Prisma.SortOrder
@@ -237,7 +237,7 @@ export type WhatsappIntegrationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.WhatsappIntegrationWhereInput[]
   NOT?: Prisma.WhatsappIntegrationWhereInput | Prisma.WhatsappIntegrationWhereInput[]
   isActive?: Prisma.BoolFilter<"WhatsappIntegration"> | boolean
-  businessId?: Prisma.StringFilter<"WhatsappIntegration"> | string
+  businessId?: Prisma.StringNullableFilter<"WhatsappIntegration"> | string | null
   wabaId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   phoneNumberId?: Prisma.StringFilter<"WhatsappIntegration"> | string
   accessToken?: Prisma.StringFilter<"WhatsappIntegration"> | string
@@ -250,7 +250,7 @@ export type WhatsappIntegrationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  businessId?: Prisma.SortOrder
+  businessId?: Prisma.SortOrderInput | Prisma.SortOrder
   wabaId?: Prisma.SortOrder
   phoneNumberId?: Prisma.SortOrder
   accessToken?: Prisma.SortOrder
@@ -268,7 +268,7 @@ export type WhatsappIntegrationScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"WhatsappIntegration"> | string
   userId?: Prisma.StringWithAggregatesFilter<"WhatsappIntegration"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"WhatsappIntegration"> | boolean
-  businessId?: Prisma.StringWithAggregatesFilter<"WhatsappIntegration"> | string
+  businessId?: Prisma.StringNullableWithAggregatesFilter<"WhatsappIntegration"> | string | null
   wabaId?: Prisma.StringWithAggregatesFilter<"WhatsappIntegration"> | string
   phoneNumberId?: Prisma.StringWithAggregatesFilter<"WhatsappIntegration"> | string
   accessToken?: Prisma.StringWithAggregatesFilter<"WhatsappIntegration"> | string
@@ -279,7 +279,7 @@ export type WhatsappIntegrationScalarWhereWithAggregatesInput = {
 export type WhatsappIntegrationCreateInput = {
   id?: string
   isActive?: boolean
-  businessId: string
+  businessId?: string | null
   wabaId: string
   phoneNumberId: string
   accessToken: string
@@ -292,7 +292,7 @@ export type WhatsappIntegrationUncheckedCreateInput = {
   id?: string
   userId: string
   isActive?: boolean
-  businessId: string
+  businessId?: string | null
   wabaId: string
   phoneNumberId: string
   accessToken: string
@@ -303,7 +303,7 @@ export type WhatsappIntegrationUncheckedCreateInput = {
 export type WhatsappIntegrationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wabaId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -316,7 +316,7 @@ export type WhatsappIntegrationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wabaId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -328,7 +328,7 @@ export type WhatsappIntegrationCreateManyInput = {
   id?: string
   userId: string
   isActive?: boolean
-  businessId: string
+  businessId?: string | null
   wabaId: string
   phoneNumberId: string
   accessToken: string
@@ -339,7 +339,7 @@ export type WhatsappIntegrationCreateManyInput = {
 export type WhatsappIntegrationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wabaId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -351,7 +351,7 @@ export type WhatsappIntegrationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wabaId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -435,7 +435,7 @@ export type WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput = {
 export type WhatsappIntegrationCreateWithoutUserInput = {
   id?: string
   isActive?: boolean
-  businessId: string
+  businessId?: string | null
   wabaId: string
   phoneNumberId: string
   accessToken: string
@@ -446,7 +446,7 @@ export type WhatsappIntegrationCreateWithoutUserInput = {
 export type WhatsappIntegrationUncheckedCreateWithoutUserInput = {
   id?: string
   isActive?: boolean
-  businessId: string
+  businessId?: string | null
   wabaId: string
   phoneNumberId: string
   accessToken: string
@@ -473,7 +473,7 @@ export type WhatsappIntegrationUpdateToOneWithWhereWithoutUserInput = {
 export type WhatsappIntegrationUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wabaId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -484,7 +484,7 @@ export type WhatsappIntegrationUpdateWithoutUserInput = {
 export type WhatsappIntegrationUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wabaId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumberId?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
@@ -565,7 +565,7 @@ export type $WhatsappIntegrationPayload<ExtArgs extends runtime.Types.Extensions
     id: string
     userId: string
     isActive: boolean
-    businessId: string
+    businessId: string | null
     wabaId: string
     phoneNumberId: string
     accessToken: string

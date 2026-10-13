@@ -1,18 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Settings2,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  Unplug,
-} from "lucide-react";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { motion } from "framer-motion";
+import { Loader2, Settings2, Unplug } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { FuseButton } from "@/components/bits/FuseButton";
 
 export type IntegrationCardProps = {
   name: string;
@@ -25,177 +16,216 @@ export type IntegrationCardProps = {
   isActive?: boolean;
   // Payment exclusivity: when true, this card's toggle is disabled
   isPaymentConflict?: boolean;
-  isTogglingId?: string | null;
+  isBusy?: boolean;
+  // Entrance animation
+  index?: number;
+  reduceMotion?: boolean;
   // Callbacks
   onConnect: () => void;
-  onToggle: (id: string, active: boolean) => void;
-  onDisconnect?: (id: string) => void;
-  onConfigure?: (id: string) => void;
+  onToggle: () => void;
+  onDisconnect?: () => void;
+  onConfigure?: () => void;
 };
 
-const CATEGORY_TILE: Record<string, string> = {
-  messaging:
-    "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-  payment:
-    "bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400",
-  scheduling:
-    "bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400",
-  ecommerce:
-    "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
-};
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function StatusPill({ connected, active }: { connected: boolean; active: boolean }) {
+  if (!connected) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-ink/45">
+        <span className="size-1.5 rounded-full bg-ink/25" />
+        Not connected
+      </span>
+    );
+  }
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold",
+        active ? "bg-brand/15 text-brand-deep" : "bg-ink/10 text-ink/55",
+      )}
+    >
+      <span className="relative flex size-1.5">
+        {active && (
+          <span className="absolute inline-flex h-full w-full rounded-full bg-brand opacity-60 animate-ping" />
+        )}
+        <span
+          className={cn(
+            "relative inline-flex size-1.5 rounded-full",
+            active ? "bg-brand" : "bg-ink/35",
+          )}
+        />
+      </span>
+      {active ? "On" : "Off"}
+    </span>
+  );
+}
 
 export function IntegrationCard({
   name,
   description,
   icon,
-  category,
-  integrationId,
+  integrationId: _integrationId,
   isConnected = false,
   isActive = false,
   isPaymentConflict = false,
-  isTogglingId,
+  isBusy = false,
+  index = 0,
+  reduceMotion = false,
   onConnect,
   onToggle,
   onDisconnect,
   onConfigure,
 }: IntegrationCardProps) {
-  const isToggling = isTogglingId === integrationId;
-  const tileClass = CATEGORY_TILE[category] ?? "bg-zinc-500/10 text-zinc-500";
+  void _integrationId;
+  const toggleDisabled = isBusy || (isPaymentConflict && !isActive);
 
   return (
-    <Card
+    <motion.div
       data-int-card
+      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        delay: Math.min(index * 0.06, 0.42),
+        duration: 0.45,
+        ease: EASE,
+      }}
       className={cn(
-        "rounded-3xl border shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
-        isConnected && isActive && "ring-1 ring-primary/30",
+        "rounded-[1.4rem] p-5 flex flex-col gap-4 transition-colors duration-300",
+        isConnected && isActive ? "bg-ink text-white" : "bg-ink/[0.045]",
       )}
     >
-      {/* Active glow top bar */}
-      {isConnected && isActive && (
-        <div className="h-1 bg-linear-to-r from-emerald-400 via-emerald-500 to-emerald-400" />
-      )}
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
+        <motion.div
+          whileHover={reduceMotion ? undefined : { rotate: -6, scale: 1.06 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+          className="size-12 rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden"
+        >
+          <Image
+            src={icon}
+            alt={name}
+            width={30}
+            height={30}
+            className="object-contain"
+          />
+        </motion.div>
+        <StatusPill connected={isConnected} active={isActive} />
+      </div>
 
-      <CardContent className="flex flex-col justify-between gap-4 p-5">
-        {/* Header Row */}
-        <div className="flex items-start justify-between">
-          {/* Icon */}
-          <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shrink-0", tileClass)}>
-            <Image
-              src={icon}
-              alt={name}
-              width={30}
-              height={30}
-              className="rounded-lg object-contain"
-            />
+      {/* Content */}
+      <div>
+        <p
+          className={cn(
+            "text-[15px] font-semibold tracking-tight",
+            isConnected && isActive ? "text-white" : "text-ink",
+          )}
+        >
+          {name}
+        </p>
+        <p
+          className={cn(
+            "text-[13px] mt-1 leading-relaxed",
+            isConnected && isActive ? "text-white/60" : "text-ink/50",
+          )}
+        >
+          {description}
+        </p>
+      </div>
+
+      {/* Footer */}
+      {!isConnected ? (
+        <div className="mt-auto flex items-center justify-between gap-3 pt-1">
+          <span className="text-xs text-ink/45">Ready to connect</span>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={onConnect}
+            aria-label={`Connect ${name}`}
+            className="h-10 inline-flex items-center rounded-full bg-ink px-5 text-[13px] font-medium text-white transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+          >
+            Connect
+          </motion.button>
+        </div>
+      ) : (
+        <div className="mt-auto flex items-center justify-between gap-3 pt-1">
+          <div className="flex items-center gap-2.5">
+            {isBusy ? (
+              <Loader2 size={16} className="animate-spin opacity-60" />
+            ) : (
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isActive}
+                aria-label={`Turn ${name} ${isActive ? "off" : "on"}`}
+                disabled={toggleDisabled}
+                onClick={onToggle}
+                className={cn(
+                  "relative h-6.5 w-11.5 rounded-full transition-colors duration-300 shrink-0",
+                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                  isActive ? "bg-brand" : "bg-white/20",
+                  toggleDisabled && "opacity-50 cursor-not-allowed",
+                )}
+              >
+                <motion.span
+                  layout
+                  transition={{ type: "spring", stiffness: 550, damping: 30 }}
+                  className={cn(
+                    "absolute top-0.5 size-5.5 rounded-full bg-white",
+                    isActive ? "right-0.5" : "left-0.5",
+                  )}
+                />
+              </button>
+            )}
+            <span
+              className={cn(
+                "text-xs font-medium",
+                isConnected && isActive ? "text-white/70" : "text-ink/55",
+              )}
+            >
+              {isActive ? "On" : "Off"}
+            </span>
           </div>
 
-          {/* Status badge */}
-          <div className="flex flex-col items-end gap-1.5">
-            {isConnected ? (
-              <div className="flex items-center gap-1 text-[10px]">
-                {isActive ? (
-                  <>
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                    </span>
-                    <span className="text-green-500 font-medium">Active</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="h-2 w-2 rounded-full bg-zinc-500" />
-                    <span className="text-muted-foreground">Inactive</span>
-                  </>
+          <div className="flex items-center gap-1.5">
+            {onConfigure && (
+              <button
+                onClick={onConfigure}
+                title={`Edit ${name} settings`}
+                aria-label={`Edit ${name} settings`}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  isConnected && isActive
+                    ? "text-white/70 hover:text-white hover:bg-white/15"
+                    : "text-ink/55 hover:text-ink hover:bg-ink/10",
                 )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                <AlertCircle size={10} />
-                <span>Not connected</span>
-              </div>
+              >
+                <Settings2 size={15} />
+              </button>
+            )}
+            {onDisconnect && (
+              <button
+                onClick={onDisconnect}
+                title={`Disconnect ${name}`}
+                aria-label={`Disconnect ${name}`}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  isConnected && isActive
+                    ? "text-white/70 hover:text-white hover:bg-white/15"
+                    : "text-ink/55 hover:text-red-600 hover:bg-red-500/10",
+                )}
+              >
+                <Unplug size={15} />
+              </button>
             )}
           </div>
         </div>
+      )}
 
-        {/* Content */}
-        <div>
-          <CardTitle className="text-[15px] font-semibold">{name}</CardTitle>
-          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            {description}
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between border-t pt-3.5">
-          {isConnected ? (
-            <>
-              {/* Toggle */}
-              <div className="flex items-center gap-2">
-                {isToggling ? (
-                  <Loader2
-                    size={15}
-                    className="animate-spin text-muted-foreground"
-                  />
-                ) : (
-                  <Switch
-                    id={`toggle-${name.toLowerCase().replace(/\s/g, "-")}`}
-                    checked={isActive}
-                    disabled={isPaymentConflict && !isActive}
-                    onCheckedChange={(checked) =>
-                      integrationId && onToggle(integrationId, checked)
-                    }
-                  />
-                )}
-                <span className="text-xs text-muted-foreground">
-                  {isActive ? "Active" : "Inactive"}
-                </span>
-                {isPaymentConflict && !isActive && (
-                  <span className="text-[10px] text-amber-500/80">
-                    (Disable other payment first)
-                  </span>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1">
-                {onConfigure && (
-                  <button
-                    onClick={() => integrationId && onConfigure(integrationId)}
-                    title="Reconfigure"
-                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-zinc-500/10 transition-colors"
-                  >
-                    <Settings2 size={14} />
-                  </button>
-                )}
-                {onDisconnect && (
-                  <button
-                    onClick={() => integrationId && onDisconnect(integrationId)}
-                    title="Disconnect"
-                    className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                  >
-                    <Unplug size={14} />
-                  </button>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <CheckCircle2 size={12} className="text-zinc-500" />
-                <span>Ready to connect</span>
-              </div>
-              <FuseButton
-                onClick={onConnect}
-                ariaLabel={`Connect ${name}`}
-                className="[&>span:last-child]:px-3 [&>span:last-child]:py-1.5 [&>span:last-child]:text-xs"
-              >
-                <Settings2 size={13} />
-                Connect
-              </FuseButton>
-            </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      {isPaymentConflict && !isActive && (
+        <p className="text-[11px] font-medium text-amber-600">
+          Turn off the other payment gateway first.
+        </p>
+      )}
+    </motion.div>
   );
 }

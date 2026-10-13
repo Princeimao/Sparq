@@ -13,9 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   LucideIcon,
-  CircleUserRound,
   CreditCard,
-  ReceiptText,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -34,13 +32,11 @@ type MenuItem = {
 };
 
 const PROFILE_ITEMS: MenuItem[] = [
-  { label: "My Profile", icon: CircleUserRound, href: "/profile" },
   { label: "My Subscription", icon: CreditCard, href: "/subscription" },
-  { label: "My Invoice", icon: ReceiptText, href: "/subscription" },
 ];
 
 const SETTINGS_ITEMS: MenuItem[] = [
-  { label: "Account Settings", icon: Settings, href: "/settings" },
+  { label: "Settings", icon: Settings, href: "/settings" },
 ];
 
 const LOGOUT_ITEM: MenuItem = {

@@ -57,8 +57,9 @@ const containerVariants = {
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 260, damping: 20 } },
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring" as const, stiffness: 260, damping: 22 } },
+  exit: { opacity: 0, scale: 0.94, transition: { duration: 0.22 } },
 };
 
 export default function ServicesPage() {
@@ -164,9 +165,9 @@ export default function ServicesPage() {
           animate="show"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {services.map((service) => (
-              <motion.div key={service.id} variants={cardVariants} layout>
+              <motion.div key={service.id} variants={cardVariants} layout exit="exit">
                 <Card className="overflow-hidden flex flex-col hover:shadow-md transition-all duration-200 h-full">
                   <div className="relative h-36 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-teal-500/10 flex items-center justify-center">
                     <div className="p-4 rounded-2xl bg-primary/10">

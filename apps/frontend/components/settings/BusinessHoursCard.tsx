@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Clock, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -88,30 +84,28 @@ export function BusinessHoursCard() {
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin" /> Loading business hours…
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-2 py-8 text-sm text-ink/50" aria-label="Loading business hours">
+        <Loader2 className="size-4 animate-spin" /> Loading business hours…
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          <Clock className="size-4 text-primary" /> Business hours & timezone
-        </CardTitle>
-        <CardDescription>
+    <div>
+      <div className="mb-5">
+        <h2 className="text-xl font-semibold tracking-tight text-ink">Business hours</h2>
+        <p className="text-[13px] text-ink/50 mt-1">
           Your opening hours — the fallback schedule when providers have no
-          hours of their own. All times are interpreted in this timezone.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-1.5 max-w-xs">
-          <Label htmlFor="biz-tz">Timezone</Label>
+          hours of their own. All times use this timezone.
+        </p>
+      </div>
+      <div className="space-y-5">
+        <div className="max-w-2xs">
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/45 mb-2">
+            Timezone
+          </span>
           <Select value={timezone} onValueChange={setTimezone}>
-            <SelectTrigger id="biz-tz" className="rounded-xl">
+            <SelectTrigger id="biz-tz" className="rounded-2xl bg-ink/[0.05]! border-0 py-3 text-sm font-medium">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -124,57 +118,82 @@ export function BusinessHoursCard() {
           </Select>
         </div>
 
-        <div className="rounded-2xl border divide-y overflow-hidden">
-          {WEEK_DAYS.map((day) => {
+        <div className="space-y-1.5">
+          {WEEK_DAYS.map((day, i) => {
             const v: OperatingDay = hours[day.id] ?? { open: "09:00", close: "18:00" };
             const closed = !!v.closed;
             return (
-              <div
+              <motion.div
                 key={day.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: Math.min(i * 0.04, 0.28) }}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2.5",
-                  !closed && "bg-muted/30",
+                  "flex items-center gap-3 rounded-2xl px-4 py-2.5 transition-colors",
+                  closed ? "bg-ink/[0.025]" : "bg-ink/[0.05]",
                 )}
               >
-                <span className="text-sm font-medium w-24">{day.label}</span>
-                <Switch
-                  checked={!closed}
-                  onCheckedChange={(open) => setDay(day.id, { ...v, closed: !open })}
+                <span className={cn("text-[13px] font-semibold w-24", closed ? "text-ink/35" : "text-ink")}>
+                  {day.label}
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={!closed}
                   aria-label={`${day.label} open`}
-                />
+                  onClick={() => setDay(day.id, { ...v, closed: !closed })}
+                  className={cn(
+                    "relative h-6 w-10.5 rounded-full transition-colors duration-300 shrink-0",
+                    closed ? "bg-ink/15" : "bg-brand",
+                  )}
+                >
+                  <motion.span
+                    layout
+                    transition={{ type: "spring", stiffness: 550, damping: 30 }}
+                    className={cn(
+                      "absolute top-0.5 size-5 rounded-full bg-white",
+                      closed ? "left-0.5" : "right-0.5",
+                    )}
+                  />
+                </button>
                 {closed ? (
-                  <span className="text-xs text-muted-foreground ml-auto">Closed</span>
+                  <span className="text-xs text-ink/35 ml-auto font-medium">Closed</span>
                 ) : (
-                  <div className="flex items-center gap-2 ml-auto">
-                    <Input
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <input
                       type="time"
                       value={v.open}
                       onChange={(e) => setDay(day.id, { ...v, open: e.target.value })}
-                      className="h-8 w-28 text-xs rounded-lg"
+                      className="text-xs font-medium rounded-xl bg-white/70 px-2 py-1.5 text-ink focus:outline-none focus:bg-white tabular-nums"
                       aria-label={`${day.label} opens`}
                     />
-                    <span className="text-xs text-muted-foreground">–</span>
-                    <Input
+                    <span className="text-xs text-ink/30">–</span>
+                    <input
                       type="time"
                       value={v.close}
                       onChange={(e) => setDay(day.id, { ...v, close: e.target.value })}
-                      className="h-8 w-28 text-xs rounded-lg"
+                      className="text-xs font-medium rounded-xl bg-white/70 px-2 py-1.5 text-ink focus:outline-none focus:bg-white tabular-nums"
                       aria-label={`${day.label} closes`}
                     />
                   </div>
                 )}
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={save} disabled={saving} className="rounded-xl">
-            {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
+        <div>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={save}
+            disabled={saving}
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-ink px-6 text-sm font-medium text-white transition-colors hover:bg-brand disabled:opacity-50"
+          >
+            {saving && <Loader2 className="size-4 animate-spin" />}
             Save hours
-          </Button>
+          </motion.button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

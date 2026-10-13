@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -47,11 +47,14 @@ export function NewBookingDialog({
   open,
   onOpenChange,
   defaultDate,
+  defaultSlotStart,
   onCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultDate?: Date;
+  /** When set, the matching availability slot is pre-picked on load. */
+  defaultSlotStart?: Date;
   onCreated: () => void;
 }) {
   const [step, setStep] = useState(0);
@@ -70,6 +73,7 @@ export function NewBookingDialog({
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [creating, setCreating] = useState(false);
+  const autoPicked = useRef(false);
 
   const service = useMemo(
     () => services.find((s) => s.id === serviceId),
@@ -86,10 +90,13 @@ export function NewBookingDialog({
     setGuestName("");
     setGuestPhone("");
     setCustomerQuery("");
+    setDate(toISODate(defaultDate ?? new Date()));
+    autoPicked.current = false;
     api
       .get("/services")
       .then((res) => setServices(res.data.data.services ?? []))
       .catch(() => toast.error("Could not load services"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open ]);
 
   useEffect(() => {
@@ -107,6 +114,19 @@ export function NewBookingDialog({
       .then((r) => {
         setSlots(r.slots);
         setOwnerImplicit(r.ownerImplicit);
+        // Pre-pick the slot the user tapped on the day timeline.
+        if (!autoPicked.current && defaultSlotStart) {
+          const dh = defaultSlotStart.getHours();
+          const dm = defaultSlotStart.getMinutes();
+          const match = r.slots.find((s: AvailabilitySlot) => {
+            const d = new Date(s.start);
+            return d.getHours() === dh && d.getMinutes() === dm;
+          });
+          if (match) {
+            setSlot(match);
+            autoPicked.current = true;
+          }
+        }
       })
       .catch(() => toast.error("Could not load availability"))
       .finally(() => setSlotsLoading(false));

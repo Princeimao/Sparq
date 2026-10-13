@@ -296,7 +296,7 @@ model WhatsappIntegration {
   userId String @unique
   isActive Boolean @default(true)
 
-  businessId   String
+  businessId   String?
   wabaId        String
   phoneNumberId String
   accessToken   String

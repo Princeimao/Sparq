@@ -7,6 +7,7 @@ import { TextAnimate } from "@/components/ui/text-animate";
 import { cn } from "@/lib/utils";
 import { comparisonData, PLANS_DATA } from "@/constant";
 import { SectionHeading, usePrefersReducedMotion } from "./landing/reveal";
+import { SlidePills } from "@/components/bits/SlidePills";
 
 type PricingSectionProps = {
   showComparisonTable?: boolean;
@@ -49,28 +50,24 @@ export default function PricingSection({
 
         {/* Billing toggle */}
         <div className="mt-8 flex justify-center">
-          <div className="flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1">
-            {(["monthly", "yearly"] as const).map((p) => (
-              <button
-                key={p}
-                onClick={() => setBillingPeriod(p)}
-                aria-pressed={billingPeriod === p}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300",
-                  billingPeriod === p
-                    ? "bg-[#14160f] text-white"
-                    : "text-zinc-500 hover:text-zinc-900",
-                )}
-              >
-                {p === "monthly" ? "Monthly" : "Yearly"}
-                {p === "yearly" && (
+          <SlidePills
+            id="pricing-billing"
+            value={billingPeriod}
+            onChange={setBillingPeriod}
+            className="bg-white p-1 shadow-[0_10px_36px_-20px_rgba(20,22,15,0.35)]"
+            options={[
+              { value: "monthly", label: "Monthly" },
+              {
+                value: "yearly",
+                label: "Yearly",
+                badge: (
                   <span className="rounded-full bg-[#178a4c] px-1.5 py-0.5 text-[10px] font-bold text-white">
                     -20%
                   </span>
-                )}
-              </button>
-            ))}
-          </div>
+                ),
+              },
+            ]}
+          />
         </div>
 
         {/* Cards */}

@@ -29,7 +29,7 @@ export function SiteHeader() {
           defaultOpen={false}
           align="center"
           trigger={
-            <div className="rounded-full p-2 hover:bg-accent relative before:absolute before:bottom-0 before:left-1/2 before:z-10 before:w-2 before:h-2 before:rounded-full before:bg-red-500 before:top-1 cursor-pointer">
+            <div className="rounded-full p-2 hover:bg-accent cursor-pointer">
               <BellRing className="size-4" />
             </div>
           }

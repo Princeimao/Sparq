@@ -16,7 +16,7 @@ export type IntegrationStatus = {
   updatedAt: string;
 };
 
-export function useWhatsAppConnect() {
+export function useWhatsAppConnect(onSuccess?: () => void) {
   const signupData = useRef<{ waba_id?: string; phone_number_id?: string }>({});
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function useWhatsAppConnect() {
 
   return () => {
     if (!window.FB) {
-      toast.error("Facebook SDK not loaded");
+      toast.error("Facebook SDK not loaded yet — try again in a moment");
       return;
     }
 
@@ -53,10 +53,22 @@ export function useWhatsAppConnect() {
           const { waba_id: wabaId, phone_number_id: phoneNumberId } =
             signupData.current;
 
+          if (!wabaId || !phoneNumberId) {
+            toast.error("Signup didn't return account details — try again");
+            return;
+          }
+
           api
             .post("/whatsapp/exchange", { code, wabaId, phoneNumberId })
-            .then(() => toast.success("WhatsApp connected successfully"))
-            .catch(() => toast.error("WhatsApp connection failed"));
+            .then(() => {
+              toast.success("WhatsApp connected successfully");
+              onSuccess?.();
+            })
+            .catch((err: any) => {
+              toast.error(
+                err.response?.data?.error ?? "WhatsApp connection failed",
+              );
+            });
         }
       },
       {
@@ -79,14 +91,16 @@ export function useIntegrations() {
     setError(null);
     try {
       const res = await api.get("/integrations/status");
-      const data = res.data.data.integrations;
-      data.push({
-        ...res.data.data.whatsappIntegration,
-        type: "whatsapp",
-        name: "whatsapp",
-      });
-
-      setIntegrations(res.data.data.integrations || []);
+      const list: IntegrationStatus[] = [
+        ...(res.data.data.integrations ?? []),
+      ];
+      // Only surface WhatsApp when a connection row actually exists —
+      // a null row means "never connected", not "connected".
+      const wa = res.data.data.whatsappIntegration;
+      if (wa) {
+        list.push({ ...wa, type: "whatsapp", name: "WhatsApp" });
+      }
+      setIntegrations(list);
     } catch (err: any) {
       const msg = err.response?.data?.error || "Failed to fetch integrations";
       setError(msg);
@@ -188,6 +202,95 @@ export function useDisconnectIntegration(onSuccess?: () => void) {
   );
 
   return { disconnect, disconnectingId };
+}
+
+// ─── WhatsApp toggle / disconnect (separate table, separate endpoints) ──────
+
+export function useWhatsAppToggle(onSuccess?: () => void) {
+  const [toggling, setToggling] = useState(false);
+
+  const toggleWhatsApp = useCallback(async () => {
+    setToggling(true);
+    try {
+      const res = await api.patch("/whatsapp/toggle");
+      toast.success(res.data.message ?? "WhatsApp updated");
+      onSuccess?.();
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to toggle WhatsApp");
+    } finally {
+      setToggling(false);
+    }
+  }, [onSuccess]);
+
+  return { toggleWhatsApp, toggling };
+}
+
+export function useWhatsAppDisconnect(onSuccess?: () => void) {
+  const [disconnecting, setDisconnecting] = useState(false);
+
+  const disconnectWhatsApp = useCallback(async () => {
+    setDisconnecting(true);
+    try {
+      const res = await api.delete("/whatsapp/disconnect");
+      toast.success(res.data.message ?? "WhatsApp disconnected");
+      onSuccess?.();
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.error || "Failed to disconnect WhatsApp",
+      );
+    } finally {
+      setDisconnecting(false);
+    }
+  }, [onSuccess]);
+
+  return { disconnectWhatsApp, disconnecting };
+}
+
+// ─── WhatsApp Flows availability gate ───────────────────────────────────────
+// Meta only unlocks Flows for numbers in good standing (GREEN/YELLOW
+// quality rating). The backend is the single source of truth.
+
+export type FlowsGateState = {
+  connected: boolean;
+  eligible: boolean;
+  qualityRating: string | null;
+  verified: boolean;
+  reason: "ok" | "not_connected" | "disabled" | "low_quality" | "unverified" | "error";
+};
+
+export function useFlowsGate() {
+  const [gate, setGate] = useState<FlowsGateState>({
+    connected: false,
+    eligible: false,
+    qualityRating: null,
+    verified: false,
+    reason: "not_connected",
+  });
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/whatsapp/flows-status");
+      setGate({
+        connected: !!res.data.connected,
+        eligible: !!res.data.eligible,
+        qualityRating: res.data.qualityRating ?? null,
+        verified: !!res.data.verified,
+        reason: res.data.reason ?? "error",
+      });
+    } catch {
+      setGate((g) => ({ ...g, reason: "error" }));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { gate, loading, refresh };
 }
 
 // ─── Unified handlers (legacy shim kept for backward compat) ─────────────────

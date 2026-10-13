@@ -24,7 +24,6 @@ import {
   TrendingUp,
   Briefcase,
   Armchair,
-  Layers,
   Workflow,
 } from "lucide-react";
 export type NavigationSection = {
@@ -351,8 +350,6 @@ export const navData: NavItem[] = [
   { title: "Products", icon: ShoppingBag, href: "/products" },
   { title: "Services", icon: Briefcase, href: "/services" },
   { title: "Resources", icon: Armchair, href: "/resources" },
-  { label: "TOOLS", isSection: true },
-  { title: "Form Builder", icon: Layers, href: "/forms" },
 ];
 
 export type IntegrationProvider =

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { animate, stagger } from "animejs";
@@ -21,14 +21,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NumberTicker } from "@/components/bits/NumberTicker";
 import { FuseButton } from "@/components/bits/FuseButton";
+import { SlidePills } from "@/components/bits/SlidePills";
 import {
-  addTimeOff,
   deleteStaff,
   getStaff,
   updateStaff,
@@ -38,6 +35,13 @@ import { setBookingStatus, type Booking } from "@/lib/bookings";
 import { HoursEditor } from "@/components/resources/HoursEditor";
 import { BreaksEditor } from "@/components/resources/BreaksEditor";
 import { TimeOffManager } from "@/components/resources/TimeOffManager";
+import { BookingDrawer } from "@/components/calendar/BookingDrawer";
+import {
+  BookingCalendar,
+  toCalBlocks,
+  type CalBlock,
+  type CalBooking,
+} from "@/components/calendar/BookingCalendar";
 import {
   EMPTY_STAFF_FORM,
   useServiceOptions,
@@ -73,8 +77,11 @@ export default function StaffDetailPage({
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<StaffFormState>(EMPTY_STAFF_FORM);
   const services = useServiceOptions();
-  const [blockForm, setBlockForm] = useState({ date: "", start: "", end: "", reason: "Walk-in" });
-  const [blocking, setBlocking] = useState(false);
+  const [staffTab, setStaffTab] = useState<"bookings" | "schedule" | "leave" | "profile">("bookings");
+  const [calMonth, setCalMonth] = useState(
+    () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  );
+  const [inspectBookingId, setInspectBookingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -157,8 +164,32 @@ export default function StaffDetailPage({
     }
   };
 
-  const changeBooking = async (bookingId: string, status: string, label: string) => {
-    try {
+  const staffCalBookings = useMemo<CalBooking[]>(
+    () =>
+      upcoming
+        .filter((b) => !["CANCELLED", "NO_SHOW"].includes(b.status))
+        .map((b) => ({
+          id: b.id,
+          title: b.service?.name ?? "Booking",
+          sub: b.customer?.name ?? b.customerName,
+          start: b.startTime,
+          end: b.endTime,
+          staffId: id,
+          staffName: staff?.name ?? null,
+        })),
+    [upcoming, staff, id],
+  );
+
+  const staffCalBlocks = useMemo<CalBlock[]>(
+    () =>
+      toCalBlocks(staff?.timeOffs ?? []).map((t) => ({
+        ...t,
+        staffName: t.staffName ?? staff?.name ?? null,
+      })),
+    [staff],
+  );
+
+  const changeBooking = async (bookingId: string, status: string, label: string) => {    try {
       const updated: Booking = await setBookingStatus(bookingId, status);
       setUpcoming((prev) =>
         status === "CANCELLED"
@@ -171,31 +202,6 @@ export default function StaffDetailPage({
         (error as { response?: { data?: { error?: string } } })?.response?.data?.error ??
         "Action failed";
       toast.error(msg);
-    }
-  };
-
-  const blockTime = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!blockForm.date || !blockForm.start || !blockForm.end) {
-      return toast.error("Pick a date, start and end");
-    }
-    setBlocking(true);
-    try {
-      await addTimeOff({
-        staffId: id,
-        startDate: new Date(`${blockForm.date}T${blockForm.start}`).toISOString(),
-        endDate: new Date(`${blockForm.date}T${blockForm.end}`).toISOString(),
-        reason: blockForm.reason || "Blocked",
-      });
-      setBlockForm({ date: "", start: "", end: "", reason: "Walk-in" });
-      toast.success("Time blocked — no online bookings can land here");
-    } catch (error: unknown) {
-      const msg =
-        (error as { response?: { data?: { error?: string } } })?.response?.data?.error ??
-        "Could not block time";
-      toast.error(msg);
-    } finally {
-      setBlocking(false);
     }
   };
 
@@ -287,24 +293,22 @@ export default function StaffDetailPage({
         ))}
       </div>
 
-      <Tabs defaultValue="bookings" className="space-y-4">
-        <TabsList className="rounded-full">
-          <TabsTrigger value="bookings" className="rounded-full text-xs gap-1.5">
-            <CalendarCheck className="size-3.5" /> Bookings
-          </TabsTrigger>
-          <TabsTrigger value="schedule" className="rounded-full text-xs gap-1.5">
-            <Clock className="size-3.5" /> Schedule
-          </TabsTrigger>
-          <TabsTrigger value="leave" className="rounded-full text-xs gap-1.5">
-            <History className="size-3.5" /> Leave
-          </TabsTrigger>
-          <TabsTrigger value="profile" className="rounded-full text-xs gap-1.5">
-            <UserRound className="size-3.5" /> Profile
-          </TabsTrigger>
-        </TabsList>
+      <div className="space-y-4">
+        <SlidePills
+          id="staff-tabs"
+          size="sm"
+          value={staffTab}
+          onChange={setStaffTab}
+          options={[
+            { value: "bookings", label: "Bookings", icon: <CalendarCheck className="size-3.5" /> },
+            { value: "schedule", label: "Schedule", icon: <Clock className="size-3.5" /> },
+            { value: "leave", label: "Leave", icon: <History className="size-3.5" /> },
+            { value: "profile", label: "Profile", icon: <UserRound className="size-3.5" /> },
+          ]}
+        />
 
         {/* Bookings */}
-        <TabsContent value="bookings">
+        {staffTab === "bookings" && (
           <Card data-st-card className="rounded-3xl border shadow-sm">
             <CardContent className="p-4">
               {upcoming.length === 0 ? (
@@ -378,10 +382,11 @@ export default function StaffDetailPage({
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
         {/* Schedule */}
-        <TabsContent value="schedule" className="space-y-4">
+        {staffTab === "schedule" && (
+        <div className="space-y-4">
           <Card data-st-card className="rounded-3xl border shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold">Weekly hours</CardTitle>
@@ -407,76 +412,69 @@ export default function StaffDetailPage({
             </CardContent>
           </Card>
 
-          <Card data-st-card className="rounded-3xl border shadow-sm border-amber-500/20">
+          <Card data-st-card className="rounded-3xl border shadow-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Ban className="size-4 text-amber-500" /> Block time
-              </CardTitle>
+              <CardTitle className="text-base font-semibold">One-off blocks</CardTitle>
               <p className="text-xs text-muted-foreground">
-                Walk-in customer occupying the chair? Block the time so online
-                bookings can&apos;t collide with it.
+                Walk-ins, holidays, sick days — block them on the Leave
+                calendar so online bookings can&apos;t collide.
               </p>
             </CardHeader>
             <CardContent>
-              <form onSubmit={blockTime} className="grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 items-end">
-                <div className="space-y-1">
-                  <Label htmlFor="blk-date" className="text-xs">Date</Label>
-                  <Input
-                    id="blk-date"
-                    type="date"
-                    value={blockForm.date}
-                    onChange={(e) => setBlockForm({ ...blockForm, date: e.target.value })}
-                    className="h-9 text-xs rounded-xl"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="blk-start" className="text-xs">From</Label>
-                  <Input
-                    id="blk-start"
-                    type="time"
-                    value={blockForm.start}
-                    onChange={(e) => setBlockForm({ ...blockForm, start: e.target.value })}
-                    className="h-9 text-xs rounded-xl"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="blk-end" className="text-xs">To</Label>
-                  <Input
-                    id="blk-end"
-                    type="time"
-                    value={blockForm.end}
-                    onChange={(e) => setBlockForm({ ...blockForm, end: e.target.value })}
-                    className="h-9 text-xs rounded-xl"
-                    required
-                  />
-                </div>
-                <Button type="submit" disabled={blocking} className="rounded-xl">
-                  {blocking ? "Blocking…" : "Block"}
-                </Button>
-              </form>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                onClick={() => setStaffTab("leave")}
+              >
+                <Ban className="size-3.5 mr-1.5" /> Open leave calendar
+              </Button>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
+        )}
 
         {/* Leave */}
-        <TabsContent value="leave">
+        {staffTab === "leave" && (
+        <div className="space-y-4">
+          <Card data-st-card className="rounded-3xl border shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold">Leave calendar</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                {staff.name}&apos;s bookings and blocks. Tap a date, then
+                another date, to block the range.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <BookingCalendar
+                month={calMonth}
+                onMonthChange={setCalMonth}
+                bookings={staffCalBookings}
+                blocks={staffCalBlocks}
+                onBookingClick={setInspectBookingId}
+                onChanged={load}
+                scope={{ staffId: id }}
+                staffOptions={[{ id, name: staff.name }]}
+                reduceMotion={!!reduceMotion}
+              />
+            </CardContent>
+          </Card>
           <Card data-st-card className="rounded-3xl border shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold">Leave & holidays</CardTitle>
               <p className="text-xs text-muted-foreground">
-                Multi-day leave closes every day in the range.
+                Quick presets and the full list of blocked periods.
               </p>
             </CardHeader>
             <CardContent>
               <TimeOffManager scope={{ staffId: id }} />
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
+        )}
 
         {/* Profile */}
-        <TabsContent value="profile">
+        {staffTab === "profile" && (
           <Card data-st-card className="rounded-3xl border shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold">Profile & services</CardTitle>
@@ -490,8 +488,14 @@ export default function StaffDetailPage({
               </form>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
+
+      <BookingDrawer
+        bookingId={inspectBookingId}
+        onClose={() => setInspectBookingId(null)}
+        onChanged={load}
+      />
     </div>
   );
 }

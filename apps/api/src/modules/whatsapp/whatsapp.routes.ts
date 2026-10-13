@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
+import { authenticate } from "../../middleware/auth";
 import axios from "axios";
-import { encrypt } from "../../lib/encryption";
+import { decrypt, encrypt } from "../../lib/encryption";
 import { hasBusinessIntend } from "../../services/whatsappRule";
 import { enqueueWhatsAppMessage } from "../../queues/whatsapp.queue";
 
@@ -115,11 +116,14 @@ router.post("/webhook", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/exchange", async (req: Request, res: Response) => {
-  const { businessId, code, orgId, wabaId, phoneNumberId } = req.body;
+router.post("/exchange", authenticate, async (req: Request, res: Response) => {
+  const userId = req.user?.userId as string;
+  const { code, wabaId, phoneNumberId } = req.body;
 
-  if (!code || !orgId) {
-    return res.status(400).json({ error: "No code or orgId provided" });
+  if (!code || !wabaId || !phoneNumberId) {
+    return res
+      .status(400)
+      .json({ error: "Missing code, wabaId or phoneNumberId" });
   }
 
   try {
@@ -136,25 +140,24 @@ router.post("/exchange", async (req: Request, res: Response) => {
     const encryptedToken = encrypt(accessToken);
 
     const credentials = {
-      businessId,
       accessToken: encryptedToken,
       wabaId,
       phoneNumberId,
     };
 
-    const existing = await prisma.whatsappIntegration.findFirst({
-      where: { wabaId },
+    const existing = await prisma.whatsappIntegration.findUnique({
+      where: { userId },
     });
 
     if (existing) {
       await prisma.whatsappIntegration.update({
-        where: { id: existing.id },
-        data: credentials,
+        where: { userId },
+        data: { ...credentials, isActive: true },
       });
     } else {
       await prisma.whatsappIntegration.create({
         data: {
-          userId: orgId,
+          userId,
           ...credentials,
         },
       });
@@ -183,6 +186,51 @@ router.post("/exchange", async (req: Request, res: Response) => {
   }
 });
 
+// PATCH /whatsapp/toggle — flip isActive for the caller's connection
+router.patch("/toggle", authenticate, async (req: Request, res: Response) => {
+  const userId = req.user?.userId as string;
+
+  const existing = await prisma.whatsappIntegration.findUnique({
+    where: { userId },
+  });
+
+  if (!existing) {
+    return res.status(404).json({ error: "WhatsApp not connected" });
+  }
+
+  const updated = await prisma.whatsappIntegration.update({
+    where: { userId },
+    data: { isActive: !existing.isActive },
+    select: { id: true, isActive: true },
+  });
+
+  res.json({
+    integration: updated,
+    message: `WhatsApp ${updated.isActive ? "activated" : "deactivated"} successfully.`,
+  });
+});
+
+// DELETE /whatsapp/disconnect — remove the caller's connection
+router.delete(
+  "/disconnect",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const userId = req.user?.userId as string;
+
+    const existing = await prisma.whatsappIntegration.findUnique({
+      where: { userId },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: "WhatsApp not connected" });
+    }
+
+    await prisma.whatsappIntegration.delete({ where: { userId } });
+
+    res.json({ message: "WhatsApp disconnected successfully." });
+  },
+);
+
 router.get("/callback", (req: Request, res: Response) => {
   const { code, state, error } = req.query;
 
@@ -195,5 +243,74 @@ router.get("/callback", (req: Request, res: Response) => {
 
   res.send("Signup completed");
 });
+
+// GET /whatsapp/flows-status — can this number use WhatsApp Flows?
+//
+// Meta only enables Flows for numbers in good standing: the business number
+// must hold a GREEN or YELLOW quality rating. New/unrated numbers stay
+// locked until Meta deems them credible. This endpoint is the single
+// source of truth the dashboard banner reads.
+router.get(
+  "/flows-status",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const userId = req.user?.userId as string;
+
+    const row = await prisma.whatsappIntegration.findUnique({
+      where: { userId },
+    });
+
+    if (!row) {
+      return res.json({
+        connected: false,
+        eligible: false,
+        qualityRating: null,
+        verified: false,
+        reason: "not_connected",
+      });
+    }
+
+    if (!row.isActive) {
+      return res.json({
+        connected: true,
+        eligible: false,
+        qualityRating: null,
+        verified: false,
+        reason: "disabled",
+      });
+    }
+
+    // Live credibility check against the Meta Graph API.
+    try {
+      const token = decrypt(row.accessToken);
+      const { data } = await axios.get(
+        `https://graph.facebook.com/v25.0/${row.phoneNumberId}`,
+        {
+          params: { fields: "quality_rating", access_token: token },
+          timeout: 8000,
+        },
+      );
+      const quality = (data?.quality_rating ?? "UNKNOWN") as string;
+      const eligible = quality === "GREEN" || quality === "YELLOW";
+      return res.json({
+        connected: true,
+        eligible,
+        qualityRating: quality,
+        verified: true,
+        reason: eligible ? "ok" : "low_quality",
+      });
+    } catch {
+      // Meta unreachable (or token invalid) — don't hard-lock the builder;
+      // surface "pending verification" and let publish enforce later.
+      return res.json({
+        connected: true,
+        eligible: true,
+        qualityRating: null,
+        verified: false,
+        reason: "unverified",
+      });
+    }
+  },
+);
 
 export default router;

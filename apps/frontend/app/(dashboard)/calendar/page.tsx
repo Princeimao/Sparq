@@ -5,25 +5,34 @@ import { animate, stagger } from "animejs";
 import { motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import {
-  CalendarCheck,
-  Check,
   ChevronLeft,
   ChevronRight,
   Plus,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SlidePills } from "@/components/bits/SlidePills";
 import { useAppSelector } from "@/lib/store";
-import { listBookings, setBookingStatus, type Booking } from "@/lib/bookings";
+import { listBookings, type Booking } from "@/lib/bookings";
+import {
+  listResources,
+  listStaff,
+  listTimeOff,
+  type TimeOff,
+} from "@/lib/resources";
 import { BookingDrawer } from "@/components/calendar/BookingDrawer";
 import { NewBookingDialog } from "@/components/calendar/NewBookingDialog";
+import { DayTimeline } from "@/components/calendar/DayTimeline";
 import { SemiRing } from "@/components/calendar/SemiRing";
+import {
+  BookingCalendar,
+  toCalBlocks,
+  toCalBookings,
+  type CalBlock,
+  type CalBooking,
+} from "@/components/calendar/BookingCalendar";
 import { AnimatedList } from "@/components/bits/AnimatedList";
 import { FuseButton } from "@/components/bits/FuseButton";
-import { SwipeRow } from "@/components/bits/SwipeRow";
 import { cn } from "@/lib/utils";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -59,14 +68,6 @@ function addDays(d: Date, n: number): Date {
   return c;
 }
 
-function sameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
-
 function greeting(): string {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
@@ -78,8 +79,6 @@ function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function CalendarPage() {
@@ -87,12 +86,16 @@ export default function CalendarPage() {
   const { user } = useAppSelector((state) => state.auth);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const [view, setView] = useState<"day" | "week" | "month">("week");
+  const [view, setView] = useState<"day" | "week" | "month">("month");
   const [anchor, setAnchor] = useState(() => new Date());
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [blocks, setBlocks] = useState<TimeOff[]>([]);
+  const [staffOptions, setStaffOptions] = useState<{ id: string; name: string }[]>([]);
+  const [resourceOptions, setResourceOptions] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState<string | null>(null);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [slotSeed, setSlotSeed] = useState<Date | null>(null);
   const [now, setNow] = useState(() => new Date());
 
   const weekStart = useMemo(() => startOfWeek(anchor), [anchor]);
@@ -129,9 +132,37 @@ export default function CalendarPage() {
     }
   }, [range]);
 
+  const loadBlocks = useCallback(async () => {
+    try {
+      const all = await listTimeOff();
+      const from = new Date(range.from).getTime();
+      const to = new Date(range.to).getTime();
+      setBlocks(
+        all.filter((t) => {
+          const s = new Date(t.startDate).getTime();
+          const e = new Date(t.endDate).getTime();
+          return s <= to && e >= from;
+        }),
+      );
+    } catch {
+      // blocks are advisory — bookings still render without them
+    }
+  }, [range]);
+
   useEffect(() => {
     load();
-  }, [load]);
+    loadBlocks();
+  }, [load, loadBlocks]);
+
+  // Staff + spaces for the block dialog scope picker (loaded once).
+  useEffect(() => {
+    Promise.all([listStaff(true).catch(() => []), listResources().catch(() => [])]).then(
+      ([staff, resources]) => {
+        setStaffOptions(staff.map((s) => ({ id: s.id, name: s.name })));
+        setResourceOptions(resources.map((r) => ({ id: r.id, name: r.name })));
+      },
+    );
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60_000);
@@ -157,23 +188,6 @@ export default function CalendarPage() {
       anim.revert();
     };
   }, [loading, view, anchor, bookings.length, reduceMotion]);
-
-  const changeStatus = async (id: string, status: string, label: string) => {
-    try {
-      const updated = await setBookingStatus(id, status);
-      setBookings((prev) =>
-        status === "CANCELLED"
-          ? prev.filter((b) => b.id !== id)
-          : prev.map((b) => (b.id === id ? updated : b)),
-      );
-      toast.success(`Booking ${label}`);
-    } catch (error: unknown) {
-      const msg =
-        (error as { response?: { data?: { error?: string } } })?.response?.data?.error ??
-        "Action failed";
-      toast.error(msg);
-    }
-  };
 
   const hours = useMemo(() => {
     let lo = 8;
@@ -201,6 +215,42 @@ export default function CalendarPage() {
   }, [bookings]);
 
   const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
+  const calBookings = useMemo<CalBooking[]>(() => toCalBookings(bookings), [bookings]);
+  const calBlocks = useMemo<CalBlock[]>(() => toCalBlocks(blocks), [blocks]);
+
+  const anchorDayStart = useMemo(() => {
+    const d = new Date(anchor);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, [anchor]);
+  const anchorDayEnd = useMemo(() => {
+    const d = new Date(anchor);
+    d.setHours(23, 59, 59, 999);
+    return d;
+  }, [anchor]);
+  const dayCalBookings = useMemo(
+    () =>
+      calBookings.filter((b) => {
+        const s = new Date(b.start).getTime();
+        const e = new Date(b.end).getTime();
+        return s <= anchorDayEnd.getTime() && e >= anchorDayStart.getTime();
+      }),
+    [calBookings, anchorDayStart, anchorDayEnd],
+  );
+  const dayCalBlocks = useMemo(
+    () =>
+      calBlocks.filter((t) => {
+        const s = new Date(t.start).getTime();
+        const e = new Date(t.end).getTime();
+        return s <= anchorDayEnd.getTime() && e >= anchorDayStart.getTime();
+      }),
+    [calBlocks, anchorDayStart, anchorDayEnd],
+  );
+  const monthDate = useMemo(
+    () => new Date(anchor.getFullYear(), anchor.getMonth(), 1),
+    [anchor],
+  );
 
   // Right rail: today's load + up next.
   const todayList = useMemo(() => {
@@ -237,20 +287,24 @@ export default function CalendarPage() {
     <div className="p-4 sm:p-6 max-w-[1400px] mx-auto space-y-5">
       {/* Header */}
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">
           {greeting()}, {firstName} 👋
         </h1>
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 tabular-nums">
+          <span className="text-xs font-medium px-3 py-1.5 rounded-full bg-ink text-white tabular-nums">
             {view === "week" ? weekLabel : anchor.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
           </span>
-          <Tabs value={view} onValueChange={(v) => setView(v as typeof view)}>
-            <TabsList className="rounded-full">
-              <TabsTrigger value="day" className="rounded-full text-xs">Day</TabsTrigger>
-              <TabsTrigger value="week" className="rounded-full text-xs">Week</TabsTrigger>
-              <TabsTrigger value="month" className="rounded-full text-xs">Month</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <SlidePills
+            id="calendar-view"
+            size="sm"
+            value={view}
+            onChange={setView}
+            options={[
+              { value: "day", label: "Day" },
+              { value: "week", label: "Week" },
+              { value: "month", label: "Month" },
+            ]}
+          />
           <FuseButton onClick={() => setBookingOpen(true)} ariaLabel="New booking">
             <Plus className="size-4" /> New booking
           </FuseButton>
@@ -259,25 +313,27 @@ export default function CalendarPage() {
 
       <div className="grid xl:grid-cols-[1fr_290px] gap-5 items-start">
         <div ref={gridRef} className="min-w-0">
-          {/* Week nav */}
-          <div className="flex items-center gap-1 mb-3">
-            <Button variant="ghost" size="icon" className="size-8" aria-label="Previous"
-              onClick={() => setAnchor((a) => addDays(a, view === "month" ? -30 : view === "week" ? -7 : -1))}>
-              <ChevronLeft className="size-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setAnchor(new Date())}>
-              Today
-            </Button>
-            <Button variant="ghost" size="icon" className="size-8" aria-label="Next"
-              onClick={() => setAnchor((a) => addDays(a, view === "month" ? 30 : view === "week" ? 7 : 1))}>
-              <ChevronRight className="size-4" />
-            </Button>
-          </div>
+          {/* Nav (hidden for month — the calendar owns its own nav) */}
+          {view !== "month" && (
+            <div className="flex items-center gap-1 mb-3">
+              <Button variant="ghost" size="icon" className="size-8 rounded-full" aria-label="Previous"
+                onClick={() => setAnchor((a) => addDays(a, view === "week" ? -7 : -1))}>
+                <ChevronLeft className="size-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="rounded-full" onClick={() => setAnchor(new Date())}>
+                Today
+              </Button>
+              <Button variant="ghost" size="icon" className="size-8 rounded-full" aria-label="Next"
+                onClick={() => setAnchor((a) => addDays(a, view === "week" ? 7 : 1))}>
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          )}
 
           {loading ? (
-            <div className="rounded-2xl border p-4 space-y-3">
+            <div className="rounded-[1.6rem] bg-ink/[0.035] p-4 space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />
+                <div key={i} className="h-16 rounded-2xl bg-ink/[0.05] animate-pulse" />
               ))}
             </div>
           ) : view === "week" ? (
@@ -287,43 +343,55 @@ export default function CalendarPage() {
               dayKey={dayKey}
               hours={hours}
               now={now}
+              blocks={blocks}
               onOpen={setOpenId}
+              reduceMotion={!!reduceMotion}
             />
           ) : view === "day" ? (
-            <DayAgenda
-              bookings={byDay.get(dayKey(anchor)) ?? []}
-              onOpen={setOpenId}
-              onStatus={changeStatus}
+            <DayTimeline
+              date={anchor}
+              bookings={dayCalBookings}
+              blocks={dayCalBlocks}
+              hours={hours}
+              now={now}
+              onBookingClick={setOpenId}
+              onSlotTap={(at) => {
+                setSlotSeed(at);
+                setBookingOpen(true);
+              }}
+              reduceMotion={!!reduceMotion}
             />
           ) : (
-            <MonthGrid
-              anchor={anchor}
-              byDay={byDay}
-              dayKey={dayKey}
-              onPickDay={(d) => {
-                setAnchor(d);
-                setView("day");
-              }}
+            <BookingCalendar
+              month={monthDate}
+              onMonthChange={setAnchor}
+              bookings={calBookings}
+              blocks={calBlocks}
+              onBookingClick={setOpenId}
+              onChanged={loadBlocks}
+              staffOptions={staffOptions}
+              resourceOptions={resourceOptions}
+              reduceMotion={!!reduceMotion}
             />
           )}
         </div>
 
         {/* Right rail */}
-        <aside className="space-y-4 xl:sticky xl:top-4">
-          <div className="rounded-2xl border bg-card p-4">
+        <aside className="space-y-3 xl:sticky xl:top-4">
+          <div className="rounded-[1.4rem] bg-ink/[0.045] p-4">
             <SemiRing
               percent={loadPercent}
               label="Today's load"
               sublabel={`${todayList.length} booking${todayList.length === 1 ? "" : "s"} today`}
             />
           </div>
-          <div className="rounded-2xl border bg-card p-4">
+          <div className="rounded-[1.4rem] bg-ink/[0.045] p-4">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold">Up next</p>
-              <Badge variant="secondary" className="text-[10px]">{todayList.length}</Badge>
+              <p className="text-sm font-semibold text-ink">Up next</p>
+              <Badge variant="secondary" className="text-[10px] rounded-full">{todayList.length}</Badge>
             </div>
             {todayList.length === 0 ? (
-              <p className="text-xs text-muted-foreground py-4 text-center">
+              <p className="text-xs text-ink/50 py-4 text-center">
                 Nothing else today. Enjoy the breather ✨
               </p>
             ) : (
@@ -334,15 +402,15 @@ export default function CalendarPage() {
                     <button
                       key={b.id}
                       onClick={() => setOpenId(b.id)}
-                      className="w-full text-left rounded-xl border bg-background px-3 py-2.5 hover:border-zinc-400 transition-colors"
+                      className="w-full text-left rounded-2xl bg-white px-3 py-2.5 hover:bg-ink/[0.07] transition-colors"
                     >
                       <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full text-white ${c.pill}`}>
                         {b.service?.name ?? "Booking"}
                       </span>
-                      <span className="block text-sm font-medium mt-1 truncate">
+                      <span className="block text-sm font-medium mt-1 truncate text-ink">
                         {b.customerName}
                       </span>
-                      <span className="block text-xs text-muted-foreground tabular-nums">
+                      <span className="block text-xs text-ink/50 tabular-nums">
                         {fmtTime(b.startTime)} – {fmtTime(b.endTime)}
                       </span>
                     </button>
@@ -352,21 +420,21 @@ export default function CalendarPage() {
             )}
           </div>
           {team.length > 0 && (
-            <div className="rounded-2xl border bg-card p-4">
-              <p className="text-sm font-semibold mb-2.5">On the books</p>
+            <div className="rounded-[1.4rem] bg-ink/[0.045] p-4">
+              <p className="text-sm font-semibold mb-2.5 text-ink">On the books</p>
               <div className="flex -space-x-2">
                 {team.slice(0, 6).map((m) => (
                   <span
                     key={m.name}
                     title={m.name}
-                    className="size-9 rounded-full border-2 border-card flex items-center justify-center text-white text-xs font-bold"
+                    className="size-9 rounded-full border-2 border-paper flex items-center justify-center text-white text-xs font-bold"
                     style={{ backgroundColor: m.color ?? "#52525b" }}
                   >
                     {m.name.charAt(0).toUpperCase()}
                   </span>
                 ))}
                 {team.length > 6 && (
-                  <span className="size-9 rounded-full border-2 border-card bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center">
+                  <span className="size-9 rounded-full border-2 border-paper bg-ink text-white text-[10px] font-bold flex items-center justify-center">
                     +{team.length - 6}
                   </span>
                 )}
@@ -383,15 +451,19 @@ export default function CalendarPage() {
       />
       <NewBookingDialog
         open={bookingOpen}
-        onOpenChange={setBookingOpen}
-        defaultDate={anchor}
+        onOpenChange={(o) => {
+          setBookingOpen(o);
+          if (!o) setSlotSeed(null);
+        }}
+        defaultDate={slotSeed ?? anchor}
+        defaultSlotStart={slotSeed ?? undefined}
         onCreated={load}
       />
     </div>
   );
 }
 
-// ─── Week grid (reference: image 3) ─────────────────────────────────────────
+// ─── Week grid ───────────────────────────────────────────────────────────────
 
 function WeekGrid({
   days,
@@ -399,35 +471,39 @@ function WeekGrid({
   dayKey,
   hours,
   now,
+  blocks,
   onOpen,
+  reduceMotion,
 }: {
   days: Date[];
   byDay: Map<string, Booking[]>;
   dayKey: (d: Date) => string;
   hours: { lo: number; hi: number };
   now: Date;
+  blocks: TimeOff[];
   onOpen: (id: string) => void;
+  reduceMotion: boolean;
 }) {
   const rows = hours.hi - hours.lo;
   const height = rows * HOUR_PX;
   const todayKey = dayKey(new Date());
 
   return (
-    <div className="rounded-2xl border bg-card overflow-x-auto">
+    <div className="rounded-[1.6rem] bg-ink/[0.035] p-2 sm:p-3 overflow-x-auto">
       <div className="min-w-[720px]">
         {/* day headers */}
-        <div className="grid grid-cols-[52px_repeat(7,1fr)] border-b">
+        <div className="grid grid-cols-[52px_repeat(7,1fr)]">
           <div />
           {days.map((d, i) => {
             const isToday = dayKey(d) === todayKey;
             return (
-              <div key={i} className="py-2.5 text-center">
-                <p className={cn("text-xs", isToday ? "font-bold text-zinc-900 dark:text-zinc-100" : "text-muted-foreground")}>
+              <div key={i} className="py-2 text-center">
+                <p className={cn("text-[11px] font-medium", isToday ? "text-ink font-bold" : "text-ink/45")}>
                   {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
                 </p>
                 <p className={cn(
                   "inline-flex items-center justify-center size-7 text-sm rounded-full mt-0.5 tabular-nums",
-                  isToday ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold" : "font-medium",
+                  isToday ? "bg-ink text-white font-bold" : "font-medium text-ink",
                 )}>
                   {d.getDate()}
                 </p>
@@ -441,7 +517,7 @@ function WeekGrid({
             {Array.from({ length: rows + 1 }).map((_, i) => (
               <span
                 key={i}
-                className="absolute right-2 text-[10px] text-muted-foreground tabular-nums -translate-y-1/2"
+                className="absolute right-2 text-[10px] font-medium text-ink/40 tabular-nums -translate-y-1/2"
                 style={{ top: i * HOUR_PX }}
               >
                 {String(hours.lo + i).padStart(2, "0")}:00
@@ -451,14 +527,23 @@ function WeekGrid({
           {days.map((d, i) => {
             const list = byDay.get(dayKey(d)) ?? [];
             const isToday = dayKey(d) === todayKey;
+            const dayStart = new Date(d);
+            dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = new Date(d);
+            dayEnd.setHours(23, 59, 59, 999);
+            const dayBlocks = blocks.filter((t) => {
+              const s = new Date(t.startDate).getTime();
+              const e = new Date(t.endDate).getTime();
+              return s <= dayEnd.getTime() && e >= dayStart.getTime();
+            });
             return (
               <div
                 key={i}
-                className={cn("relative border-l border-zinc-100 dark:border-zinc-800", isToday && "bg-zinc-50/60 dark:bg-zinc-900/40")}
+                className={cn("relative rounded-lg", isToday && "bg-ink/[0.045]")}
                 style={{ height }}
               >
                 {Array.from({ length: rows + 1 }).map((_, r) => (
-                  <span key={r} className="absolute inset-x-0 border-t border-zinc-100 dark:border-zinc-800" style={{ top: r * HOUR_PX }} />
+                  <span key={r} className="absolute inset-x-1 border-t border-ink/10" style={{ top: r * HOUR_PX }} />
                 ))}
                 {/* now line */}
                 {isToday && (() => {
@@ -466,45 +551,66 @@ function WeekGrid({
                   const top = (mins / 60) * HOUR_PX;
                   if (top < 0 || top > height) return null;
                   return (
-                    <span className="absolute inset-x-0 z-10 border-t-2 border-red-500" style={{ top }}>
+                    <span className="absolute inset-x-0 z-20 border-t-2 border-red-500 pointer-events-none" style={{ top }}>
                       <span className="absolute -left-1 -top-[5px] size-2 rounded-full bg-red-500" />
                     </span>
                   );
                 })()}
-                {list.map((b) => {
+                {/* block bands */}
+                {dayBlocks.map((t) => {
+                  const s = new Date(Math.max(new Date(t.startDate).getTime(), dayStart.getTime()));
+                  const e = new Date(Math.min(new Date(t.endDate).getTime(), dayEnd.getTime()));
+                  const top = Math.max(0, ((s.getHours() * 60 + s.getMinutes()) / 60 - hours.lo) * HOUR_PX);
+                  const h = Math.max(22, ((+e - +s) / 3_600_000) * HOUR_PX - 3);
+                  const who = t.staff?.name ?? t.resource?.name ?? "Blocked";
+                  return (
+                    <motion.div
+                      key={t.id}
+                      title={`${who}${t.reason ? ` — ${t.reason}` : ""} (${fmtTime(t.startDate)}–${fmtTime(t.endDate)})`}
+                      initial={reduceMotion ? false : { opacity: 0, scaleX: 0.7 }}
+                      animate={{ opacity: 1, scaleX: 1 }}
+                      style={{ top, height: h, transformOrigin: "left center" }}
+                      className="absolute inset-x-1 z-10 rounded-lg bg-red-500/20 px-1.5 py-1 overflow-hidden pointer-events-none"
+                    >
+                      <p className="text-[9px] font-semibold text-red-700 truncate leading-tight">
+                        {who}{t.reason ? ` · ${t.reason}` : ""}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+                {list.map((b, bi) => {
                   const s = new Date(b.startTime);
                   const e = new Date(b.endTime);
                   const top = ((s.getHours() * 60 + s.getMinutes()) / 60 - hours.lo) * HOUR_PX;
                   const h = Math.max(30, ((+e - +s) / 3_600_000) * HOUR_PX - 3);
-                  const c = colorFor(b.service?.id ?? b.id);
                   const who = b.allocations.map((a) => a.staff?.name ?? a.resource?.name).filter(Boolean)[0];
                   return (
-                    <button
+                    <motion.button
                       key={b.id}
                       data-cal-block
+                      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(bi * 0.03, 0.3), duration: 0.3 }}
                       onClick={() => onOpen(b.id)}
-                      className={cn("absolute inset-x-1 rounded-xl p-1.5 text-left overflow-hidden", c.bg, "hover:ring-2 hover:ring-zinc-900/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900")}
+                      className="absolute inset-x-1 z-10 rounded-xl bg-ink text-white p-1.5 text-left overflow-hidden hover:bg-brand-deep transition-colors focus-visible:outline-2 focus-visible:outline-brand"
                       style={{ top: Math.max(0, top), height: h }}
                       aria-label={`${b.service?.name ?? "Booking"} for ${b.customerName} at ${fmtTime(b.startTime)}`}
                     >
-                      <span className={cn("inline-block text-[9px] font-bold px-1.5 py-px rounded-full text-white", c.pill)}>
-                        {(b.service?.name ?? "Booking").slice(0, 14)}
-                      </span>
-                      <span className={cn("block text-[11px] font-semibold leading-tight mt-0.5 truncate", c.text)}>
+                      <span className="block text-[10px] font-semibold leading-tight truncate">
                         {b.customerName}
                       </span>
-                      <span className={cn("block text-[10px] tabular-nums", c.text, "opacity-80")}>
-                        {fmtTime(b.startTime)}–{fmtTime(b.endTime)}
+                      <span className="block text-[9px] text-white/60 truncate tabular-nums">
+                        {(b.service?.name ?? "Booking").slice(0, 16)} · {fmtTime(b.startTime)}–{fmtTime(b.endTime)}
                       </span>
-                      {who && h > 64 && (
-                        <span className={cn("flex items-center gap-1 text-[10px] mt-0.5 truncate", c.text)}>
-                          <span className="size-4 rounded-full bg-white/70 text-zinc-900 text-[8px] font-bold flex items-center justify-center shrink-0">
+                      {who && h > 60 && (
+                        <span className="flex items-center gap-1 text-[9px] mt-0.5 truncate text-white/75">
+                          <span className="size-3.5 rounded-full bg-white/20 text-[7px] font-bold flex items-center justify-center shrink-0">
                             {who.charAt(0).toUpperCase()}
                           </span>
                           <span className="truncate">{who}</span>
                         </span>
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -516,122 +622,3 @@ function WeekGrid({
   );
 }
 
-// ─── Day agenda with swipe actions ───────────────────────────────────────────
-
-function DayAgenda({
-  bookings,
-  onOpen,
-  onStatus,
-}: {
-  bookings: Booking[];
-  onOpen: (id: string) => void;
-  onStatus: (id: string, status: string, label: string) => void;
-}) {
-  if (bookings.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-2xl bg-muted/5">
-        <CalendarCheck className="size-10 text-muted-foreground mb-3" />
-        <p className="font-medium text-sm">A quiet day</p>
-        <p className="text-xs text-muted-foreground mt-1">No bookings scheduled.</p>
-      </div>
-    );
-  }
-  return (
-    <div className="space-y-2.5">
-      {bookings.map((b) => {
-        const c = colorFor(b.service?.id ?? b.id);
-        const primary =
-          b.status === "PENDING"
-            ? { label: "Confirm", icon: <Check className="size-4" />, fn: () => onStatus(b.id, "CONFIRMED", "confirmed") }
-            : b.status === "CONFIRMED"
-              ? { label: "Done", icon: <Check className="size-4" />, fn: () => onStatus(b.id, "COMPLETED", "completed") }
-              : null;
-        return (
-          <SwipeRow
-            key={b.id}
-            left={primary ? [{ label: primary.label, icon: primary.icon, tone: "primary" as const, onPress: primary.fn }] : []}
-            right={
-              b.status !== "CANCELLED" && b.status !== "COMPLETED"
-                ? [{ label: "Cancel", icon: <X className="size-4" />, tone: "danger" as const, onPress: () => onStatus(b.id, "CANCELLED", "cancelled") }]
-                : []
-            }
-          >
-            <button
-              onClick={() => onOpen(b.id)}
-              className="w-full flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 text-left hover:border-zinc-400 transition-colors"
-            >
-              <span className={cn("w-1.5 self-stretch rounded-full", c.pill)} aria-hidden />
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold truncate">
-                  {b.service?.name ?? "Booking"} · {b.customerName}
-                </span>
-                <span className="block text-xs text-muted-foreground tabular-nums">
-                  {fmtTime(b.startTime)} – {fmtTime(b.endTime)}
-                  {b.partySize ? ` · 👥 ${b.partySize}` : ""}
-                </span>
-              </span>
-              <Badge variant="outline" className="text-[10px] shrink-0">{b.status}</Badge>
-            </button>
-          </SwipeRow>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Month grid ──────────────────────────────────────────────────────────────
-
-function MonthGrid({
-  anchor,
-  byDay,
-  dayKey,
-  onPickDay,
-}: {
-  anchor: Date;
-  byDay: Map<string, Booking[]>;
-  dayKey: (d: Date) => string;
-  onPickDay: (d: Date) => void;
-}) {
-  const first = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-  const lead = (first.getDay() + 6) % 7;
-  const cells = Array.from({ length: 42 }, (_, i) => addDays(first, i - lead));
-  const todayKey = dayKey(new Date());
-  return (
-    <div className="rounded-2xl border bg-card p-3">
-      <div className="grid grid-cols-7 gap-1">
-        {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-          <p key={i} className="text-center text-[10px] font-semibold text-muted-foreground py-1">{d}</p>
-        ))}
-        {cells.map((d, i) => {
-          const list = byDay.get(dayKey(d)) ?? [];
-          const inMonth = d.getMonth() === anchor.getMonth();
-          const isToday = dayKey(d) === todayKey;
-          return (
-            <button
-              key={i}
-              onClick={() => onPickDay(d)}
-              className={cn(
-                "rounded-xl p-1.5 min-h-[64px] text-left border transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900/20",
-                inMonth ? "hover:border-zinc-400 bg-background" : "opacity-40",
-                isToday && "border-zinc-900",
-              )}
-            >
-              <span className={cn("text-xs tabular-nums", isToday ? "font-bold" : "text-muted-foreground")}>
-                {d.getDate()}
-              </span>
-              <span className="flex flex-wrap gap-0.5 mt-1">
-                {list.slice(0, 5).map((b) => (
-                  <span key={b.id} className={cn("size-1.5 rounded-full", colorFor(b.service?.id ?? b.id).pill)} />
-                ))}
-                {list.length > 5 && (
-                  <span className="text-[9px] text-muted-foreground">+{list.length - 5}</span>
-                )}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
