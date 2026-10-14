@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DropzoneUploader } from "@/components/uploads/DropzoneUploader";
 import { WizardDialog, type WizardStepDef } from "./WizardDialog";
 import type { Product } from "@/app/(dashboard)/products/page";
 
@@ -78,13 +79,20 @@ export function ProductWizard({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="pw-image">Photo URL</Label>
+            <Label>Photo</Label>
+            <DropzoneUploader
+              purpose="products"
+              value={d.image.trim() ? [d.image.trim()] : []}
+              onChange={(urls) => onChange({ image: urls[0] ?? "" })}
+              label="Drop a photo here"
+              sublabel="or click to browse — uploads straight to your bucket"
+            />
             <div className="flex gap-2 items-center">
               <Input
                 id="pw-image"
                 value={d.image}
                 onChange={(e) => onChange({ image: e.target.value })}
-                placeholder="https://…"
+                placeholder="…or paste an image URL"
                 className="rounded-xl"
               />
               {d.image.trim() && (

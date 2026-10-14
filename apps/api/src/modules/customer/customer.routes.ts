@@ -29,9 +29,9 @@ const updateCustomerSchema = z.object({
   customFields: z.record(z.unknown()).optional(),
 });
 
-// GET /customers - List customers
+// GET / - List customers
 router.get(
-  "/customers",
+  "/",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -107,9 +107,9 @@ router.get(
   }
 );
 
-// POST /customers - Create customer
+// POST / - Create customer
 router.post(
-  "/customers",
+  "/",
   authenticate,
   validateBody(createCustomerSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -174,9 +174,9 @@ router.post(
   }
 );
 
-// GET /customers/:customerId - Get customer detail
+// GET /:customerId - Get customer detail
 router.get(
-  "/customers/:customerId",
+  "/:customerId",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -231,9 +231,9 @@ router.get(
   }
 );
 
-// PATCH /customers/:customerId - Update customer
+// PATCH /:customerId - Update customer
 router.patch(
-  "/customers/:customerId",
+  "/:customerId",
   authenticate,
   validateBody(updateCustomerSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -280,9 +280,9 @@ router.patch(
   }
 );
 
-// DELETE /customers/:customerId - Delete customer
+// DELETE /:customerId - Delete customer
 router.delete(
-  "/customers/:customerId",
+  "/:customerId",
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {

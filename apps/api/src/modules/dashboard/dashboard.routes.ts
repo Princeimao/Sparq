@@ -23,9 +23,12 @@ router.get(
         productsCount,
         appointmentsCount,
         integrationsCount,
+        lowStockProducts,
+        todaysBookings,
       ] = await Promise.all([
         prisma.order.findMany({
           where: { userId },
+          include: { customer: { select: { name: true, phone: true } } },
         }),
         prisma.customer.count({ where: { userId } }),
         prisma.message.count({
@@ -36,6 +39,25 @@ router.get(
         prisma.product.count({ where: { userId } }),
         prisma.booking.count({ where: { userId } }),
         prisma.integration.count({ where: { userId, isActive: true } }),
+        prisma.product.findMany({
+          where: { userId, stock: { lte: 5 } },
+          select: { id: true, name: true, stock: true, price: true },
+          orderBy: { stock: "asc" },
+          take: 6,
+        }),
+        prisma.booking.findMany({
+          where: {
+            userId,
+            startTime: {
+              gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+              lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+            },
+            status: { notIn: ["CANCELLED", "NO_SHOW"] },
+          },
+          orderBy: { startTime: "asc" },
+          take: 8,
+          include: { service: { select: { name: true } } },
+        }),
       ]);
 
       const totalSales = orders.length;
@@ -53,6 +75,63 @@ router.get(
       const weeklyRevenue = paidOrders
         .filter((o) => o.createdAt >= startOfWeek)
         .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+      // ── Daily-ops aggregates ──────────────────────────────────────────
+      const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const yesterdayStart = new Date(dayStart);
+      yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+      const isPaid = (o: { status: string }) =>
+        o.status === "PAID" || o.status === "COMPLETED";
+
+      const todayOrders = orders.filter((o) => o.createdAt >= dayStart);
+      const todayRevenue = todayOrders
+        .filter(isPaid)
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+      const yesterdayRevenue = orders
+        .filter((o) => o.createdAt >= yesterdayStart && o.createdAt < dayStart)
+        .filter(isPaid)
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+      const revenueDeltaPct =
+        yesterdayRevenue > 0
+          ? Number((((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100).toFixed(1))
+          : todayRevenue > 0
+            ? 100
+            : 0;
+
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthRevenue = paidOrders
+        .filter((o) => o.createdAt >= monthStart)
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+      const pendingOrders = orders
+        .filter((o) => o.status === "PENDING")
+        .sort((a, b) => +b.createdAt - +a.createdAt)
+        .slice(0, 5)
+        .map((o) => ({
+          id: o.id,
+          productName: o.productName,
+          amount: o.amount || 0,
+          createdAt: o.createdAt,
+          customerName: (o as { customer?: { name?: string | null; phone?: string } | null })
+            .customer?.name ?? null,
+        }));
+      const unpaidAmount = orders
+        .filter((o) => o.status === "PENDING")
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+      const newCustomersWeek = await prisma.customer.count({
+        where: { userId, createdAt: { gte: startOfWeek } },
+      });
+
+      const bookingsByStatusRows = await prisma.booking.groupBy({
+        by: ["status"],
+        where: { userId },
+        _count: { status: true },
+      });
+      const bookingsByStatus = bookingsByStatusRows.map((r) => ({
+        status: r.status,
+        count: r._count.status,
+      }));
 
       // Calculated Expenses (28% of total revenue + operational overhead)
       const expenseAmount = totalRevenue > 0 ? totalRevenue * 0.28 + 150 : 85;
@@ -223,6 +302,27 @@ router.get(
             recentOrders,
             recentCustomers,
             upcomingAppointments,
+            // Daily-ops additions (additive — existing clients unaffected).
+            today: {
+              revenue: todayRevenue,
+              orders: todayOrders.length,
+              bookings: todaysBookings.length,
+              revenueDeltaPct,
+            },
+            period: { weekRevenue: weeklyRevenue, monthRevenue },
+            newCustomersWeek,
+            unpaidAmount,
+            pendingOrders,
+            lowStock: lowStockProducts,
+            todaysBookings: todaysBookings.map((b) => ({
+              id: b.id,
+              customerName: b.customerName,
+              startTime: b.startTime,
+              endTime: b.endTime,
+              status: b.status,
+              serviceName: b.service?.name ?? null,
+            })),
+            bookingsByStatus,
           },
           "Dashboard data fetched successfully",
           true,

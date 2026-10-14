@@ -43,8 +43,7 @@ const envSchema = z.object({
   RAZORPAY_PLAN_PRO_MONTHLY: z.string().optional(),
   RAZORPAY_PLAN_PRO_YEARLY: z.string().optional(),
 
-  // Frontend origin(s) allowed by CORS. Comma-separated to cover the
-  // production Vercel URL plus preview deployments, e.g.
+  // Frontend origin(s) allowed by CORS. Comma-separated to cover the  // production Vercel URL plus preview deployments, e.g.
   // "https://sparq.vercel.app,https://sparq-git-main-user.vercel.app".
   FRONTEND_URL: z.string().min(1).default("http://localhost:3000"),
 
@@ -58,6 +57,22 @@ const envSchema = z.object({
 
   // Redis
   REDIS_URL: z.string().url(),
+
+  // Object storage (direct-to-bucket uploads via presigned URLs).
+  // STORAGE_PROVIDER=s3 (default, AWS SDK — also speaks R2/MinIO via
+  // S3_ENDPOINT) or gcs (legacy Google Cloud Storage path).
+  STORAGE_PROVIDER: z.enum(["s3", "gcs"]).default("s3"),
+  S3_BUCKET: z.string().optional(),
+  S3_REGION: z.string().default("ap-south-1"),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_FORCE_PATH_STYLE: z.coerce.boolean().default(false),
+  // Public CDN in front of the bucket (e.g. CloudFront). Falls back to
+  // the standard https://<bucket>.s3.<region>.amazonaws.com/<key> URL.
+  S3_PUBLIC_BASE_URL: z.string().url().optional(),
+  UPLOAD_MAX_IMAGE_MB: z.coerce.number().default(8),
+  UPLOAD_URL_TTL_SEC: z.coerce.number().default(900),
 
   // Langchain Gemini
   GEMINI_API_KEY: z.string().optional(),

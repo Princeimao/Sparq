@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { NumberTicker } from "@/components/bits/NumberTicker";
 import { FuseButton } from "@/components/bits/FuseButton";
 import { SlidePills } from "@/components/bits/SlidePills";
+import { useConfirm } from "@/components/ui/confirm";
 import {
   deleteStaff,
   getStaff,
@@ -71,6 +72,7 @@ export default function StaffDetailPage({
   const rootRef = useRef<HTMLDivElement>(null);
 
   const [staff, setStaff] = useState<StaffDetail | null>(null);
+  const confirmAction = useConfirm();
   const [upcoming, setUpcoming] = useState<Upcoming[]>([]);
   const [pastCount, setPastCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -154,7 +156,14 @@ export default function StaffDetailPage({
   };
 
   const remove = async () => {
-    if (!staff || !confirm(`Remove ${staff.name}? Upcoming bookings will deactivate them instead.`)) return;
+    if (!staff) return;
+    const ok = await confirmAction({
+      title: `Remove ${staff.name}?`,
+      body: "Upcoming bookings will deactivate them instead of deleting.",
+      confirmLabel: "Remove",
+      tone: "danger",
+    });
+    if (!ok) return;
     try {
       const res = await deleteStaff(id);
       toast.success(res.archived ? "Deactivated — upcoming bookings kept" : "Provider removed");

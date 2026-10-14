@@ -7,6 +7,7 @@ import { useAppSelector } from "@/lib/store";
 import AppSidebar from "@/components/AppSidebar";
 import FacebookSDK from "@/components/FacebookSDK";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ConfirmProvider } from "@/components/ui/confirm";
 import { getOnboarding } from "@/lib/onboarding";
 
 export default function DashboardLayout({
@@ -59,14 +60,16 @@ export default function DashboardLayout({
 
   return (
     <TooltipProvider>
-      <AppSidebar>
-        <div className="w-full h-full">
-          <div className="p-4">
-            <FacebookSDK />
-            {children}
+      <ConfirmProvider>
+        <AppSidebar>
+          <div className="w-full h-full">
+            <div className="p-4">
+              <FacebookSDK />
+              {children}
+            </div>
           </div>
-        </div>
-      </AppSidebar>
+        </AppSidebar>
+      </ConfirmProvider>
     </TooltipProvider>
   );
 }

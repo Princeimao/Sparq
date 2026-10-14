@@ -30,22 +30,15 @@ import uploadRoutes from "./modules/upload/upload.routes";
 
 const app = express();
 
-// Behind the Catalyst reverse proxy: trust X-Forwarded-* so req.ip /
-// req.protocol are the client's, not the proxy's. Without this every user
-// shares one rate-limit bucket and secure-cookie semantics break.
 app.set("trust proxy", 1);
 
 app.use(helmet());
-
-// CORS allowlist — FRONTEND_URL accepts comma-separated origins so Vercel
-// preview deployments keep working alongside production.
 const allowedOrigins = env.FRONTEND_URL.split(",")
   .map((o) => o.trim().replace(/\/$/, ""))
   .filter(Boolean);
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Same-origin / curl / health checks carry no Origin header.
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error(`CORS blocked for origin ${origin}`));
@@ -53,8 +46,7 @@ app.use(
     credentials: true,
   }),
 );
-// Capture the raw body for HMAC-verified webhooks (Razorpay).
-// `req.rawBody` is set via the Express Request extension in billing routes.
+
 app.use(
   express.json({
     verify: (req, _res, buf) => {

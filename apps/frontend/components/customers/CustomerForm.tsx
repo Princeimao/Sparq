@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { animate, stagger } from "animejs";
-import { useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import { ArrowLeft, MapPin, Plus, Trash2, UserRound } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FuseButton } from "@/components/bits/FuseButton";
 import type { CustomerAddress, CustomerDetail } from "@/lib/customers";
 import { cn } from "@/lib/utils";
@@ -36,6 +29,8 @@ export interface CustomerFormValue {
   addresses: AddressDraft[];
   removedAddressIds: string[];
 }
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 const EMPTY_ADDRESS: AddressDraft = {
   label: "",
@@ -73,6 +68,65 @@ export function toFormValue(detail?: CustomerDetail | null): CustomerFormValue {
   };
 }
 
+function Card({
+  index,
+  reduceMotion,
+  icon,
+  title,
+  action,
+  children,
+}: {
+  index: number;
+  reduceMotion: boolean;
+  icon: React.ReactNode;
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.section
+      initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(index * 0.07, 0.28), duration: 0.4, ease: EASE }}
+      className="rounded-[1.6rem] bg-ink/[0.045] p-5"
+    >
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h2 className="text-[15px] font-semibold tracking-tight text-ink flex items-center gap-2">
+          <span className="flex size-8 items-center justify-center rounded-xl bg-white text-ink">
+            {icon}
+          </span>
+          {title}
+        </h2>
+        {action}
+      </div>
+      {children}
+    </motion.section>
+  );
+}
+
+function FillInput(props: React.InputHTMLAttributes<HTMLInputElement> & { small?: boolean }) {
+  const { small, className, ...rest } = props;
+  return (
+    <input
+      {...rest}
+      className={cn(
+        "w-full rounded-2xl bg-white font-medium text-ink placeholder:text-ink/30 placeholder:font-normal",
+        "focus:outline-none focus:ring-2 focus:ring-brand/40 transition-shadow",
+        small ? "px-3.5 py-2 text-[13px]" : "px-4 py-3 text-sm",
+        className,
+      )}
+    />
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/45 mb-1.5">
+      {children}
+    </span>
+  );
+}
+
 export function CustomerForm({
   initial,
   saving,
@@ -87,30 +141,12 @@ export function CustomerForm({
   onSubmit: (value: CustomerFormValue) => void;
 }) {
   const reduceMotion = useReducedMotion();
-  const rootRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState<CustomerFormValue>(() => toFormValue(initial));
 
   useEffect(() => {
     setForm(toFormValue(initial));
-  }, [initial?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (reduceMotion) return;
-    const root = rootRef.current;
-    if (!root) return;
-    const cards = root.querySelectorAll("[data-cf-card]");
-    if (cards.length === 0) return;
-    const anim = animate(cards, {
-      opacity: [0, 1],
-      translateY: [18, 0],
-      duration: 500,
-      delay: stagger(80),
-      ease: "outCubic",
-    });
-    return () => {
-      anim.revert();
-    };
-  }, [reduceMotion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial?.id]);
 
   const patch = (p: Partial<CustomerFormValue>) =>
     setForm((f) => ({ ...f, ...p }));
@@ -149,120 +185,101 @@ export function CustomerForm({
   };
 
   return (
-    <div ref={rootRef}>
+    <div>
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-ink/55 hover:text-ink transition-colors mb-4"
       >
         <ArrowLeft className="size-4" /> Back
       </button>
 
-      <form onSubmit={submit} className="space-y-4 max-w-3xl">
+      <form onSubmit={submit} className="space-y-3 max-w-3xl">
         {/* Identity */}
-        <Card data-cf-card className="rounded-3xl border shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                <UserRound className="size-4" />
-              </span>
-              Identity
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="cf-phone">Phone / WhatsApp *</Label>
-              <Input
-                id="cf-phone"
+        <Card index={0} reduceMotion={!!reduceMotion} icon={<UserRound className="size-4" />} title="Identity">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <FieldLabel>Phone / WhatsApp *</FieldLabel>
+              <FillInput
                 value={form.phone}
                 onChange={(e) => patch({ phone: e.target.value })}
                 placeholder="+919876543210"
                 required
                 disabled={!!initial}
-                className="rounded-xl"
+                className="tabular-nums"
               />
               {!!initial && (
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-ink/45 mt-1.5">
                   Phone is the customer identity and can&apos;t be changed.
                 </p>
               )}
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="cf-name">Full name</Label>
-              <Input
-                id="cf-name"
+            <div>
+              <FieldLabel>Full name</FieldLabel>
+              <FillInput
                 value={form.name}
                 onChange={(e) => patch({ name: e.target.value })}
                 placeholder="e.g. Priya Sharma"
-                className="rounded-xl"
               />
             </div>
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="cf-email">Email</Label>
-              <Input
-                id="cf-email"
+            <div className="sm:col-span-2">
+              <FieldLabel>Email</FieldLabel>
+              <FillInput
                 type="email"
                 value={form.email}
                 onChange={(e) => patch({ email: e.target.value })}
                 placeholder="priya@example.com"
-                className="rounded-xl"
               />
             </div>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Addresses */}
-        <Card data-cf-card className="rounded-3xl border shadow-sm">
-          <CardHeader className="pb-3 flex flex-row items-center justify-between">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-                <MapPin className="size-4" />
-              </span>
-              Addresses
-              {form.addresses.length > 0 && (
-                <Badge variant="secondary" className="ml-1 tabular-nums">
-                  {form.addresses.length}
-                </Badge>
-              )}
-            </CardTitle>
-            <Button
+        <Card
+          index={1}
+          reduceMotion={!!reduceMotion}
+          icon={<MapPin className="size-4" />}
+          title={`Addresses${form.addresses.length > 0 ? ` · ${form.addresses.length}` : ""}`}
+          action={
+            <button
               type="button"
-              variant="outline"
-              size="sm"
-              className="rounded-full"
               onClick={() => patch({ addresses: [...form.addresses, { ...EMPTY_ADDRESS }] })}
+              className="h-9 inline-flex items-center gap-1 rounded-full bg-white px-3.5 text-xs font-semibold text-ink hover:bg-ink hover:text-white transition-colors"
             >
-              <Plus className="size-3.5 mr-1" /> Add
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {form.addresses.length === 0 ? (
-              <p className="text-xs text-muted-foreground py-3 text-center border border-dashed rounded-2xl">
-                No addresses yet — add home, work or delivery addresses. Saved
-                addresses are only ever used when explicitly chosen.
-              </p>
-            ) : (
-              form.addresses.map((a, i) => (
-                <div key={a.id ?? `new-${i}`} className="rounded-2xl border p-3.5 space-y-3 bg-muted/20">
+              <Plus className="size-3.5" /> Add
+            </button>
+          }
+        >
+          {form.addresses.length === 0 ? (
+            <p className="text-xs text-ink/50 py-4 text-center rounded-2xl bg-white/60">
+              No addresses yet — add home, work or delivery addresses.
+            </p>
+          ) : (
+            <div className="space-y-2.5">
+              {form.addresses.map((a, i) => (
+                <motion.div
+                  key={a.id ?? `new-${i}`}
+                  layout
+                  initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-2xl bg-white p-3.5 space-y-2.5"
+                >
                   <div className="flex items-center gap-2">
-                    <Input
+                    <FillInput
+                      small
                       value={a.label}
                       onChange={(e) => patchAddress(i, { label: e.target.value })}
                       placeholder="Label — Home, Work…"
                       aria-label={`Address ${i + 1} label`}
-                      className="h-8 text-xs rounded-lg"
+                      className="bg-ink/[0.05]"
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        patchAddress(i, { isDefault: !a.isDefault })
-                      }
+                      onClick={() => patchAddress(i, { isDefault: !a.isDefault })}
                       aria-pressed={a.isDefault}
                       title="Default address"
                       className={cn(
-                        "text-[11px] font-medium px-2.5 py-1 rounded-full border shrink-0 transition-colors",
-                        a.isDefault
-                          ? "border-zinc-900 bg-zinc-900 text-white"
-                          : "border-zinc-200 text-muted-foreground hover:border-zinc-400",
+                        "text-[11px] font-semibold px-2.5 py-1.5 rounded-full shrink-0 transition-colors",
+                        a.isDefault ? "bg-ink text-white" : "bg-ink/[0.07] text-ink/55 hover:text-ink",
                       )}
                     >
                       Default
@@ -271,142 +288,144 @@ export function CustomerForm({
                       type="button"
                       onClick={() => removeAddress(i)}
                       aria-label={`Remove address ${i + 1}`}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
+                      className="p-2 rounded-full text-ink/45 hover:text-red-600 hover:bg-red-500/10 transition-colors shrink-0"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
                   </div>
-                  <Input
+                  <FillInput
+                    small
                     value={a.line1}
                     onChange={(e) => patchAddress(i, { line1: e.target.value })}
                     placeholder="Street address *"
                     aria-label={`Address ${i + 1} street`}
-                    className="rounded-xl"
+                    className="bg-ink/[0.05]"
                   />
                   <div className="grid grid-cols-3 gap-2">
-                    <Input
+                    <FillInput
+                      small
                       value={a.city}
                       onChange={(e) => patchAddress(i, { city: e.target.value })}
                       placeholder="City *"
                       aria-label={`Address ${i + 1} city`}
-                      className="rounded-xl"
+                      className="bg-ink/[0.05]"
                     />
-                    <Input
+                    <FillInput
+                      small
                       value={a.state}
                       onChange={(e) => patchAddress(i, { state: e.target.value })}
                       placeholder="State"
                       aria-label={`Address ${i + 1} state`}
-                      className="rounded-xl"
+                      className="bg-ink/[0.05]"
                     />
-                    <Input
+                    <FillInput
+                      small
                       value={a.pincode}
                       onChange={(e) => patchAddress(i, { pincode: e.target.value })}
                       placeholder="Pincode *"
                       inputMode="numeric"
                       aria-label={`Address ${i + 1} pincode`}
-                      className="rounded-xl"
+                      className="bg-ink/[0.05] tabular-nums"
                     />
                   </div>
-                  <Input
+                  <FillInput
+                    small
                     value={a.landmark}
                     onChange={(e) => patchAddress(i, { landmark: e.target.value })}
                     placeholder="Landmark (optional)"
                     aria-label={`Address ${i + 1} landmark`}
-                    className="rounded-xl"
+                    className="bg-ink/[0.05]"
                   />
-                </div>
-              ))
-            )}
-          </CardContent>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </Card>
 
         {/* Preferences */}
-        <Card data-cf-card className="rounded-3xl border shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">
-              Preferences & notes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="cf-notes">Notes</Label>
-              <Textarea
-                id="cf-notes"
+        <Card index={2} reduceMotion={!!reduceMotion} icon={<Plus className="size-4" />} title="Preferences & notes">
+          <div className="space-y-3">
+            <div>
+              <FieldLabel>Notes</FieldLabel>
+              <textarea
                 rows={3}
                 value={form.notes}
                 onChange={(e) => patch({ notes: e.target.value })}
                 placeholder="Allergies, VIP flags, language preference…"
-                className="rounded-xl"
+                className="w-full rounded-2xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none transition-shadow"
               />
             </div>
-            <div className="space-y-2">
-              <Label>Custom fields</Label>
+            <div>
+              <FieldLabel>Custom fields</FieldLabel>
               {form.customFields.length === 0 ? (
-                <p className="text-xs text-muted-foreground">
-                  No custom fields — add things like birthday, skin type, table preference.
+                <p className="text-xs text-ink/50">
+                  None yet — birthdays, skin type, table preference…
                 </p>
               ) : (
-                form.customFields.map((f, i) => (
-                  <div key={i} className="flex gap-2">
-                    <Input
-                      value={f.key}
-                      onChange={(e) =>
-                        patch({
-                          customFields: form.customFields.map((c, j) =>
-                            j === i ? { ...c, key: e.target.value } : c,
-                          ),
-                        })
-                      }
-                      placeholder="Field"
-                      aria-label={`Custom field ${i + 1} name`}
-                      className="rounded-xl"
-                    />
-                    <Input
-                      value={f.value}
-                      onChange={(e) =>
-                        patch({
-                          customFields: form.customFields.map((c, j) =>
-                            j === i ? { ...c, value: e.target.value } : c,
-                          ),
-                        })
-                      }
-                      placeholder="Value"
-                      aria-label={`Custom field ${i + 1} value`}
-                      className="rounded-xl"
-                    />
-                    <button
-                      type="button"
-                      aria-label={`Remove custom field ${i + 1}`}
-                      onClick={() =>
-                        patch({ customFields: form.customFields.filter((_, j) => j !== i) })
-                      }
-                      className="p-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive shrink-0"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </div>
-                ))
+                <div className="space-y-2">
+                  {form.customFields.map((f, i) => (
+                    <div key={i} className="flex gap-2">
+                      <FillInput
+                        small
+                        value={f.key}
+                        onChange={(e) =>
+                          patch({
+                            customFields: form.customFields.map((c, j) =>
+                              j === i ? { ...c, key: e.target.value } : c,
+                            ),
+                          })
+                        }
+                        placeholder="Field"
+                        aria-label={`Custom field ${i + 1} name`}
+                        className="bg-ink/[0.05]"
+                      />
+                      <FillInput
+                        small
+                        value={f.value}
+                        onChange={(e) =>
+                          patch({
+                            customFields: form.customFields.map((c, j) =>
+                              j === i ? { ...c, value: e.target.value } : c,
+                            ),
+                          })
+                        }
+                        placeholder="Value"
+                        aria-label={`Custom field ${i + 1} value`}
+                        className="bg-ink/[0.05]"
+                      />
+                      <button
+                        type="button"
+                        aria-label={`Remove custom field ${i + 1}`}
+                        onClick={() => patch({ customFields: form.customFields.filter((_, j) => j !== i) })}
+                        className="p-2 rounded-full text-ink/45 hover:text-red-600 hover:bg-red-500/10 shrink-0 self-center transition-colors"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() =>
-                  patch({ customFields: [...form.customFields, { key: "", value: "" }] })
-                }
+                onClick={() => patch({ customFields: [...form.customFields, { key: "", value: "" }] })}
+                className="mt-2 h-9 inline-flex items-center gap-1 rounded-full bg-white px-3.5 text-xs font-semibold text-ink hover:bg-ink hover:text-white transition-colors"
               >
-                <Plus className="size-3.5 mr-1" /> Add field
-              </Button>
+                <Plus className="size-3.5" /> Add field
+              </button>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
         {/* Sticky footer */}
-        <div className="sticky bottom-4 flex items-center justify-end gap-2 rounded-2xl border bg-card/95 backdrop-blur px-4 py-3 shadow-lg">
-          <Button type="button" variant="ghost" onClick={onBack} disabled={saving}>
+        <div className="sticky bottom-4 flex items-center justify-end gap-2 rounded-[1.4rem] bg-ink px-4 py-3">
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={saving}
+            className="h-11 px-5 rounded-full text-sm font-medium text-white/65 hover:text-white transition-colors"
+          >
             Cancel
-          </Button>
+          </button>
           <FuseButton type="submit" disabled={saving} ariaLabel={submitLabel}>
             {submitLabel}
           </FuseButton>
@@ -415,4 +434,3 @@ export function CustomerForm({
     </div>
   );
 }
-

@@ -26,6 +26,7 @@ import {
 } from "@/lib/onboarding";
 import { useAppDispatch } from "@/lib/store";
 import { logoutUser } from "@/lib/store/authSlice";
+import { useConfirm } from "@/components/ui/confirm";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -626,6 +627,7 @@ function AlertsPanel() {
 // ─── Danger ──────────────────────────────────────────────────────────────────
 
 function DangerPanel() {
+  const confirmAction = useConfirm();
   return (
     <div>
       <PanelTitle sub="Irreversible actions. Tread carefully.">
@@ -640,10 +642,14 @@ function DangerPanel() {
         </div>
         <motion.button
           whileTap={{ scale: 0.96 }}
-          onClick={() => {
-            if (confirm("Request permanent deletion of your workspace and all data?")) {
-              toast.error("Deletion request submitted. Support will confirm by email.");
-            }
+          onClick={async () => {
+            const ok = await confirmAction({
+              title: "Delete workspace & data?",
+              body: "Catalog, flows and conversation history go away permanently.",
+              confirmLabel: "Request deletion",
+              tone: "danger",
+            });
+            if (ok) toast.error("Deletion request submitted. Support will confirm by email.");
           }}
           className="h-10 inline-flex items-center gap-2 rounded-full bg-red-600 px-5 text-[13px] font-medium text-white hover:bg-red-700 transition-colors"
         >

@@ -1,20 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { api } from "@/lib/api";
-import { Loader2, Plus, Package, Edit, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Plus, Package, Pencil, Trash2, Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ProductDrawer } from "@/components/products/ProductDrawer";
 import { ProductWizard } from "@/components/wizards/ProductWizard";
-import { ProductCardComp } from "@/components/ProductCardComp";
+import { SlidePills } from "@/components/bits/SlidePills";
+import { useConfirm } from "@/components/ui/confirm";
+import { cn } from "@/lib/utils";
 
 export interface Product {
   id: string;
@@ -26,12 +21,45 @@ export interface Product {
   sku?: string;
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const inr = (n: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: Number.isInteger(n) ? 0 : 2,
+  }).format(n);
+
+type StockFilter = "all" | "in" | "low" | "out";
+
+function stockState(stock: number): "in" | "low" | "out" {
+  if (stock <= 0) return "out";
+  if (stock <= 5) return "low";
+  return "in";
+}
+
+const STOCK_PILL: Record<string, string> = {
+  in: "bg-brand/15 text-brand-deep",
+  low: "bg-amber-500/15 text-amber-700",
+  out: "bg-red-500/15 text-red-700",
+};
+
+const STOCK_LABEL: Record<string, (s: number) => string> = {
+  in: (s) => `${s} in stock`,
+  low: (s) => `Only ${s} left`,
+  out: () => "Out of stock",
+};
+
 export default function ProductsPage() {
+  const reduceMotion = useReducedMotion();
+  const confirmAction = useConfirm();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<StockFilter>("all");
 
   const fetchProducts = useCallback(async () => {
     const res = await api.get(`/products`);
@@ -39,24 +67,31 @@ export default function ProductsPage() {
   }, []);
 
   useEffect(() => {
-    const loadProducts = async () => {
+    let cancelled = false;
+    (async () => {
       setLoading(true);
-
       try {
-        const products = await fetchProducts();
-        setProducts(products);
+        const list = await fetchProducts();
+        if (!cancelled) setProducts(list);
       } catch {
-        toast.error("Failed to load products");
+        if (!cancelled) toast.error("Failed to load products");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-
-    loadProducts();
   }, [fetchProducts]);
 
-  const handleDelete = async (productId: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+  const handleDelete = async (productId: string, productName: string) => {
+    const ok = await confirmAction({
+      title: `Delete ${productName}?`,
+      body: "It disappears from your catalog and WhatsApp orders immediately.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
     try {
       await api.delete(`/products/${productId}`);
       setProducts((prev) => prev.filter((p) => p.id !== productId));
@@ -87,107 +122,210 @@ export default function ProductsPage() {
     setDrawerOpen(true);
   };
 
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return products.filter((p) => {
+      if (filter !== "all" && stockState(p.stock) !== filter) return false;
+      if (q && !`${p.name} ${p.sku ?? ""}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [products, query, filter]);
+
+  const counts = useMemo(
+    () => ({
+      all: products.length,
+      in: products.filter((p) => stockState(p.stock) === "in").length,
+      low: products.filter((p) => stockState(p.stock) === "low").length,
+      out: products.filter((p) => stockState(p.stock) === "out").length,
+    }),
+    [products],
+  );
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="relative p-6 max-w-7xl mx-auto space-y-5">
+      {!reduceMotion && (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 right-0 size-72 rounded-full bg-brand/10 blur-[110px]"
+          animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+
+      {/* Header */}
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: EASE }}
+        className="relative flex flex-col sm:flex-row sm:items-end gap-4"
+      >
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Products</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your catalog of products and services.
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">
+            Catalog · {products.length} product{products.length === 1 ? "" : "s"}
+          </p>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-ink mt-1">
+            Products
+          </h1>
+          <p className="text-[15px] text-ink/55 mt-1.5">
+            Everything customers can order over WhatsApp.
           </p>
         </div>
-        <Button onClick={openCreateDrawer} className="py-5 rounded-2xl">
-          <Plus className="size-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex items-center gap-2 sm:ml-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-ink/40" />
+            <input
+              placeholder="Search products…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search products"
+              className="pl-8 h-10 w-44 rounded-full text-xs font-medium bg-ink/[0.05] text-ink placeholder:text-ink/35 focus:outline-none focus:bg-ink/[0.08] transition-colors"
+            />
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={openCreateDrawer}
+            className="h-10 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-medium text-white hover:bg-brand transition-colors"
+          >
+            <Plus className="size-4" /> Add product
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Stock filter */}
+      <div className="relative">
+        <SlidePills
+          id="products-stock"
+          size="sm"
+          value={filter}
+          onChange={setFilter}
+          options={[
+            { value: "all", label: <>All <span className="tabular-nums opacity-70">{counts.all}</span></> },
+            { value: "in", label: <>In stock <span className="tabular-nums opacity-70">{counts.in}</span></> },
+            { value: "low", label: <>Low <span className="tabular-nums opacity-70">{counts.low}</span></> },
+            { value: "out", label: <>Out <span className="tabular-nums opacity-70">{counts.out}</span></> },
+          ]}
+        />
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-xl bg-muted/5">
-          <Package className="size-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">No products found</h3>
-          <p className="text-sm text-muted-foreground mt-1 mb-4">
-            Add your first product to get started.
-          </p>
-          <Button onClick={openCreateDrawer} variant="outline">
-            <Plus className="size-4 mr-2" />
-            Add Product
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <Card
-              key={product.id}
-              className="overflow-hidden flex flex-col hover:shadow-md transition-all duration-200"
-            >
-              {product.image ? (
-                <div className="relative w-full h-48">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              ) : (
-                <div className="relative w-full h-48 bg-muted flex items-center justify-center">
-                  <Package className="size-10 text-muted-foreground/30" />
-                </div>
-              )}
-              <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-lg truncate">
-                  {product.name}
-                </CardTitle>
-                {product.sku && (
-                  <p className="text-xs text-muted-foreground font-mono">
-                    SKU: {product.sku}
-                  </p>
-                )}
-              </CardHeader>
-              <CardContent className="p-4 pt-0 flex-1">
-                <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
-                  {product.description || "No description provided."}
-                </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="font-semibold text-lg text-primary">
-                    ${product.price.toFixed(2)}
-                  </span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full font-medium ${product.stock > 0 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"}`}
-                  >
-                    {product.stock > 0
-                      ? `${product.stock} in stock`
-                      : "Out of stock"}
-                  </span>
-                </div>
-              </CardContent>
-              <CardFooter className="p-4 pt-4 border-t flex items-center gap-2 mt-auto bg-muted/20">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 py-6"
-                  onClick={() => openUpdateDrawer(product)}
-                >
-                  <Edit className="size-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10 py-6"
-                  onClick={() => handleDelete(product.id)}
-                >
-                  <Trash2 className="size-4 mr-2" />
-                  Delete
-                </Button>
-              </CardFooter>
-            </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="rounded-[1.4rem] bg-ink/[0.045] animate-pulse overflow-hidden">
+              <div className="aspect-[4/3] bg-ink/[0.05]" />
+              <div className="p-4 space-y-2">
+                <div className="h-4 w-2/3 rounded-full bg-ink/10" />
+                <div className="h-4 w-1/3 rounded-full bg-ink/10" />
+              </div>
+            </div>
           ))}
         </div>
+      ) : products.length === 0 ? (
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative flex flex-col items-center justify-center py-20 text-center rounded-[1.6rem] bg-ink/[0.035]"
+        >
+          <span className="flex size-14 items-center justify-center rounded-[1.2rem] bg-ink text-white">
+            <Package className="size-7" />
+          </span>
+          <h3 className="text-lg font-semibold text-ink mt-4">No products yet</h3>
+          <p className="text-sm text-ink/50 mt-1 mb-5">
+            Add your first product to start selling on WhatsApp.
+          </p>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={openCreateDrawer}
+            className="h-11 inline-flex items-center gap-1.5 rounded-full bg-ink px-5 text-sm font-medium text-white hover:bg-brand transition-colors"
+          >
+            <Plus className="size-4" /> Add product
+          </motion.button>
+        </motion.div>
+      ) : visible.length === 0 ? (
+        <div className="relative py-16 text-center">
+          <p className="font-medium text-sm text-ink">Nothing matches</p>
+          <p className="text-xs text-ink/50 mt-1">Try a different search or filter.</p>
+        </div>
+      ) : (
+        <motion.div layout className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          <AnimatePresence mode="popLayout">
+            {visible.map((product, i) => {
+              const state = stockState(product.stock);
+              return (
+                <motion.article
+                  key={product.id}
+                  layout
+                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.3), duration: 0.35, ease: EASE }}
+                  className="group rounded-[1.4rem] bg-ink/[0.045] hover:bg-ink/[0.065] transition-colors overflow-hidden flex flex-col"
+                >
+                  {/* Image */}
+                  <div className="relative aspect-[4/3] overflow-hidden bg-ink/[0.05]">
+                    {product.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        loading="lazy"
+                        className={cn(
+                          "size-full object-cover transition-transform duration-500 group-hover:scale-[1.05]",
+                          state === "out" && "grayscale opacity-70",
+                        )}
+                      />
+                    ) : (
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <Package className="size-10 text-ink/20" />
+                      </span>
+                    )}
+                    <span
+                      className={cn(
+                        "absolute left-2.5 top-2.5 rounded-full px-2.5 py-1 text-[10px] font-semibold",
+                        STOCK_PILL[state],
+                        state === "in" && "bg-white/90 text-ink",
+                      )}
+                    >
+                      {STOCK_LABEL[state](product.stock)}
+                    </span>
+                    <span className="absolute right-2.5 top-2.5 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => openUpdateDrawer(product)}
+                        aria-label={`Edit ${product.name}`}
+                        className="flex size-8 items-center justify-center rounded-full bg-white/95 text-ink hover:bg-white transition-colors"
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id, product.name)}
+                        aria-label={`Delete ${product.name}`}
+                        className="flex size-8 items-center justify-center rounded-full bg-white/95 text-ink hover:bg-red-600 hover:text-white transition-colors"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </span>
+                  </div>
+                  {/* Body */}
+                  <div className="p-4 flex flex-col gap-1 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-[15px] tracking-tight text-ink leading-snug line-clamp-1">
+                        {product.name}
+                      </h3>
+                      <p className="text-[15px] font-bold tabular-nums text-ink shrink-0">
+                        {inr(product.price)}
+                      </p>
+                    </div>
+                    {product.sku && (
+                      <p className="text-[11px] text-ink/40 font-mono">SKU {product.sku}</p>
+                    )}
+                    <p className="text-[13px] text-ink/50 leading-relaxed line-clamp-2 min-h-10">
+                      {product.description || "No description yet."}
+                    </p>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
       )}
 
       <ProductDrawer

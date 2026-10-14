@@ -1,31 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import {
-  Loader2,
   Plus,
   Briefcase,
-  Edit,
+  Pencil,
   Trash2,
   Clock,
-  User,
-  Users,
-  DollarSign,
+  Search,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { ServiceDrawer } from "@/components/services/ServiceDrawer";
 import { ServiceWizard } from "@/components/wizards/ServiceWizard";
+import { SlidePills } from "@/components/bits/SlidePills";
+import { useConfirm } from "@/components/ui/confirm";
+import { cn } from "@/lib/utils";
 
 export interface Service {
   id: string;
@@ -48,26 +39,27 @@ const ASSIGNMENT_LABELS: Record<string, string> = {
   SINGLE: "Solo",
 };
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.97 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring" as const, stiffness: 260, damping: 22 } },
-  exit: { opacity: 0, scale: 0.94, transition: { duration: 0.22 } },
-};
+const inr = (n: number) =>
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: Number.isInteger(n) ? 0 : 2,
+  }).format(n);
+
+type ModeFilter = "all" | "CUSTOMER_CHOICE" | "BUSINESS_ASSIGN" | "AUTO" | "SINGLE";
 
 export default function ServicesPage() {
+  const reduceMotion = useReducedMotion();
+  const confirmAction = useConfirm();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<ModeFilter>("all");
 
   const fetchServices = useCallback(async () => {
     const res = await api.get(`/services`);
@@ -75,22 +67,31 @@ export default function ServicesPage() {
   }, []);
 
   useEffect(() => {
-    const load = async () => {
+    let cancelled = false;
+    (async () => {
       setLoading(true);
       try {
         const data = await fetchServices();
-        setServices(data);
+        if (!cancelled) setServices(data);
       } catch {
-        toast.error("Failed to load services");
+        if (!cancelled) toast.error("Failed to load services");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    load();
   }, [fetchServices]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this service?")) return;
+  const handleDelete = async (id: string, name: string) => {
+    const ok = await confirmAction({
+      title: `Delete ${name}?`,
+      body: "Upcoming bookings for it stay intact, but no new ones can be made.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
     try {
       await api.delete(`/services/${id}`);
       setServices((prev) => prev.filter((s) => s.id !== id));
@@ -110,163 +111,233 @@ export default function ServicesPage() {
   };
 
   const formatDuration = (mins: number) => {
-    if (mins < 60) return `${mins}m`;
+    if (mins < 60) return `${mins} min`;
     const h = Math.floor(mins / 60);
     const m = mins % 60;
-    return m === 0 ? `${h}h` : `${h}h ${m}m`;
+    return m === 0 ? `${h} hr` : `${h}h ${m}m`;
   };
 
+  const modeOf = (s: Service) =>
+    s.assignmentMode ?? (s.bookingMode === "SELECT_STAFF" ? "CUSTOMER_CHOICE" : "BUSINESS_ASSIGN");
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return services.filter((s) => {
+      const mode = modeOf(s);
+      if (filter !== "all" && mode !== filter) return false;
+      if (q && !s.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [services, query, filter]);
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="relative p-6 max-w-7xl mx-auto space-y-5">
+      {!reduceMotion && (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 right-0 size-72 rounded-full bg-brand/10 blur-[110px]"
+          animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+
+      {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-8"
+        transition={{ duration: 0.45, ease: EASE }}
+        className="relative flex flex-col sm:flex-row sm:items-end gap-4"
       >
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Services</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your service catalog with optional staff assignment.
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand">
+            Bookable · {services.length} service{services.length === 1 ? "" : "s"}
+          </p>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-ink mt-1">
+            Services
+          </h1>
+          <p className="text-[15px] text-ink/55 mt-1.5">
+            What customers book — and who fulfils it.
           </p>
         </div>
-        <Button
-          onClick={() => { setSelectedService(null); setWizardOpen(true); }}
-          className="py-5 rounded-2xl"
-        >
-          <Plus className="size-4 mr-2" />
-          Add Service
-        </Button>
+        <div className="flex items-center gap-2 sm:ml-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-ink/40" />
+            <input
+              placeholder="Search services…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search services"
+              className="pl-8 h-10 w-44 rounded-full text-xs font-medium bg-ink/[0.05] text-ink placeholder:text-ink/35 focus:outline-none focus:bg-ink/[0.08] transition-colors"
+            />
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={() => { setSelectedService(null); setWizardOpen(true); }}
+            className="h-10 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 text-[13px] font-medium text-white hover:bg-brand transition-colors"
+          >
+            <Plus className="size-4" /> Add service
+          </motion.button>
+        </div>
       </motion.div>
 
+      {/* Mode filter */}
+      <div className="relative">
+        <SlidePills
+          id="services-mode"
+          size="sm"
+          value={filter}
+          onChange={setFilter}
+          options={[
+            { value: "all", label: "All" },
+            { value: "CUSTOMER_CHOICE", label: "Customer picks" },
+            { value: "BUSINESS_ASSIGN", label: "We assign" },
+            { value: "AUTO", label: "Auto" },
+            { value: "SINGLE", label: "Solo" },
+          ]}
+        />
+      </div>
+
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-52 rounded-[1.4rem] bg-ink/[0.045] animate-pulse" />
+          ))}
         </div>
       ) : services.length === 0 ? (
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-xl bg-muted/5"
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative flex flex-col items-center justify-center py-20 text-center rounded-[1.6rem] bg-ink/[0.035]"
         >
-          <Briefcase className="size-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">No services yet</h3>
-          <p className="text-sm text-muted-foreground mt-1 mb-4">
-            Add your first service to get started.
+          <span className="flex size-14 items-center justify-center rounded-[1.2rem] bg-ink text-white">
+            <Briefcase className="size-7" />
+          </span>
+          <h3 className="text-lg font-semibold text-ink mt-4">No services yet</h3>
+          <p className="text-sm text-ink/50 mt-1 mb-5">
+            Offer something bookable — haircuts, consultations, tables.
           </p>
-          <Button onClick={() => { setSelectedService(null); setWizardOpen(true); }} variant="outline">
-            <Plus className="size-4 mr-2" />
-            Add Service
-          </Button>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            onClick={() => { setSelectedService(null); setWizardOpen(true); }}
+            className="h-11 inline-flex items-center gap-1.5 rounded-full bg-ink px-5 text-sm font-medium text-white hover:bg-brand transition-colors"
+          >
+            <Plus className="size-4" /> Add service
+          </motion.button>
         </motion.div>
+      ) : visible.length === 0 ? (
+        <div className="relative py-16 text-center">
+          <p className="font-medium text-sm text-ink">Nothing matches</p>
+          <p className="text-xs text-ink/50 mt-1">Try a different search or filter.</p>
+        </div>
       ) : (
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
+        <motion.div layout className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <AnimatePresence mode="popLayout">
-            {services.map((service) => (
-              <motion.div key={service.id} variants={cardVariants} layout exit="exit">
-                <Card className="overflow-hidden flex flex-col hover:shadow-md transition-all duration-200 h-full">
-                  <div className="relative h-36 bg-gradient-to-br from-purple-500/10 via-blue-500/10 to-teal-500/10 flex items-center justify-center">
-                    <div className="p-4 rounded-2xl bg-primary/10">
-                      <Briefcase className="size-8 text-primary" />
+            {visible.map((service, i) => {
+              const mode = modeOf(service);
+              const bookings = service._count?.bookings ?? 0;
+              return (
+                <motion.article
+                  key={service.id}
+                  layout
+                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.3), duration: 0.35, ease: EASE }}
+                  className="group rounded-[1.4rem] bg-ink/[0.045] hover:bg-ink/[0.065] transition-colors p-5 flex flex-col gap-3"
+                >
+                  {/* Top row */}
+                  <div className="flex items-start gap-3">
+                    <motion.span
+                      whileHover={reduceMotion ? undefined : { rotate: -6, scale: 1.06 }}
+                      className="flex size-11 items-center justify-center rounded-2xl bg-white text-ink shrink-0"
+                    >
+                      <Briefcase className="size-5" />
+                    </motion.span>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-[15px] tracking-tight text-ink leading-snug line-clamp-1">
+                        {service.name}
+                      </h3>
+                      <p className="text-xs text-ink/50 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1 tabular-nums">
+                          <Clock className="size-3" /> {formatDuration(service.duration)}
+                        </span>
+                        {service.price != null && (
+                          <span className="font-bold text-ink tabular-nums">{inr(service.price)}</span>
+                        )}
+                      </p>
                     </div>
-                    <Badge className="absolute top-3 right-3 text-[10px]" variant="secondary">
-                      {service.assignmentMode
-                        ? (ASSIGNMENT_LABELS[service.assignmentMode] ?? service.assignmentMode)
-                        : service.bookingMode === "SELECT_STAFF" ? "By Staff" : "Any Staff"}
-                    </Badge>
-                    {service.requiresPartySize && (
-                      <Badge className="absolute top-3 left-3 text-[10px]" variant="outline">
-                        Party size
-                      </Badge>
-                    )}
+                    <span className="rounded-full bg-ink px-2.5 py-1 text-[10px] font-semibold text-white shrink-0">
+                      {ASSIGNMENT_LABELS[mode] ?? mode}
+                    </span>
                   </div>
 
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-base truncate">{service.name}</CardTitle>
-                  </CardHeader>
+                  {service.description && (
+                    <p className="text-[13px] text-ink/55 leading-relaxed line-clamp-2">
+                      {service.description}
+                    </p>
+                  )}
 
-                  <CardContent className="p-4 pt-0 flex-1 space-y-2">
-                    {service.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {service.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="size-3" />
-                        {formatDuration(service.duration)}
-                      </span>
-                      {service.price != null && (
-                        <span className="flex items-center gap-1 text-xs font-semibold text-primary">
-                          <DollarSign className="size-3" />
-                          {service.price.toFixed(2)}
+                  {/* Fulfillers */}
+                  {(service.staff?.length ?? 0) > 0 || (service.resourceLinks?.length ?? 0) > 0 ? (
+                    <div className="flex items-center flex-wrap">
+                      {(service.staff ?? []).slice(0, 4).map((s) => (
+                        <span
+                          key={s.id}
+                          title={s.name}
+                          className="-ml-1.5 first:ml-0 flex size-7 items-center justify-center rounded-full bg-ink text-white text-[11px] font-bold ring-2 ring-paper"
+                        >
+                          {s.name.charAt(0).toUpperCase()}
                         </span>
-                      )}
-                      {(service._count?.bookings ?? 0) > 0 && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Users className="size-3" />
-                          {service._count?.bookings} bookings
+                      ))}
+                      {(service.resourceLinks ?? []).slice(0, 3).map((l) => (
+                        <span
+                          key={l.resource.id}
+                          className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white text-ink/65"
+                        >
+                          {l.resource.name}
+                        </span>
+                      ))}
+                      {bookings > 0 && (
+                        <span className="ml-auto text-[11px] font-semibold text-brand tabular-nums">
+                          {bookings} booking{bookings === 1 ? "" : "s"}
                         </span>
                       )}
                     </div>
-                    {service.resourceLinks && service.resourceLinks.length > 0 && (
-                      <div className="flex items-center gap-1 flex-wrap pt-1">
-                        {service.resourceLinks.slice(0, 3).map((l) => (
-                          <Badge key={l.resource.id} variant="outline" className="text-[10px] gap-1">
-                            {l.resource.name}
-                          </Badge>
-                        ))}
-                        {service.resourceLinks.length > 3 && (
-                          <Badge variant="outline" className="text-[10px]">
-                            +{service.resourceLinks.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                    {service.staff && service.staff.length > 0 && (
-                      <div className="flex items-center gap-1 flex-wrap pt-1">
-                        {service.staff.slice(0, 3).map((s) => (
-                          <Badge key={s.id} variant="outline" className="text-[10px] gap-1">
-                            <User className="size-2.5" />
-                            {s.name}
-                          </Badge>
-                        ))}
-                        {service.staff.length > 3 && (
-                          <Badge variant="outline" className="text-[10px]">
-                            +{service.staff.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
+                  ) : (
+                    bookings > 0 ? (
+                      <p className="text-[11px] font-semibold text-brand tabular-nums">
+                        {bookings} booking{bookings === 1 ? "" : "s"}
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-ink/40">
+                        No providers linked yet{service.requiresPartySize ? " · asks party size" : ""}
+                      </p>
+                    )
+                  )}
 
-                  <CardFooter className="p-4 pt-4 border-t flex items-center gap-2 mt-auto bg-muted/20">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex-1 py-6"
+                  {/* Actions */}
+                  <div className="flex gap-1.5 mt-auto pt-1">
+                    <button
                       onClick={() => { setSelectedService(service); setDrawerOpen(true); }}
+                      className="flex-1 h-9 inline-flex items-center justify-center gap-1.5 rounded-full bg-white text-[13px] font-medium text-ink hover:bg-ink hover:text-white transition-colors"
                     >
-                      <Edit className="size-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10 py-6"
-                      onClick={() => handleDelete(service.id)}
+                      <Pencil className="size-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(service.id, service.name)}
+                      aria-label={`Delete ${service.name}`}
+                      className={cn(
+                        "h-9 w-9 inline-flex items-center justify-center rounded-full transition-colors",
+                        "bg-white text-ink/55 hover:bg-red-600 hover:text-white",
+                        "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                      )}
                     >
-                      <Trash2 className="size-4 mr-2" />
-                      Delete
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+                </motion.article>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
       )}

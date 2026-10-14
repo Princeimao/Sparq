@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useConfirm } from "@/components/ui/confirm";
 import {
   Sheet,
   SheetContent,
@@ -63,6 +64,7 @@ export function BookingDrawer({
   onChanged: () => void;
 }) {
   const [booking, setBooking] = useState<Booking | null>(null);
+  const confirmAction = useConfirm();
   const [loading, setLoading] = useState(false);
   const [acting, setActing] = useState(false);
   const [staffOptions, setStaffOptions] = useState<{ id: string; name: string }[]>([]);
@@ -113,7 +115,14 @@ export function BookingDrawer({
   };
 
   const remove = async () => {
-    if (!booking || !confirm("Delete this pending booking? History is kept for confirmed ones.")) return;
+    if (!booking) return;
+    const ok = await confirmAction({
+      title: "Delete this booking?",
+      body: "Pending bookings vanish; history is kept for confirmed ones.",
+      confirmLabel: "Delete",
+      tone: "danger",
+    });
+    if (!ok) return;
     setActing(true);
     try {
       await deleteBooking(booking.id);

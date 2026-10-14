@@ -81,6 +81,57 @@ export class GcsService {
       fileKey,
     };
   }
+
+  /**
+   * Same as above but for a caller-chosen key (storage-abstraction path).
+   */
+  async generateSignedUploadUrlWithKey(
+    fileKey: string,
+    contentType: string,
+    expiresSec: number,
+  ): Promise<SignedUrlResponse> {
+    const publicUrl = `https://storage.googleapis.com/${this.bucketName}/${fileKey}`;
+
+    if (this.storage) {
+      try {
+        const file = this.storage.bucket(this.bucketName).file(fileKey);
+        const [signedUrl] = await file.getSignedUrl({
+          version: "v4",
+          action: "write",
+          expires: Date.now() + expiresSec * 1000,
+          contentType,
+        });
+        return { signedUrl, publicUrl, fileKey };
+      } catch (err) {
+        console.warn("[GcsService] Error generating GCS signed URL:", err);
+      }
+    }
+
+    return {
+      signedUrl: `/api/upload/dev-direct-upload?fileKey=${encodeURIComponent(fileKey)}`,
+      publicUrl,
+      fileKey,
+    };
+  }
+
+  /** Best-effort delete; resolves silently when storage is not configured. */
+  async deleteFile(fileKey: string): Promise<void> {
+    if (!this.storage) return;
+    await this.storage.bucket(this.bucketName).file(fileKey).delete({
+      ignoreNotFound: true,
+    });
+  }
+
+  /** Server-side write for the proxied-upload fallback path. */
+  async saveFile(fileKey: string, body: Buffer, contentType: string): Promise<void> {
+    if (!this.storage) {
+      throw new Error("GCS storage is not configured");
+    }
+    await this.storage
+      .bucket(this.bucketName)
+      .file(fileKey)
+      .save(body, { metadata: { contentType }, resumable: false });
+  }
 }
 
 export const gcsService = new GcsService();

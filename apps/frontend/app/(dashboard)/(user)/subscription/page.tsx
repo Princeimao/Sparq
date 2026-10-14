@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import { Check, Download, Loader2, ShieldCheck, Zap } from "lucide-react";
+import { useConfirm } from "@/components/ui/confirm";
 import {
   cancelSubscription,
   changePlan,
@@ -33,6 +34,7 @@ export default function SubscriptionPage() {
 
 function SubscriptionInner() {
   const searchParams = useSearchParams();
+  const confirmAction = useConfirm();
 
   // ALL HOOKS MUST BE CALLED AT THE TOP BEFORE ANY EARLY RETURNS
   const reduceMotion = useReducedMotion();
@@ -144,8 +146,12 @@ function SubscriptionInner() {
   };
 
   const handleCancel = async () => {
-    if (!confirm("Cancel your subscription at the end of the billing period?"))
-      return;
+    const ok = await confirmAction({
+      title: "Cancel at period end?",
+      body: "You keep every feature until the billing date, then drop to Free.",
+      confirmLabel: "Yes, cancel",
+    });
+    if (!ok) return;
     setActing("cancel");
     try {
       const res = await cancelSubscription(true);

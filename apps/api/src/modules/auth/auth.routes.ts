@@ -5,31 +5,28 @@ import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { authenticate, AuthPayload } from "../../middleware/auth";
 import { exchangeToken, getGoogleAuthUrl, getUserInfo } from "../../lib/auth";
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.utils";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../../utils/jwt.utils";
 
 const codeVerifierStore = new Map<string, string>();
 
 const router = Router();
 
-// ─── Secure cookie helpers ──────────────────────────────────────────────────
-// Tokens live ONLY in httpOnly cookies — they are never returned in response
-// bodies and never placed in redirect URLs. JS (and XSS) cannot read them.
-
 const ACCESS_COOKIE = "access_token";
 const REFRESH_COOKIE = "refresh_token";
-// Scoped so the long-lived refresh token is only sent to auth endpoints.
 const REFRESH_COOKIE_PATH = "/api/auth";
 
-// Cross-site hosting (Vercel frontend × Catalyst API) requires
-// SameSite=None; Secure — browsers silently drop Lax cookies on cross-site
-// fetch, which is exactly "login works but the dashboard gets 401".
-// Localhost dev stays Lax (browsers reject SameSite=None over plain HTTP).
 const COOKIE_SAMESITE = (env.COOKIE_SAMESITE ??
   (env.NODE_ENV === "production" ? "none" : "lax")) as "lax" | "none";
-const COOKIE_SECURE =
-  env.COOKIE_SECURE ?? env.NODE_ENV === "production";
+const COOKIE_SECURE = env.COOKIE_SECURE ?? env.NODE_ENV === "production";
 
-function setAuthCookies(res: Response, accessToken: string, refreshToken: string): void {
+function setAuthCookies(
+  res: Response,
+  accessToken: string,
+  refreshToken: string,
+): void {
   res.cookie(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
     secure: COOKIE_SECURE,
@@ -57,7 +54,7 @@ function clearAuthCookies(res: Response): void {
 const googleClient = new OAuth2Client(
   env.GOOGLE_CLIENT_ID,
   env.GOOGLE_CLIENT_SECRET,
-  env.GOOGLE_REDIRECT_URI
+  env.GOOGLE_REDIRECT_URI,
 );
 
 router.get("/google", (_req, res) => {
@@ -68,7 +65,7 @@ router.get("/google", (_req, res) => {
 
 router.get("/google/callback", async (req, res, next) => {
   try {
-    const { code, state } = req.query as { code: string, state: string };
+    const { code, state } = req.query as { code: string; state: string };
     if (!code) {
       res.status(400).json({ error: "Authorization code is required" });
       return;
@@ -161,7 +158,7 @@ router.post("/google/token", async (req, res, next) => {
         id: user.id,
         email: user.email,
         name: user.name,
-        avatarUrl: user.avatarUrl
+        avatarUrl: user.avatarUrl,
       },
     });
   } catch (error) {
@@ -188,7 +185,9 @@ router.post("/refresh", async (req, res, next) => {
       return;
     }
 
-    const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+    });
     if (!user) {
       clearAuthCookies(res);
       res.status(401).json({ error: "User not found" });
@@ -267,6 +266,34 @@ router.post("/logout", (_req, res) => {
   res.json({ message: "Logged out" });
 });
 
+// GET /api/auth/session-debug — no auth required. Tells a hosted frontend
+// exactly what the browser sent and what cookie policy this deploy runs,
+// so "login works but dashboard 401s" can be diagnosed without guessing.
+// Safe: reports presence of cookies, never their values.
+router.get("/session-debug", (req, res) => {
+  const cookies = (req as { cookies?: Record<string, unknown> }).cookies ?? {};
+  res.json({
+    received: {
+      hasAccessCookie: !!cookies[ACCESS_COOKIE],
+      hasRefreshCookie: !!cookies[REFRESH_COOKIE],
+      cookieNames: Object.keys(cookies),
+    },
+    effectiveCookiePolicy: {
+      sameSite: COOKIE_SAMESITE,
+      secure: COOKIE_SECURE,
+      refreshPath: REFRESH_COOKIE_PATH,
+    },
+    request: {
+      origin: req.headers.origin ?? null,
+      host: req.headers.host ?? null,
+      protocol: req.protocol,
+      ip: req.ip,
+    },
+    server: {
+      nodeEnv: env.NODE_ENV,
+      frontendUrl: env.FRONTEND_URL,
+    },
+  });
+});
+
 export default router;
-
-

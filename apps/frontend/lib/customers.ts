@@ -94,9 +94,7 @@ export async function listCustomers(params: {
   limit?: number;
   search?: string;
 }): Promise<CustomersPage> {
-  // NOTE: list/create live under the doubled /customers/customers path
-  // (existing backend routing) — detail/update/delete use /customers/:id.
-  const res = await api.get<ApiEnvelope<CustomersPage>>("/customers/customers", {
+  const res = await api.get<ApiEnvelope<CustomersPage>>("/customers", {
     params,
   });
   return res.data.data;
@@ -117,7 +115,7 @@ export async function createCustomer(input: {
   customFields?: Record<string, unknown>;
 }): Promise<Customer> {
   const res = await api.post<ApiEnvelope<{ customer: Customer }>>(
-    "/customers/customers",
+    "/customers",
     input,
   );
   return res.data.data.customer;

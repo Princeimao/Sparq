@@ -4,13 +4,9 @@ import { clearAuth, fetchCurrentUser } from "./store/authSlice";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  // Session cookies (httpOnly) are sent automatically. Tokens are never
-  // stored in localStorage and never set as Authorization headers.
   withCredentials: true,
 });
 
-// Single-flight refresh: concurrent 401s share one refresh request so token
-// rotation can't invalidate itself through parallel calls.
 let refreshPromise: Promise<unknown> | null = null;
 
 function refreshSession(): Promise<unknown> {
@@ -28,14 +24,8 @@ function refreshSession(): Promise<unknown> {
   return refreshPromise;
 }
 
-// Circuit breaker: once a refresh has definitively failed (no session),
-// don't keep hammering /auth/refresh on every subsequent 401. Resets on
-// full page load and on any successful refresh.
 let sessionExpired = false;
 
-// App routes that require a session (mirror the dashboard nav). Public pages
-// (landing, pricing, auth callback, …) must NEVER hard-redirect on 401,
-// otherwise logged-out visitors get stuck in a reload loop.
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/calendar",
@@ -68,8 +58,6 @@ function isAuthEndpoint(url?: string): boolean {
   );
 }
 
-// Response interceptor: on 401, silently refresh the cookie session once,
-// then retry the original request.
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
