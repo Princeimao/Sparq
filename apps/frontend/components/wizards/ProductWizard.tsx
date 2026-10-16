@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DropzoneUploader } from "@/components/uploads/DropzoneUploader";
+import { ReadableImage } from "@/components/uploads/ReadableImage";
 import { WizardDialog, type WizardStepDef } from "./WizardDialog";
 import type { Product } from "@/app/(dashboard)/products/page";
 
@@ -96,14 +97,10 @@ export function ProductWizard({
                 className="rounded-xl"
               />
               {d.image.trim() && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <ReadableImage
                   src={d.image.trim()}
                   alt=""
-                  className="size-10 rounded-xl object-cover border border-zinc-200 shrink-0"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+                  className="size-10 rounded-xl shrink-0"
                 />
               )}
             </div>

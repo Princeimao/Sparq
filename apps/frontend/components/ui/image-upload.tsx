@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { UploadCloud, X, Image as ImageIcon, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { isSupportedImage, uploadImage } from "@/lib/uploads";
+import { ReadableImage } from "@/components/uploads/ReadableImage";
 import { cn } from "@/lib/utils";
 
 interface ImageUploadProps {
@@ -49,16 +50,9 @@ export function ImageUpload({
 
       try {
         // Slot from the API, bytes straight to the bucket.
-        const { url, readable } = await uploadImage("avatars", file, setProgress, ctrl.signal);
+        const url = await uploadImage("avatars", file, setProgress, ctrl.signal);
         onChange(url);
-        if (readable) {
-          toast.success("Image uploaded!");
-        } else {
-          toast.warning(
-            "Uploaded, but the bucket isn't serving it publicly — allow public read on the bucket and it will appear.",
-            { duration: 9000 },
-          );
-        }
+        toast.success("Image uploaded!");
       } catch (err) {
         if ((err as Error)?.message !== "Upload cancelled") {
           toast.error((err as Error)?.message || "Failed to upload image");
@@ -106,11 +100,11 @@ export function ImageUpload({
           animate={{ opacity: 1, scale: 1 }}
           className="relative group rounded-[1.2rem] overflow-hidden bg-ink/[0.05] h-44 flex items-center justify-center"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <ReadableImage
             src={value}
             alt="Uploaded preview"
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 size-full"
+            imgClassName="transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-ink/40 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <button

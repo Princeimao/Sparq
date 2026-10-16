@@ -71,8 +71,20 @@ const envSchema = z.object({
   // Public CDN in front of the bucket (e.g. CloudFront). Falls back to
   // the standard https://<bucket>.s3.<region>.amazonaws.com/<key> URL.
   S3_PUBLIC_BASE_URL: z.string().url().optional(),
+  // Object ACL applied SDK-side on every write. "public-read" makes
+  // uploads world-readable without touching the console — only use it
+  // when the bucket allows ACLs (ownership-enforced buckets reject it
+  // and uploads would fail). Default "none": objects stay private and
+  // the dashboard serves them via signed read URLs instead.
+  S3_OBJECT_ACL: z.enum(["none", "public-read"]).default("none"),
   UPLOAD_MAX_IMAGE_MB: z.coerce.number().default(8),
   UPLOAD_URL_TTL_SEC: z.coerce.number().default(900),
+  // Signed read-URL lifetime for private-bucket image serving.
+  UPLOAD_READ_TTL_SEC: z.coerce.number().default(3600),
+  // Copy the Google profile photo into our own bucket at login so
+  // avatars serve from our storage, not Google's CDN. Best-effort:
+  // login never fails because of it.
+  AVATAR_MIRROR_ENABLED: z.coerce.boolean().default(true),
 
   // Langchain Gemini
   GEMINI_API_KEY: z.string().optional(),

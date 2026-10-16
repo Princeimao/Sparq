@@ -1,5 +1,5 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { BellRing, SearchIcon } from "lucide-react";
 import {
   InputGroup,
@@ -8,11 +8,13 @@ import {
 } from "@/components/ui/input-group";
 import NotificationDropdown from "./NotificationDropdown";
 import UserDropdown from "./UserDropdown";
+import { useReadableUrl } from "@/components/uploads/ReadableImage";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 
 export function SiteHeader() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const avatarSrc = useReadableUrl(user?.avatarUrl);
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-2">
@@ -40,11 +42,12 @@ export function SiteHeader() {
           trigger={
             <div className="rounded-full">
               <Avatar className="size-8 cursor-pointer">
-                <AvatarImage
-                  src={user?.avatarUrl || "/avatar.png"}
-                  alt={user?.name || ""}
-                />
-                <AvatarFallback>{user?.name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+                {avatarSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarSrc} alt={user?.name || ""} className="aspect-square size-full object-cover" />
+                ) : (
+                  <AvatarFallback>{user?.name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+                )}
               </Avatar>
             </div>
           }

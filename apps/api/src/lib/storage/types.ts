@@ -23,12 +23,22 @@ export interface PresignedUpload {
   expiresInSec: number;
 }
 
+export interface PresignedDownload {
+  url: string;
+  expiresInSec: number;
+}
+
 export interface StorageProvider {
   readonly name: string;
   /** Public read URL for an already-stored key (CDN-aware). */
   publicUrlFor(key: string): string;
   /** Direct-to-bucket upload URL — bytes never touch the API. */
   presignUpload(input: PresignInput): Promise<PresignedUpload>;
+  /**
+   * Short-lived signed READ url — how private buckets serve images with
+   * zero console configuration. No public policy, no ACLs needed.
+   */
+  presignDownload(key: string, expiresSec: number): Promise<PresignedDownload>;
   /**
    * Server-side write — the fallback when the bucket's CORS policy blocks
    * browser-direct PUTs and the owner can't change it in the console.

@@ -1,11 +1,12 @@
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "../../config/env";
-import type { PresignedUpload, PresignInput, StorageProvider } from "./types";
+import type { PresignedDownload, PresignedUpload, PresignInput, StorageProvider } from "./types";
 
 export class S3StorageProvider implements StorageProvider {
   readonly name = "s3";
@@ -59,6 +60,10 @@ export class S3StorageProvider implements StorageProvider {
       Key: input.key,
       ContentType: input.contentType,
       ContentLength: input.sizeBytes,
+      // Keys-only buckets with no console: this is the only SDK-side way
+      // to make objects publicly readable. Only enable when the bucket
+      // allows ACLs — buckets with ownership-enforced settings reject it.
+      ...(env.S3_OBJECT_ACL === "public-read" ? { ACL: "public-read" as const } : {}),
     });
     const uploadUrl = await getSignedUrl(this.client, command, {
       expiresIn: input.expiresSec,
@@ -68,6 +73,15 @@ export class S3StorageProvider implements StorageProvider {
       publicUrl: this.publicUrlFor(input.key),
       expiresInSec: input.expiresSec,
     };
+  }
+
+  async presignDownload(key: string, expiresSec: number): Promise<PresignedDownload> {
+    const url = await getSignedUrl(
+      this.client,
+      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+      { expiresIn: expiresSec },
+    );
+    return { url, expiresInSec: expiresSec };
   }
 
   async putObject(key: string, body: Buffer, contentType: string): Promise<void> {

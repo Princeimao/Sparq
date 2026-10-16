@@ -5,6 +5,7 @@ import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { authenticate, AuthPayload } from "../../middleware/auth";
 import { exchangeToken, getGoogleAuthUrl, getUserInfo } from "../../lib/auth";
+import { mirrorAvatarToBucket } from "../../lib/avatar-mirror";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -101,6 +102,16 @@ router.get("/google/callback", async (req, res, next) => {
       },
     });
 
+    // Serve the avatar from our own bucket from now on (best-effort).
+    const mirrored = await mirrorAvatarToBucket(user.id, payload.picture?.toString());
+    const avatarUrl = mirrored ?? user.avatarUrl;
+    if (mirrored && mirrored !== user.avatarUrl) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { avatarUrl: mirrored },
+      });
+    }
+
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
@@ -148,6 +159,16 @@ router.post("/google/token", async (req, res, next) => {
       },
     });
 
+    // Serve the avatar from our own bucket from now on (best-effort).
+    const mirroredTokenAvatar = await mirrorAvatarToBucket(user.id, payload.picture);
+    const tokenAvatarUrl = mirroredTokenAvatar ?? user.avatarUrl;
+    if (mirroredTokenAvatar && mirroredTokenAvatar !== user.avatarUrl) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { avatarUrl: mirroredTokenAvatar },
+      });
+    }
+
     const accessToken = generateAccessToken(user.id, user.email);
     const refreshToken = generateRefreshToken(user.id, user.email);
 
@@ -158,7 +179,7 @@ router.post("/google/token", async (req, res, next) => {
         id: user.id,
         email: user.email,
         name: user.name,
-        avatarUrl: user.avatarUrl,
+        avatarUrl: tokenAvatarUrl,
       },
     });
   } catch (error) {

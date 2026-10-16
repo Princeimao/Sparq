@@ -23,6 +23,66 @@ export function isSupportedImage(file: File): boolean {
   return IMAGE_TYPES.has(file.type.toLowerCase());
 }
 
+// ─── Read resolution (private-bucket support) ────────────────────────────────
+// Stored URLs may point at a private bucket that serves nothing publicly.
+// resolveReadableUrl() probes the stored URL and, when it doesn't load,
+// swaps in a short-lived signed read URL from POST /upload/read — zero
+// console configuration needed on any S3-compatible store.
+
+const readUrlCache = new Map<string, { url: string; at: number }>();
+const READ_CACHE_MS = 45 * 60 * 1000;
+
+/** Extract our `u/<userId>/…` key from a stored URL, or null. */
+export function extractUploadKey(storedUrl: string): string | null {
+  try {
+    const u = new URL(storedUrl);
+    const idx = u.pathname.indexOf("/u/");
+    if (idx === -1) return null;
+    return decodeURIComponent(u.pathname.slice(idx + 1).split("?")[0] ?? "");
+  } catch {
+    return null;
+  }
+}
+
+function probeLoads(url: string, timeoutMs = 9000): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof Image === "undefined") return resolve(true);
+    const timer = setTimeout(() => resolve(false), timeoutMs);
+    const img = new Image();
+    img.onload = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    img.onerror = () => {
+      clearTimeout(timer);
+      resolve(false);
+    };
+    img.src = url;
+  });
+}
+
+async function fetchSignedReadUrl(key: string): Promise<string | null> {
+  const cached = readUrlCache.get(key);
+  if (cached && Date.now() - cached.at < READ_CACHE_MS) return cached.url;
+  try {
+    const res = await api.post<{ data?: { url?: string } }>("/upload/read", { key });
+    const url = res.data?.data?.url ?? null;
+    if (url) readUrlCache.set(key, { url, at: Date.now() });
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+/** URL guaranteed (best-effort) to render in an `<img>` — or null. */
+export async function resolveReadableUrl(storedUrl: string): Promise<string | null> {
+  if (!storedUrl) return null;
+  if (await probeLoads(storedUrl)) return storedUrl;
+  const key = extractUploadKey(storedUrl);
+  if (!key) return null;
+  return fetchSignedReadUrl(key);
+}
+
 /** Ask the API for a direct-to-bucket slot. Bytes never touch the backend. */
 export async function requestUploadSlot(
   purpose: UploadPurpose,
@@ -137,41 +197,18 @@ export async function uploadImage(
   file: File,
   onProgress?: (pct: number) => void,
   signal?: AbortSignal,
-): Promise<{ url: string; readable: boolean }> {
+): Promise<string> {
   const slot = await requestUploadSlot(purpose, file);
   try {
     await putFileToBucket(slot, file, onProgress, signal);
+    return slot.publicUrl;
   } catch (err) {
     // Bucket CORS blocked the browser PUT — retry through the API instead
     // of surfacing a cryptic CORS error.
     if ((err as Error & { corsHint?: boolean })?.corsHint) {
       onProgress?.(0);
-      const directUrl = await putFileDirect(purpose, file, onProgress, signal);
-      return { url: directUrl, readable: await probeImageReadable(directUrl) };
+      return putFileDirect(purpose, file, onProgress, signal);
     }
     throw err;
   }
-  return { url: slot.publicUrl, readable: await probeImageReadable(slot.publicUrl) };
-}
-
-/**
- * Did the bucket actually serve the file back? An `<img>` probe needs no
- * CORS, so a failure here means the object isn't publicly readable
- * (bucket policy) or the public URL host is wrong — not a CORS problem.
- */
-export function probeImageReadable(url: string, timeoutMs = 12000): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof Image === "undefined") return resolve(true);
-    const timer = setTimeout(() => resolve(false), timeoutMs);
-    const img = new Image();
-    img.onload = () => {
-      clearTimeout(timer);
-      resolve(true);
-    };
-    img.onerror = () => {
-      clearTimeout(timer);
-      resolve(false);
-    };
-    img.src = url;
-  });
 }

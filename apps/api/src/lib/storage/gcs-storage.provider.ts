@@ -1,5 +1,5 @@
 import { gcsService } from "../../services/gcs.service";
-import type { PresignedUpload, PresignInput, StorageProvider } from "./types";
+import type { PresignedDownload, PresignedUpload, PresignInput, StorageProvider } from "./types";
 
 export class GcsStorageProvider implements StorageProvider {
   readonly name = "gcs";
@@ -22,11 +22,22 @@ export class GcsStorageProvider implements StorageProvider {
     };
   }
 
-  async putObject(key: string, body: Buffer, contentType: string): Promise<void> {
-    await gcsService.saveFile(key, body, contentType).catch((error: unknown) => {
-      console.warn(`[GcsStorageProvider] put failed for ${key}:`, error);
-      throw error;
-    });
+  async putObject(
+    key: string,
+    body: Buffer,
+    contentType: string,
+  ): Promise<void> {
+    await gcsService
+      .saveFile(key, body, contentType)
+      .catch((error: unknown) => {
+        console.warn(`[GcsStorageProvider] put failed for ${key}:`, error);
+        throw error;
+      });
+  }
+
+  async presignDownload(key: string, expiresSec: number): Promise<PresignedDownload> {
+    const url = await gcsService.generateSignedReadUrl(key, expiresSec);
+    return { url, expiresInSec: expiresSec };
   }
 
   async deleteObject(key: string): Promise<void> {

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +48,7 @@ const LOGOUT_ITEM: MenuItem = {
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 import { logoutUser } from "@/lib/store/authSlice";
 import { useRouter } from "next/navigation";
+import { useReadableUrl } from "@/components/uploads/ReadableImage";
 
 const itemClass =
   "p-2 text-sm font-medium text-popover-foreground cursor-pointer gap-2";
@@ -56,6 +57,7 @@ const UserDropdown = ({ trigger, defaultOpen, align = "end" }: Props) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
+  const avatarSrc = useReadableUrl(user?.avatarUrl);
 
   const getInitials = (name?: string | null) => {
     if (!name) return "U";
@@ -85,13 +87,12 @@ const UserDropdown = ({ trigger, defaultOpen, align = "end" }: Props) => {
             <DropdownMenuLabel className="flex items-center gap-3 px-4 py-3">
               <div className="relative">
                 <Avatar className="data-[size=lg]:size-8">
-                  {user?.avatarUrl && (
-                    <AvatarImage
-                      src={user.avatarUrl}
-                      alt={user.name || "User Avatar"}
-                    />
+                  {avatarSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatarSrc} alt={user?.name || "User Avatar"} className="aspect-square size-full object-cover" />
+                  ) : (
+                    <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                   )}
-                  <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                 </Avatar>
                 <span className="ring-card absolute right-0 bottom-0 size-2 rounded-full bg-green-600 ring-2" />
               </div>

@@ -16,6 +16,7 @@ import {
   uploadImage,
   type UploadPurpose,
 } from "@/lib/uploads";
+import { ReadableImage } from "./ReadableImage";
 import { cn } from "@/lib/utils";
 
 interface Tile {
@@ -24,7 +25,6 @@ interface Tile {
   status: "uploading" | "done" | "error";
   progress: number;
   url?: string;
-  readable: boolean;
   error?: string;
 }
 
@@ -119,19 +119,13 @@ export function DropzoneUploader({
       const ctrl = new AbortController();
       aborters.current.set(tileId, ctrl);
       try {
-        const { url, readable } = await uploadImage(
+        const url = await uploadImage(
           purpose,
           file,
           (pct) => patchTile(tileId, { progress: pct }),
           ctrl.signal,
         );
-        patchTile(tileId, { status: "done", progress: 100, url, readable });
-        if (!readable) {
-          toast.warning(
-            "Uploaded, but the bucket isn't serving it publicly — allow public read on the bucket, then it will appear.",
-            { duration: 8000 },
-          );
-        }
+        patchTile(tileId, { status: "done", progress: 100, url });
         return url;
       } catch (err) {
         if ((err as Error)?.message === "Upload cancelled") {
@@ -178,7 +172,6 @@ export function DropzoneUploader({
           preview,
           status: "uploading",
           progress: 0,
-          readable: true,
         };
         filesByTile.current.set(tile.id, file);
         queue.push({ tile, file });
@@ -293,12 +286,20 @@ export function DropzoneUploader({
                 transition={{ type: "spring", stiffness: 380, damping: 28 }}
                 className="relative size-20 rounded-2xl overflow-hidden bg-ink/10 shrink-0 group"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={tile.status === "done" && tile.url ? tile.url : tile.preview}
-                  alt=""
-                  className="absolute inset-0 size-full object-cover"
-                />
+                {tile.status === "uploading" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={tile.preview}
+                    alt=""
+                    className="absolute inset-0 size-full object-cover"
+                  />
+                ) : tile.status === "done" && tile.url ? (
+                  <ReadableImage
+                    src={tile.url}
+                    alt=""
+                    className="absolute inset-0 size-full"
+                  />
+                ) : null}
                 {tile.status === "uploading" && (
                   <span className="absolute inset-0 bg-ink/55 flex flex-col items-center justify-center gap-1">
                     <ProgressRing pct={tile.progress} />
@@ -307,7 +308,7 @@ export function DropzoneUploader({
                     </span>
                   </span>
                 )}
-                {tile.status === "done" && tile.readable && (
+                {tile.status === "done" && (
                   <motion.span
                     initial={{ scale: 0.4, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -316,14 +317,6 @@ export function DropzoneUploader({
                   >
                     <Check className="size-3" strokeWidth={3.5} />
                   </motion.span>
-                )}
-                {tile.status === "done" && !tile.readable && (
-                  <span
-                    title="Uploaded, but the bucket isn't serving it publicly. Allow public read access on the bucket."
-                    className="absolute inset-x-1 bottom-1 flex items-center justify-center gap-1 rounded-full bg-amber-500 px-2 py-1 text-[9px] font-bold text-white"
-                  >
-                    <TriangleAlert className="size-3 shrink-0" /> Not public
-                  </span>
                 )}
                 {tile.status === "error" && (
                   <button

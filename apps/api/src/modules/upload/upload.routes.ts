@@ -167,6 +167,35 @@ router.post(
 );
 
 /**
+ * POST /api/upload/read — signed READ url for a private object.
+ * Authenticated; the key must live under the caller's own folder.
+ * This is how private buckets (no console, no public policy) still
+ * serve images to the dashboard: short-lived, per-request URLs.
+ */
+router.post(
+  "/read",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const userId = req.user?.userId as string;
+    const { key } = req.body as { key?: string };
+    if (typeof key !== "string" || !key.startsWith(`u/${userId}/`)) {
+      res.status(403).json({ error: "You can only read your own uploads" });
+      return;
+    }
+    try {
+      const slot = await getStorageProvider().presignDownload(
+        key,
+        env.UPLOAD_READ_TTL_SEC,
+      );
+      res.json(new ApiResponse(slot, "Read URL created.", true));
+    } catch (error) {
+      console.error("[upload/read]", error);
+      res.status(500).json({ error: "Could not create read URL" });
+    }
+  },
+);
+
+/**
  * DELETE /api/upload — remove an object the caller owns.
  * The key must live under the caller's own folder; anything else is 403.
  */

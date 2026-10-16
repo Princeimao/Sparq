@@ -132,6 +132,22 @@ export class GcsService {
       .file(fileKey)
       .save(body, { metadata: { contentType }, resumable: false });
   }
+
+  /** Short-lived signed READ url for private objects. */
+  async generateSignedReadUrl(fileKey: string, expiresSec: number): Promise<string> {
+    if (!this.storage) {
+      throw new Error("GCS storage is not configured");
+    }
+    const [url] = await this.storage
+      .bucket(this.bucketName)
+      .file(fileKey)
+      .getSignedUrl({
+        version: "v4",
+        action: "read",
+        expires: Date.now() + expiresSec * 1000,
+      });
+    return url;
+  }
 }
 
 export const gcsService = new GcsService();

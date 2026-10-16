@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ProductDrawer } from "@/components/products/ProductDrawer";
 import { ProductWizard } from "@/components/wizards/ProductWizard";
 import { SlidePills } from "@/components/bits/SlidePills";
+import { ReadableImage } from "@/components/uploads/ReadableImage";
 import { useConfirm } from "@/components/ui/confirm";
 import { cn } from "@/lib/utils";
 
@@ -263,16 +264,14 @@ export default function ProductsPage() {
                   {/* Image */}
                   <div className="relative aspect-[4/3] overflow-hidden bg-ink/[0.05]">
                     {product.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        loading="lazy"
-                        className={cn(
-                          "size-full object-cover transition-transform duration-500 group-hover:scale-[1.05]",
-                          state === "out" && "grayscale opacity-70",
-                        )}
-                      />
+                      <div className={cn("size-full", state === "out" && "[&_img]:grayscale [&_img]:opacity-70")}>
+                        <ReadableImage
+                          src={product.image}
+                          alt={product.name}
+                          className="size-full"
+                          imgClassName="transition-transform duration-500 group-hover:scale-[1.05]"
+                        />
+                      </div>
                     ) : (
                       <span className="absolute inset-0 flex items-center justify-center">
                         <Package className="size-10 text-ink/20" />
