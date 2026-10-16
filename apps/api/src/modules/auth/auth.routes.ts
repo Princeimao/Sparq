@@ -23,7 +23,7 @@ const COOKIE_SAMESITE = (env.COOKIE_SAMESITE ??
   (env.NODE_ENV === "production" ? "none" : "lax")) as "lax" | "none";
 const COOKIE_SECURE = env.COOKIE_SECURE ?? env.NODE_ENV === "production";
 
-function setAuthCookies(
+export function setAuthCookies(
   res: Response,
   accessToken: string,
   refreshToken: string,

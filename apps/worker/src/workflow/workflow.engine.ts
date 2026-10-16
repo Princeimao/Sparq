@@ -4,7 +4,7 @@ import { ConversationStore } from "../services/store/conversation.store";
 import { ConversationState } from "../types/conversationState";
 import { LlmService } from "../services/llm.service";
 import { Intent } from "../types/intent";
-import { WhatsAppService } from "../services/whatsapp.service";
+import { ChannelSender } from "../types/channel";
 import { MessageRouter } from "../services/message.router";
 import { getBusinessCapabilities } from "../services/business-capabilities";
 
@@ -30,7 +30,7 @@ export class WorkflowEngine {
 
   // ─── Main entry ─────────────────────────────────────────────────────────────
 
-  async process(message: IncomingMessage, whatsapp: WhatsAppService) {
+  async process(message: IncomingMessage, whatsapp: ChannelSender) {
     const key = this.conversationKey(message);
     const state = await this.conversationStore.get(key);
 
@@ -70,7 +70,7 @@ export class WorkflowEngine {
   private async dispatchIntent(
     intent: Intent,
     message: IncomingMessage,
-    whatsapp: WhatsAppService,
+    whatsapp: ChannelSender,
     llm: any,
   ) {
     const caps = await getBusinessCapabilities(message.userId);
@@ -108,7 +108,7 @@ export class WorkflowEngine {
   private async resumeConversation(
     message: IncomingMessage,
     state: ConversationState,
-    whatsapp: WhatsAppService,
+    whatsapp: ChannelSender,
   ) {
     const handler = this.registry.get(state.intent);
 
@@ -126,6 +126,8 @@ export class WorkflowEngine {
   // ─── Helpers ────────────────────────────────────────────────────────────────
 
   private conversationKey(message: IncomingMessage) {
-    return `${message.phoneNumberId}:${message.customerWaId}`;
+    // Channel-scoped: the same numeric id space never collides across
+    // WhatsApp (wa_id) and Instagram (IGSID).
+    return `${message.channel ?? "WHATSAPP"}:${message.phoneNumberId}:${message.customerWaId}`;
   }
 }

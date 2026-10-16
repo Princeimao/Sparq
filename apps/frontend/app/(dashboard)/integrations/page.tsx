@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import { toast } from "sonner";
 import {
   MessageSquare,
   CreditCard,
@@ -25,6 +26,9 @@ import {
   useWhatsAppConnect,
   useWhatsAppToggle,
   useWhatsAppDisconnect,
+  useInstagramConnect,
+  useInstagramToggle,
+  useInstagramDisconnect,
 } from "@/hooks/integration";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +84,9 @@ const Page = () => {
   const { toggleWhatsApp, toggling: togglingWhatsApp } = useWhatsAppToggle(refetch);
   const { disconnectWhatsApp } = useWhatsAppDisconnect(refetch);
   const whatsappConnect = useWhatsAppConnect(refetch);
+  const { toggleInstagram, toggling: togglingInstagram } = useInstagramToggle(refetch);
+  const { disconnectInstagram } = useInstagramDisconnect(refetch);
+  const instagramConnect = useInstagramConnect();
 
   // Dialog state: which provider's dialog is open
   const [openDialog, setOpenDialog] = useState<IntegrationProvider | null>(null);
@@ -116,6 +123,8 @@ const Page = () => {
   const handleConnect = (integration: IntegrationDefinition) => {
     if (integration.provider === "whatsapp") {
       whatsappConnect();
+    } else if (integration.provider === "instagram") {
+      instagramConnect();
     } else {
       setOpenDialog(integration.provider);
       setReconfigureId(null);
@@ -128,7 +137,7 @@ const Page = () => {
   };
 
   const handleDialogSubmit = async (
-    provider: Exclude<IntegrationProvider, "whatsapp">,
+    provider: Exclude<IntegrationProvider, "whatsapp" | "instagram">,
     data: Record<string, string>
   ) => {
     await connect(provider, data, refetch);
@@ -141,6 +150,35 @@ const Page = () => {
 
   const activeCount = connectedIntegrations.filter((i) => i.isActive).length;
   let cardIndex = 0;
+
+  // OAuth return params from the Instagram connect round-trip.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const connected = params.get("connected");
+    const igError = params.get("ig_error");
+    if (connected === "instagram") {
+      toast.success("Instagram connected successfully");
+      refetch();
+    } else if (igError) {
+      const messages: Record<string, string> = {
+        no_ig_account:
+          "No business or creator Instagram account found on your Pages — link one first, then retry.",
+        personal_account:
+          "That Instagram account is personal — switch it to business or creator in Instagram settings, then retry.",
+        access_denied: "Instagram login was cancelled before finishing.",
+        session_expired: "Your session expired — please sign in again, then retry.",
+        invalid_state: "Instagram login expired — please try again.",
+        not_configured: "Instagram login is not configured on the server.",
+        token_exchange_failed: "Meta refused the login — please try again.",
+        connect_failed: "Instagram connection failed — please try again.",
+      };
+      toast.error(messages[igError] ?? "Instagram connection failed");
+    }
+    if (connected || igError) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="relative p-6 max-w-7xl mx-auto space-y-7">
@@ -309,12 +347,16 @@ const Page = () => {
                     const isConnected = !!status;
                     const isActive = status?.isActive ?? false;
                     const isWhatsapp = integration.provider === "whatsapp";
+                    const isInstagram = integration.provider === "instagram";
+                    const isOAuth = isWhatsapp || isInstagram;
                     const conflict =
                       integration.category === "payment" &&
                       isPaymentConflict(integration.provider);
                     const busy = isWhatsapp
                       ? togglingWhatsApp
-                      : togglingId === status?.id;
+                      : isInstagram
+                        ? togglingInstagram
+                        : togglingId === status?.id;
                     const idx = cardIndex++;
 
                     return (
@@ -332,22 +374,22 @@ const Page = () => {
                         index={idx}
                         reduceMotion={!!reduceMotion}
                         onConnect={() => handleConnect(integration)}
-                        onToggle={() =>
-                          isWhatsapp
-                            ? toggleWhatsApp()
-                            : status?.id && toggle(status.id, !isActive)
-                        }
+                        onToggle={() => {
+                          if (isWhatsapp) return toggleWhatsApp();
+                          if (isInstagram) return toggleInstagram();
+                          if (status?.id) toggle(status.id, !isActive);
+                        }}
                         onDisconnect={
                           isConnected
-                            ? () =>
-                                isWhatsapp
-                                  ? disconnectWhatsApp()
-                                  : status?.id &&
-                                    disconnect(status.id, integration.name)
+                            ? () => {
+                                if (isWhatsapp) return disconnectWhatsApp();
+                                if (isInstagram) return disconnectInstagram();
+                                if (status?.id) disconnect(status.id, integration.name);
+                              }
                             : undefined
                         }
                         onConfigure={
-                          isConnected && !isWhatsapp
+                          isConnected && !isOAuth
                             ? () => status?.id && handleConfigure(integration, status.id)
                             : undefined
                         }
@@ -362,7 +404,7 @@ const Page = () => {
       )}
 
       {/* Dialogs */}
-      {openDialog && openDialog !== "whatsapp" && (
+      {openDialog && openDialog !== "whatsapp" && openDialog !== "instagram" && (
         <IntegrationDialog
           provider={openDialog}
           isOpen={!!openDialog}
@@ -373,7 +415,7 @@ const Page = () => {
           }}
           onSubmit={(data) =>
             handleDialogSubmit(
-              openDialog as Exclude<IntegrationProvider, "whatsapp">,
+              openDialog as Exclude<IntegrationProvider, "whatsapp" | "instagram">,
               data
             )
           }

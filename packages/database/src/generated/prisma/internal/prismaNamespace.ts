@@ -402,6 +402,7 @@ export const ModelName = {
   Subscription: 'Subscription',
   Integration: 'Integration',
   WhatsappIntegration: 'WhatsappIntegration',
+  InstagramIntegration: 'InstagramIntegration',
   Customer: 'Customer',
   Address: 'Address',
   Order: 'Order',
@@ -435,7 +436,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "payment" | "subscription" | "integration" | "whatsappIntegration" | "customer" | "address" | "order" | "conversationState" | "message" | "product" | "flow" | "service" | "staff" | "availability" | "resource" | "serviceResource" | "timeOff" | "break" | "booking" | "bookingAllocation" | "webhookEvent" | "businessProfile"
+    modelProps: "user" | "payment" | "subscription" | "integration" | "whatsappIntegration" | "instagramIntegration" | "customer" | "address" | "order" | "conversationState" | "message" | "product" | "flow" | "service" | "staff" | "availability" | "resource" | "serviceResource" | "timeOff" | "break" | "booking" | "bookingAllocation" | "webhookEvent" | "businessProfile"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -806,6 +807,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.WhatsappIntegrationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.WhatsappIntegrationCountAggregateOutputType> | number
+        }
+      }
+    }
+    InstagramIntegration: {
+      payload: Prisma.$InstagramIntegrationPayload<ExtArgs>
+      fields: Prisma.InstagramIntegrationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InstagramIntegrationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InstagramIntegrationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>
+        }
+        findFirst: {
+          args: Prisma.InstagramIntegrationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InstagramIntegrationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>
+        }
+        findMany: {
+          args: Prisma.InstagramIntegrationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>[]
+        }
+        create: {
+          args: Prisma.InstagramIntegrationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>
+        }
+        createMany: {
+          args: Prisma.InstagramIntegrationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InstagramIntegrationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>[]
+        }
+        delete: {
+          args: Prisma.InstagramIntegrationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>
+        }
+        update: {
+          args: Prisma.InstagramIntegrationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>
+        }
+        deleteMany: {
+          args: Prisma.InstagramIntegrationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InstagramIntegrationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InstagramIntegrationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>[]
+        }
+        upsert: {
+          args: Prisma.InstagramIntegrationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramIntegrationPayload>
+        }
+        aggregate: {
+          args: Prisma.InstagramIntegrationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInstagramIntegration>
+        }
+        groupBy: {
+          args: Prisma.InstagramIntegrationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InstagramIntegrationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InstagramIntegrationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InstagramIntegrationCountAggregateOutputType> | number
         }
       }
     }
@@ -2267,10 +2342,27 @@ export const WhatsappIntegrationScalarFieldEnum = {
 export type WhatsappIntegrationScalarFieldEnum = (typeof WhatsappIntegrationScalarFieldEnum)[keyof typeof WhatsappIntegrationScalarFieldEnum]
 
 
+export const InstagramIntegrationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  isActive: 'isActive',
+  pageId: 'pageId',
+  pageName: 'pageName',
+  igUserId: 'igUserId',
+  igUsername: 'igUsername',
+  accessToken: 'accessToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InstagramIntegrationScalarFieldEnum = (typeof InstagramIntegrationScalarFieldEnum)[keyof typeof InstagramIntegrationScalarFieldEnum]
+
+
 export const CustomerScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   phone: 'phone',
+  channel: 'channel',
   name: 'name',
   email: 'email',
   customFields: 'customFields',
@@ -3177,6 +3269,7 @@ export type GlobalOmitConfig = {
   subscription?: Prisma.SubscriptionOmit
   integration?: Prisma.IntegrationOmit
   whatsappIntegration?: Prisma.WhatsappIntegrationOmit
+  instagramIntegration?: Prisma.InstagramIntegrationOmit
   customer?: Prisma.CustomerOmit
   address?: Prisma.AddressOmit
   order?: Prisma.OrderOmit

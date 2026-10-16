@@ -100,6 +100,11 @@ export function useIntegrations() {
       if (wa) {
         list.push({ ...wa, type: "whatsapp", name: "WhatsApp" });
       }
+      // Same guard for Instagram — never connected means no entry at all.
+      const ig = res.data.data.instagramIntegration;
+      if (ig) {
+        list.push({ ...ig, type: "instagram", name: "Instagram" });
+      }
       setIntegrations(list);
     } catch (err: any) {
       const msg = err.response?.data?.error || "Failed to fetch integrations";
@@ -204,6 +209,16 @@ export function useDisconnectIntegration(onSuccess?: () => void) {
   return { disconnect, disconnectingId };
 }
 
+// ─── Instagram OAuth connect (full-page redirect, like Google login) ────────
+// The backend bounces through Facebook Login, links the first Page with a
+// professional Instagram account, then returns to /integrations.
+
+export function useInstagramConnect() {
+  return () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/instagram/connect`;
+  };
+}
+
 // ─── WhatsApp toggle / disconnect (separate table, separate endpoints) ──────
 
 export function useWhatsAppToggle(onSuccess?: () => void) {
@@ -291,6 +306,48 @@ export function useFlowsGate() {
   }, [refresh]);
 
   return { gate, loading, refresh };
+}
+
+// ─── Instagram toggle / disconnect ─────────────────────────────────────────
+
+export function useInstagramToggle(onSuccess?: () => void) {
+  const [toggling, setToggling] = useState(false);
+
+  const toggleInstagram = useCallback(async () => {
+    setToggling(true);
+    try {
+      const res = await api.patch("/instagram/toggle");
+      toast.success(res.data.message ?? "Instagram updated");
+      onSuccess?.();
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to toggle Instagram");
+    } finally {
+      setToggling(false);
+    }
+  }, [onSuccess]);
+
+  return { toggleInstagram, toggling };
+}
+
+export function useInstagramDisconnect(onSuccess?: () => void) {
+  const [disconnecting, setDisconnecting] = useState(false);
+
+  const disconnectInstagram = useCallback(async () => {
+    setDisconnecting(true);
+    try {
+      const res = await api.delete("/instagram/disconnect");
+      toast.success(res.data.message ?? "Instagram disconnected");
+      onSuccess?.();
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.error || "Failed to disconnect Instagram",
+      );
+    } finally {
+      setDisconnecting(false);
+    }
+  }, [onSuccess]);
+
+  return { disconnectInstagram, disconnecting };
 }
 
 // ─── Unified handlers (legacy shim kept for backward compat) ─────────────────

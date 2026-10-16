@@ -353,7 +353,7 @@ export const navData: NavItem[] = [
 ];
 
 export type IntegrationProvider =
-  "whatsapp" | "stripe" | "razorpay" | "calcom" | "woocommerce";
+  "whatsapp" | "instagram" | "stripe" | "razorpay" | "calcom" | "woocommerce";
 
 export type IntegrationCategory =
   "messaging" | "payment" | "scheduling" | "ecommerce";
@@ -372,6 +372,13 @@ export const integrations: IntegrationDefinition[] = [
     provider: "whatsapp",
     description: "Send messages and automate work",
     icon: "/whatsapp.png",
+    category: "messaging",
+  },
+  {
+    name: "Instagram",
+    provider: "instagram",
+    description: "Reply to DMs from business & creator accounts",
+    icon: "/instagram.svg",
     category: "messaging",
   },
   {

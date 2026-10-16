@@ -27,6 +27,13 @@ const envSchema = z.object({
 
   // WhatsApp
   WHATSAPP_VERIFY_TOKEN: z.string().min(1),
+  // Instagram (professional accounts via Facebook Login + Page API).
+  // IG_VERIFY_TOKEN is the webhook verify token; IG_VERIFIY_TOKEN
+  // (historical typo) is accepted as a fallback for existing deploys.
+  IG_APP_ID: z.string().optional(),
+  IG_APP_SECRET: z.string().optional(),
+  IG_VERIFY_TOKEN: z.string().optional(),
+  IG_REDIRECT_URI: z.string().url().optional(),
   WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
   WHATSAPP_ACCESS_TOKEN: z.string().optional(),
 

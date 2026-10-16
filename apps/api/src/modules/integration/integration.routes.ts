@@ -56,7 +56,7 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.userId as string;
-      const [integrations, whatsappIntegration] = await Promise.all([
+      const [integrations, whatsappIntegration, instagramIntegration] = await Promise.all([
         prisma.integration.findMany({
           where: { userId },
           select: {
@@ -81,6 +81,18 @@ router.get(
             updatedAt: true,
           },
         }),
+
+        prisma.instagramIntegration.findFirst({
+          where: {
+            userId,
+          },
+          select: {
+            id: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        }),
       ]);
 
       res.json(
@@ -88,6 +100,7 @@ router.get(
           {
             integrations,
             whatsappIntegration,
+            instagramIntegration,
           },
           "Integrations fetched successfully",
           true,

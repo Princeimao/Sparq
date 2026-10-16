@@ -1,18 +1,24 @@
 import { Prisma } from "@sparq/database/src/generated/prisma/client";
 import { BaseRepository } from "./base.repository";
 
+export type CustomerChannel = "WHATSAPP" | "INSTAGRAM";
+
 export class CustomerRepository extends BaseRepository {
   // ─── Find ──────────────────────────────────────────────────────────────────
 
-  async findByPhone(phone: string, phoneNumberId: string) {
+  async findByPhone(
+    phone: string,
+    channelAccountId: string,
+    channel: CustomerChannel = "WHATSAPP",
+  ) {
     return this.prisma.customer.findFirst({
       where: {
         phone,
-        user: {
-          whatsappIntegrations: {
-            phoneNumberId,
-          },
-        },
+        channel,
+        user:
+          channel === "INSTAGRAM"
+            ? { instagramIntegrations: { igUserId: channelAccountId } }
+            : { whatsappIntegrations: { phoneNumberId: channelAccountId } },
       },
     });
   }
@@ -26,24 +32,31 @@ export class CustomerRepository extends BaseRepository {
   // ─── Find or Create ────────────────────────────────────────────────────────
 
   /**
-   * Finds an existing customer by (userId, phone) or creates one.
-   * Uses upsert on the @@unique([userId, phone]) constraint so concurrent
-   * webhook deliveries can't create duplicate customer records.
+   * Finds an existing customer by (userId, channel, phone) or creates one.
+   * Uses upsert on the @@unique([userId, channel, phone]) constraint so
+   * concurrent webhook deliveries can't create duplicate customer records.
    */
   async findOrCreate(params: {
     phone: string;
     name?: string;
     phoneNumberId: string;
     userId: string;
+    channel?: CustomerChannel;
   }) {
+    const channel = params.channel ?? "WHATSAPP";
     return this.prisma.customer.upsert({
       where: {
-        userId_phone: { userId: params.userId, phone: params.phone },
+        userId_channel_phone: {
+          userId: params.userId,
+          channel,
+          phone: params.phone,
+        },
       },
       update: {},
       create: {
         phone: params.phone,
         name: params.name,
+        channel,
         userId: params.userId,
       },
     });

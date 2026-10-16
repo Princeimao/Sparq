@@ -56,6 +56,7 @@ export const ModelName = {
   Subscription: 'Subscription',
   Integration: 'Integration',
   WhatsappIntegration: 'WhatsappIntegration',
+  InstagramIntegration: 'InstagramIntegration',
   Customer: 'Customer',
   Address: 'Address',
   Order: 'Order',
@@ -179,10 +180,27 @@ export const WhatsappIntegrationScalarFieldEnum = {
 export type WhatsappIntegrationScalarFieldEnum = (typeof WhatsappIntegrationScalarFieldEnum)[keyof typeof WhatsappIntegrationScalarFieldEnum]
 
 
+export const InstagramIntegrationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  isActive: 'isActive',
+  pageId: 'pageId',
+  pageName: 'pageName',
+  igUserId: 'igUserId',
+  igUsername: 'igUsername',
+  accessToken: 'accessToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InstagramIntegrationScalarFieldEnum = (typeof InstagramIntegrationScalarFieldEnum)[keyof typeof InstagramIntegrationScalarFieldEnum]
+
+
 export const CustomerScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   phone: 'phone',
+  channel: 'channel',
   name: 'name',
   email: 'email',
   customFields: 'customFields',

@@ -17,6 +17,7 @@ import orderRoutes from "./modules/order/order.routes";
 import bookingRoutes from "./modules/bookings/booking.routes";
 import onboardingRoutes from "./modules/onboarding/onboarding.routes";
 import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
+import instagramRoutes from "./modules/instagram/instagram.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import productRoutes from "./modules/product/product.routes";
 import flowRoutes from "./modules/flow/flow.routes";
@@ -74,6 +75,10 @@ app.use("/api/auth", strictAuthLimiter, authRoutes);
 // whatsapp route (public webhook, rate-limited)
 app.use("/api/whatsapp", webhookLimiter, whatsappRoutes);
 
+// instagram route (public webhook, rate-limited; connect/callback carry
+// their own auth via OAuth state)
+app.use("/api/instagram", instagramRoutes);
+
 // Billing: authenticated APIs + public Razorpay webhook
 // (webhook authenticity is proven via HMAC signature, not JWT).
 app.use("/api/billing", billingRoutes);
@@ -100,6 +105,28 @@ async function main() {
   try {
     await prisma.$connect();
     console.log("Database connected");
+
+    // Fail-loud misconfiguration warnings (Instagram + CORS are the
+    // usual "it works locally but not hosted" culprits).
+    if (
+      env.NODE_ENV === "production" &&
+      env.FRONTEND_URL.includes("localhost")
+    ) {
+      console.warn(
+        "[config] FRONTEND_URL still points at localhost in production — OAuth callbacks and CORS will miss the hosted frontend.",
+      );
+    }
+    const igVars = [env.IG_APP_ID, env.IG_APP_SECRET, env.IG_REDIRECT_URI].filter(Boolean).length;
+    if (igVars > 0 && igVars < 3) {
+      console.warn(
+        "[config] Instagram is partially configured (need IG_APP_ID + IG_APP_SECRET + IG_REDIRECT_URI) — /instagram/connect will refuse logins.",
+      );
+    }
+    if (!env.IG_VERIFY_TOKEN && !process.env.IG_VERIFIY_TOKEN) {
+      console.warn(
+        "[config] No Instagram webhook verify token (IG_VERIFY_TOKEN) — Meta cannot verify /api/instagram/webhook.",
+      );
+    }
 
     // Note: WhatsApp worker is started in apps/worker — not in the API process.
     // Uncomment the line below only if running in a monolith mode:

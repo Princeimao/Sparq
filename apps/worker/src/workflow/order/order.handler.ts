@@ -177,6 +177,7 @@ export class OrderHandler implements WorkflowHandler {
     const customer = await this.customerRepository.findByPhone(
       ctx.message.customerWaId,
       ctx.message.phoneNumberId,
+      ctx.message.channel ?? "WHATSAPP",
     );
 
     if (customer) {
@@ -454,6 +455,7 @@ export class OrderHandler implements WorkflowHandler {
         name: collected["name"] ?? ctx.message.customerName,
         phoneNumberId: ctx.message.phoneNumberId,
         userId: data.userId!,
+        channel: ctx.message.channel ?? "WHATSAPP",
       });
 
       const address = await this.customerRepository.createAddress(customer.id, {

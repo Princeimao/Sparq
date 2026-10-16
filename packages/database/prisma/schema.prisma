@@ -173,6 +173,7 @@ model User {
 
   integrations Integration[]
   whatsappIntegrations WhatsappIntegration?
+  instagramIntegrations InstagramIntegration?
   customers    Customer[]
   orders       Order[]
   products     Product[]
@@ -309,11 +310,37 @@ model WhatsappIntegration {
   @@map("whatsapp_integrations")
 }
 
+model InstagramIntegration {
+  id String @id @default(cuid())
+
+  userId String @unique
+  isActive Boolean @default(true)
+
+  // Facebook Page the Instagram professional account is linked to.
+  // Null for Instagram-native logins (no Page involved) — identity is
+  // always the professional account's igUserId.
+  pageId        String?
+  pageName      String?
+  igUserId      String?
+  igUsername    String?
+  accessToken   String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("instagram_integrations")
+}
+
 model Customer {
   id String @id @default(cuid())
 
   userId String
   phone      String
+  // Messaging channel that owns this identity (WhatsApp wa_id or
+  // Instagram IGSID in `phone`). A person on both channels = two rows.
+  channel    String   @default("WHATSAPP")
   name       String?
   email      String?
   customFields Json?
@@ -329,7 +356,7 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, phone])
+  @@unique([userId, channel, phone])
   @@index([userId])
   @@map("customers")
 }

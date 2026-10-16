@@ -65,6 +65,11 @@ export type Integration = Prisma.IntegrationModel
  */
 export type WhatsappIntegration = Prisma.WhatsappIntegrationModel
 /**
+ * Model InstagramIntegration
+ * 
+ */
+export type InstagramIntegration = Prisma.InstagramIntegrationModel
+/**
  * Model Customer
  * 
  */

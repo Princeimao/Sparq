@@ -200,6 +200,7 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   integrations?: Prisma.IntegrationListRelationFilter
   whatsappIntegrations?: Prisma.XOR<Prisma.WhatsappIntegrationNullableScalarRelationFilter, Prisma.WhatsappIntegrationWhereInput> | null
+  instagramIntegrations?: Prisma.XOR<Prisma.InstagramIntegrationNullableScalarRelationFilter, Prisma.InstagramIntegrationWhereInput> | null
   customers?: Prisma.CustomerListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   products?: Prisma.ProductListRelationFilter
@@ -226,6 +227,7 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   integrations?: Prisma.IntegrationOrderByRelationAggregateInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationOrderByWithRelationInput
+  instagramIntegrations?: Prisma.InstagramIntegrationOrderByWithRelationInput
   customers?: Prisma.CustomerOrderByRelationAggregateInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
   products?: Prisma.ProductOrderByRelationAggregateInput
@@ -255,6 +257,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   integrations?: Prisma.IntegrationListRelationFilter
   whatsappIntegrations?: Prisma.XOR<Prisma.WhatsappIntegrationNullableScalarRelationFilter, Prisma.WhatsappIntegrationWhereInput> | null
+  instagramIntegrations?: Prisma.XOR<Prisma.InstagramIntegrationNullableScalarRelationFilter, Prisma.InstagramIntegrationWhereInput> | null
   customers?: Prisma.CustomerListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   products?: Prisma.ProductListRelationFilter
@@ -307,6 +310,7 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -333,6 +337,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -359,6 +364,7 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -385,6 +391,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -532,6 +539,20 @@ export type UserUpdateOneRequiredWithoutWhatsappIntegrationsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutWhatsappIntegrationsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWhatsappIntegrationsInput, Prisma.UserUpdateWithoutWhatsappIntegrationsInput>, Prisma.UserUncheckedUpdateWithoutWhatsappIntegrationsInput>
+}
+
+export type UserCreateNestedOneWithoutInstagramIntegrationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInstagramIntegrationsInput, Prisma.UserUncheckedCreateWithoutInstagramIntegrationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInstagramIntegrationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutInstagramIntegrationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInstagramIntegrationsInput, Prisma.UserUncheckedCreateWithoutInstagramIntegrationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInstagramIntegrationsInput
+  upsert?: Prisma.UserUpsertWithoutInstagramIntegrationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInstagramIntegrationsInput, Prisma.UserUpdateWithoutInstagramIntegrationsInput>, Prisma.UserUncheckedUpdateWithoutInstagramIntegrationsInput>
 }
 
 export type UserCreateNestedOneWithoutCustomersInput = {
@@ -712,6 +733,7 @@ export type UserCreateWithoutPaymentsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -737,6 +759,7 @@ export type UserUncheckedCreateWithoutPaymentsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -778,6 +801,7 @@ export type UserUpdateWithoutPaymentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -803,6 +827,7 @@ export type UserUncheckedUpdateWithoutPaymentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -828,6 +853,7 @@ export type UserCreateWithoutSubscriptionsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -853,6 +879,7 @@ export type UserUncheckedCreateWithoutSubscriptionsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -894,6 +921,7 @@ export type UserUpdateWithoutSubscriptionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -919,6 +947,7 @@ export type UserUncheckedUpdateWithoutSubscriptionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -943,6 +972,7 @@ export type UserCreateWithoutIntegrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -968,6 +998,7 @@ export type UserUncheckedCreateWithoutIntegrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -1009,6 +1040,7 @@ export type UserUpdateWithoutIntegrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -1034,6 +1066,7 @@ export type UserUncheckedUpdateWithoutIntegrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1059,6 +1092,7 @@ export type UserCreateWithoutWhatsappIntegrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -1084,6 +1118,7 @@ export type UserUncheckedCreateWithoutWhatsappIntegrationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -1125,6 +1160,7 @@ export type UserUpdateWithoutWhatsappIntegrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -1150,6 +1186,127 @@ export type UserUncheckedUpdateWithoutWhatsappIntegrationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUncheckedUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUncheckedUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUncheckedUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutInstagramIntegrationsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutInstagramIntegrationsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  avatarUrl?: string | null
+  googleId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
+  service?: Prisma.ServiceUncheckedCreateNestedManyWithoutUserInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutUserInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutUserInput
+  timeOffs?: Prisma.TimeOffUncheckedCreateNestedManyWithoutUserInput
+  breaks?: Prisma.BreakUncheckedCreateNestedManyWithoutUserInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutUserInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  businessProfile?: Prisma.BusinessProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutInstagramIntegrationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutInstagramIntegrationsInput, Prisma.UserUncheckedCreateWithoutInstagramIntegrationsInput>
+}
+
+export type UserUpsertWithoutInstagramIntegrationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutInstagramIntegrationsInput, Prisma.UserUncheckedUpdateWithoutInstagramIntegrationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutInstagramIntegrationsInput, Prisma.UserUncheckedCreateWithoutInstagramIntegrationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutInstagramIntegrationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutInstagramIntegrationsInput, Prisma.UserUncheckedUpdateWithoutInstagramIntegrationsInput>
+}
+
+export type UserUpdateWithoutInstagramIntegrationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
+  service?: Prisma.ServiceUpdateManyWithoutUserNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutUserNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutUserNestedInput
+  timeOffs?: Prisma.TimeOffUpdateManyWithoutUserNestedInput
+  breaks?: Prisma.BreakUpdateManyWithoutUserNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutUserNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
+  businessProfile?: Prisma.BusinessProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutInstagramIntegrationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
+  whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1176,6 +1333,7 @@ export type UserCreateWithoutCustomersInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
@@ -1201,6 +1359,7 @@ export type UserUncheckedCreateWithoutCustomersInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
@@ -1242,6 +1401,7 @@ export type UserUpdateWithoutCustomersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
@@ -1267,6 +1427,7 @@ export type UserUncheckedUpdateWithoutCustomersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
@@ -1292,6 +1453,7 @@ export type UserCreateWithoutOrdersInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
@@ -1317,6 +1479,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
@@ -1358,6 +1521,7 @@ export type UserUpdateWithoutOrdersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
@@ -1383,6 +1547,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
@@ -1408,6 +1573,7 @@ export type UserCreateWithoutMessagesInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -1433,6 +1599,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -1474,6 +1641,7 @@ export type UserUpdateWithoutMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -1499,6 +1667,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1524,6 +1693,7 @@ export type UserCreateWithoutProductsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowCreateNestedManyWithoutUserInput
@@ -1549,6 +1719,7 @@ export type UserUncheckedCreateWithoutProductsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   flows?: Prisma.FlowUncheckedCreateNestedManyWithoutUserInput
@@ -1590,6 +1761,7 @@ export type UserUpdateWithoutProductsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUpdateManyWithoutUserNestedInput
@@ -1615,6 +1787,7 @@ export type UserUncheckedUpdateWithoutProductsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   flows?: Prisma.FlowUncheckedUpdateManyWithoutUserNestedInput
@@ -1640,6 +1813,7 @@ export type UserCreateWithoutFlowsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -1665,6 +1839,7 @@ export type UserUncheckedCreateWithoutFlowsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -1706,6 +1881,7 @@ export type UserUpdateWithoutFlowsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -1731,6 +1907,7 @@ export type UserUncheckedUpdateWithoutFlowsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1756,6 +1933,7 @@ export type UserCreateWithoutServiceInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -1781,6 +1959,7 @@ export type UserUncheckedCreateWithoutServiceInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -1822,6 +2001,7 @@ export type UserUpdateWithoutServiceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -1847,6 +2027,7 @@ export type UserUncheckedUpdateWithoutServiceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1872,6 +2053,7 @@ export type UserCreateWithoutStaffInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -1897,6 +2079,7 @@ export type UserUncheckedCreateWithoutStaffInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -1938,6 +2121,7 @@ export type UserUpdateWithoutStaffInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -1963,6 +2147,7 @@ export type UserUncheckedUpdateWithoutStaffInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -1988,6 +2173,7 @@ export type UserCreateWithoutResourcesInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -2013,6 +2199,7 @@ export type UserUncheckedCreateWithoutResourcesInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -2054,6 +2241,7 @@ export type UserUpdateWithoutResourcesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -2079,6 +2267,7 @@ export type UserUncheckedUpdateWithoutResourcesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -2104,6 +2293,7 @@ export type UserCreateWithoutTimeOffsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -2129,6 +2319,7 @@ export type UserUncheckedCreateWithoutTimeOffsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -2170,6 +2361,7 @@ export type UserUpdateWithoutTimeOffsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -2195,6 +2387,7 @@ export type UserUncheckedUpdateWithoutTimeOffsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -2220,6 +2413,7 @@ export type UserCreateWithoutBreaksInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -2245,6 +2439,7 @@ export type UserUncheckedCreateWithoutBreaksInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -2286,6 +2481,7 @@ export type UserUpdateWithoutBreaksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -2311,6 +2507,7 @@ export type UserUncheckedUpdateWithoutBreaksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -2336,6 +2533,7 @@ export type UserCreateWithoutBookingsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -2361,6 +2559,7 @@ export type UserUncheckedCreateWithoutBookingsInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -2402,6 +2601,7 @@ export type UserUpdateWithoutBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -2427,6 +2627,7 @@ export type UserUncheckedUpdateWithoutBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -2452,6 +2653,7 @@ export type UserCreateWithoutBusinessProfileInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
@@ -2477,6 +2679,7 @@ export type UserUncheckedCreateWithoutBusinessProfileInput = {
   updatedAt?: Date | string
   integrations?: Prisma.IntegrationUncheckedCreateNestedManyWithoutUserInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedCreateNestedOneWithoutUserInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedCreateNestedOneWithoutUserInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
@@ -2518,6 +2721,7 @@ export type UserUpdateWithoutBusinessProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
@@ -2543,6 +2747,7 @@ export type UserUncheckedUpdateWithoutBusinessProfileInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   integrations?: Prisma.IntegrationUncheckedUpdateManyWithoutUserNestedInput
   whatsappIntegrations?: Prisma.WhatsappIntegrationUncheckedUpdateOneWithoutUserNestedInput
+  instagramIntegrations?: Prisma.InstagramIntegrationUncheckedUpdateOneWithoutUserNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
@@ -2716,6 +2921,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   integrations?: boolean | Prisma.User$integrationsArgs<ExtArgs>
   whatsappIntegrations?: boolean | Prisma.User$whatsappIntegrationsArgs<ExtArgs>
+  instagramIntegrations?: boolean | Prisma.User$instagramIntegrationsArgs<ExtArgs>
   customers?: boolean | Prisma.User$customersArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   products?: boolean | Prisma.User$productsArgs<ExtArgs>
@@ -2767,6 +2973,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   integrations?: boolean | Prisma.User$integrationsArgs<ExtArgs>
   whatsappIntegrations?: boolean | Prisma.User$whatsappIntegrationsArgs<ExtArgs>
+  instagramIntegrations?: boolean | Prisma.User$instagramIntegrationsArgs<ExtArgs>
   customers?: boolean | Prisma.User$customersArgs<ExtArgs>
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   products?: boolean | Prisma.User$productsArgs<ExtArgs>
@@ -2791,6 +2998,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     integrations: Prisma.$IntegrationPayload<ExtArgs>[]
     whatsappIntegrations: Prisma.$WhatsappIntegrationPayload<ExtArgs> | null
+    instagramIntegrations: Prisma.$InstagramIntegrationPayload<ExtArgs> | null
     customers: Prisma.$CustomerPayload<ExtArgs>[]
     orders: Prisma.$OrderPayload<ExtArgs>[]
     products: Prisma.$ProductPayload<ExtArgs>[]
@@ -3210,6 +3418,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   integrations<T extends Prisma.User$integrationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$integrationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IntegrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   whatsappIntegrations<T extends Prisma.User$whatsappIntegrationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$whatsappIntegrationsArgs<ExtArgs>>): Prisma.Prisma__WhatsappIntegrationClient<runtime.Types.Result.GetResult<Prisma.$WhatsappIntegrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  instagramIntegrations<T extends Prisma.User$instagramIntegrationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$instagramIntegrationsArgs<ExtArgs>>): Prisma.Prisma__InstagramIntegrationClient<runtime.Types.Result.GetResult<Prisma.$InstagramIntegrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customers<T extends Prisma.User$customersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   orders<T extends Prisma.User$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   products<T extends Prisma.User$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3693,6 +3902,25 @@ export type User$whatsappIntegrationsArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.WhatsappIntegrationInclude<ExtArgs> | null
   where?: Prisma.WhatsappIntegrationWhereInput
+}
+
+/**
+ * User.instagramIntegrations
+ */
+export type User$instagramIntegrationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InstagramIntegration
+   */
+  select?: Prisma.InstagramIntegrationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InstagramIntegration
+   */
+  omit?: Prisma.InstagramIntegrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstagramIntegrationInclude<ExtArgs> | null
+  where?: Prisma.InstagramIntegrationWhereInput
 }
 
 /**

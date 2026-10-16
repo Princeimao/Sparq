@@ -230,6 +230,7 @@ export class ReservationHandler implements WorkflowHandler {
     const customer = await this.customerRepository.findByPhone(
       ctx.message.customerWaId,
       ctx.message.phoneNumberId,
+      ctx.message.channel ?? "WHATSAPP",
     );
 
     if (customer) {
@@ -372,6 +373,7 @@ export class ReservationHandler implements WorkflowHandler {
       name,
       phoneNumberId: ctx.message.phoneNumberId,
       userId,
+      channel: ctx.message.channel ?? "WHATSAPP",
     });
 
     const tableId: string | undefined = data.tableId;

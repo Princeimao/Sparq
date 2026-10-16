@@ -5,6 +5,7 @@ import type { WhatsAppJobData } from "@sparq/types";
 
 // Services
 import { WhatsAppService } from "../services/whatsapp.service";
+import { InstagramService } from "../services/instagram.service";
 import { LlmService } from "../services/llm.service";
 
 // Store
@@ -122,6 +123,8 @@ export function startWhatsAppWorker() {
     "whatsapp-messages",
     async (job: Job<WhatsAppJobData>) => {
       const {
+        channel = "WHATSAPP",
+        pageId,
         messageId,
         phoneNumberId,
         wabaId,
@@ -135,13 +138,17 @@ export function startWhatsAppWorker() {
       } = job.data;
 
       console.log(
-        `[Worker] Job ${job.id} | from: ${customerWaId} | type: ${messageType ?? "text"} | text: "${text.slice(0, 60)}"`,
+        `[Worker:${channel}] Job ${job.id} | from: ${customerWaId} | type: ${messageType ?? "text"} | text: "${text.slice(0, 60)}"`,
       );
 
       try {
         // Resolve the owning user first — the worker never trusts
         // subscription state from the job payload.
-        const ownerId = userId ?? (await resolveUserId(phoneNumberId));
+        const ownerId =
+          userId ??
+          (channel === "INSTAGRAM"
+            ? await resolveUserIdByPage(pageId ?? "")
+            : await resolveUserId(phoneNumberId));
 
         // ── Subscription gate: block billable work without retry ──
         const gate = await checkJobEntitlement(ownerId, "workflow execution");
@@ -152,14 +159,16 @@ export function startWhatsAppWorker() {
           return;
         }
 
-        // ── Customer identity: one record per (business, phone) ──
+        // ── Customer identity: one record per (business, channel, id) ──
         // Scoped to the owning business — never merged across tenants.
+        // WhatsApp stores the wa_id; Instagram stores the raw IGSID.
         const customerRepo = new CustomerRepository();
         const customer = await customerRepo.findOrCreate({
           phone: customerWaId,
           name: customerName || undefined,
           phoneNumberId,
           userId: ownerId,
+          channel,
         });
 
         // ── Inbound history + redelivery dedup ──
@@ -192,35 +201,47 @@ export function startWhatsAppWorker() {
           throw err;
         }
 
-        // Build the service for this specific message's WABA
-        const whatsapp = new WhatsAppService({
-          messageId,
-          phoneNumberId,
-          wabaId,
-          customerWaId,
-          customerName,
-          text,
-          // Best-effort outbound history for the customer timeline.
-          onSend: (info) => {
-            void prisma.message
-              .create({
-                data: {
-                  customerId: customer.id,
-                  userId: ownerId,
-                  direction: "OUTBOUND",
-                  type: mapOutboundType(info.type),
-                  body: info.body?.slice(0, 4000),
-                  status: "SENT",
-                },
+        // Build the channel sender for this specific message.
+        // WhatsAppService and InstagramService share the ChannelSender
+        // surface, so the workflow engine below is channel-blind.
+        const logOutbound = (info: { to: string; type: string; body?: string }) => {
+          void prisma.message
+            .create({
+              data: {
+                customerId: customer.id,
+                userId: ownerId,
+                direction: "OUTBOUND",
+                type: mapOutboundType(info.type),
+                body: info.body?.slice(0, 4000),
+                status: "SENT",
+              },
+            })
+            .catch((e) =>
+              console.warn("[Worker] outbound log failed:", e),
+            );
+        };
+
+        const whatsapp =
+          channel === "INSTAGRAM"
+            ? new InstagramService({
+                igUserId: pageId ?? "",
+                igsid: customerWaId,
+                onSend: logOutbound,
               })
-              .catch((e) =>
-                console.warn("[Worker] outbound log failed:", e),
-              );
-          },
-        });
+            : new WhatsAppService({
+                messageId,
+                phoneNumberId,
+                wabaId,
+                customerWaId,
+                customerName,
+                text,
+                // Best-effort outbound history for the customer timeline.
+                onSend: logOutbound,
+              });
 
         // Build the strongly-typed incoming message object
         const incomingMessage: IncomingMessage = {
+          channel,
           messageId,
           customerWaId,
           customerName,
@@ -235,8 +256,21 @@ export function startWhatsAppWorker() {
 
         // Run the workflow engine — it decides whether to start or resume
         await engine.process(incomingMessage, whatsapp);
+        console.log(`[Worker:${channel}] Job ${job.id} replied OK`);
       } catch (error) {
-        console.error(`[Worker] Error processing job ${job.id}:`, error);
+        const err = error as {
+          message?: string;
+          response?: { status?: number; data?: unknown };
+        };
+        // Meta's reason (bad token, missing permission, 24h window, app
+        // in dev mode…) lives in response.data — always log it.
+        console.error(
+          `[Worker:${channel}] Error processing job ${job.id}:`,
+          err?.message ?? error,
+          err?.response
+            ? `| meta=${err.response.status} ${JSON.stringify(err.response.data).slice(0, 500)}`
+            : "",
+        );
         throw error; // BullMQ will retry according to queue config
       }
     },
@@ -294,6 +328,25 @@ async function resolveUserId(phoneNumberId: string): Promise<string> {
   if (!integration) {
     throw new Error(
       `[Worker] Could not resolve userId for phoneNumberId: ${phoneNumberId}`,
+    );
+  }
+
+  return integration.userId;
+}
+
+/**
+ * Instagram equivalent: resolve the owner from the professional
+ * account ID the webhook entry arrived on.
+ */
+async function resolveUserIdByPage(pageId: string): Promise<string> {
+  const integration = await prisma.instagramIntegration.findFirst({
+    where: { igUserId: pageId },
+    select: { userId: true },
+  });
+
+  if (!integration) {
+    throw new Error(
+      `[Worker] Could not resolve userId for Instagram account: ${pageId}`,
     );
   }
 

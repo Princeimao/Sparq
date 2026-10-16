@@ -123,6 +123,9 @@ const FIELDS: Record<IntegrationProvider, FieldConfig[]> = {
     },
   ],
   whatsapp: [],
+  // OAuth connections (WhatsApp embedded signup, Instagram login)
+  // never open this dialog — entries exist only for type completeness.
+  instagram: [],
 };
 
 const DIALOG_META: Record<
@@ -157,6 +160,11 @@ const DIALOG_META: Record<
     title: "Connect WhatsApp",
     description: "Connect your WhatsApp Business Account via Facebook login.",
     color: "from-green-600/20 to-emerald-600/10",
+  },
+  instagram: {
+    title: "Connect Instagram",
+    description: "Connect a business or creator account via Instagram login.",
+    color: "from-pink-600/20 to-purple-600/10",
   },
 };
 

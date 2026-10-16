@@ -1,7 +1,7 @@
 import { Intent } from "../../types/intent";
 import { MenuEntry, WorkflowHandler } from "../../types/handler";
 import { WorkflowContext } from "../../types/workflowContext";
-import { WhatsAppService } from "../../services/whatsapp.service";
+import { ChannelSender } from "../../types/channel";
 import { IncomingMessage } from "../../types/message";
 
 /**
@@ -34,7 +34,7 @@ export class GreetingHandler implements WorkflowHandler {
    */
   async handle(
     message: IncomingMessage,
-    whatsapp: WhatsAppService,
+    whatsapp: ChannelSender,
     menu: MenuEntry[],
     businessName: string,
   ): Promise<void> {

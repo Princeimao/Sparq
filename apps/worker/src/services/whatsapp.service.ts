@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { prisma } from "../config/prisma";
 import { decrypt } from "../lib/encryption";
+import type { ChannelSender } from "../types/channel";
 
 const WHATSAPP_API_VERSION = "v25.0";
 const WHATSAPP_API_BASE = `https://graph.facebook.com/${WHATSAPP_API_VERSION}`;
@@ -48,7 +49,7 @@ export interface WhatsAppMessageResponse {
   messages: Array<{ id: string }>;
 }
 
-export class WhatsAppService {
+export class WhatsAppService implements ChannelSender {
   private client: AxiosInstance;
   private phoneNumberId: string;
   private wabaId: string;
@@ -85,7 +86,7 @@ export class WhatsAppService {
       );
     }
 
-    return integration.accessToken;
+    return decrypt(integration.accessToken);
   }
 
   private async post<T = WhatsAppMessageResponse>(

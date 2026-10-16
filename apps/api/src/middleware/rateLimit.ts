@@ -18,7 +18,11 @@ interface RateLimitOptions {
  */
 export function rateLimit(options: RateLimitOptions) {
   const { windowSec, max, namespace } = options;
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     const identity = req.user?.userId ?? req.ip ?? "unknown";
     const key = `ratelimit:${namespace}:${identity}`;
     try {
